@@ -1,0 +1,46 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.nomis.ovc.dao;
+
+import com.nomis.ovc.business.AdultHouseholdMember;
+import com.nomis.reports.utils.ReportParameterTemplate;
+import java.util.List;
+
+/**
+ *
+ * @author smomoh
+ */
+public interface AdultHouseholdMemberDao 
+{
+    public void saveAdultHouseholdMember(AdultHouseholdMember ahm) throws Exception;
+    public void updateAdultHouseholdMember(AdultHouseholdMember ahm) throws Exception;
+    public void markForDelete(AdultHouseholdMember ahm) throws Exception;
+    public void deleteAdultHouseholdMember(AdultHouseholdMember ahm) throws Exception;
+    public List getAllAdultHouseholdMembers() throws Exception;
+    public List getAdultHouseholdMembersPerHousehold(String hhUniqueId) throws Exception;
+    public AdultHouseholdMember getAdultHouseholdMember(String beneficiaryId) throws Exception;
+    public AdultHouseholdMember getHeadOfHousehold(String hhUniqueId) throws Exception;
+    public void updateAllAdultHouseholdMembers() throws Exception;
+    public List getAdultHouseholdMembers(String additionalQuery,int currentEnrollmentStatus,int hivStatus,String startDate, String endDate,int startAge,int endAge,String sex,boolean onTreatment) throws Exception;
+    public List searchHouseholdProfileByPartOfName(ReportParameterTemplate rpt,String partOfName) throws Exception;
+    public List getAdultHouseholdMemberRecordsForExport(ReportParameterTemplate rpt) throws Exception;
+    public int getNumberOfAdultHouseholdMembersEnrolledWithinReportPeriod(String additionalQuery,int currentEnrollmentStatus,int hivStatus,String startDate, String endDate,int startAge,int endAge,String sex,int onTreatment) throws Exception;
+    public int getNumberOfAdultHouseholdMembersEnrolled(String additionalQuery,int currentEnrollmentStatus,int startAge,int endAge,String sex) throws Exception;
+    public List getListOfAdultHouseholdMembersEnrolled(String additionalQuery,int currentEnrollmentStatus,int startAge,int endAge,String sex) throws Exception;
+    public List getListOfAdultHouseholdMembersEnrolledWithinReportPeriod(String additionalQuery,int currentEnrollmentStatus,int hivStatus,String startDate, String endDate,int startAge,int endAge,String sex,int onTreatment) throws Exception;
+    public List getListOfAdultHouseholdMembersWithZeroAge() throws Exception;
+    public int updateAdultHouseholdMembersAge() throws Exception;
+    public List getListOfAdultHouseholdMembersByLevel4OrganizationUnit(String level4OuId) throws Exception;
+    public int getNumberOfAdultHouseholdMembersExitedWithoutGraduation(ReportParameterTemplate rpt,String startDate,String endDate,String sex) throws Exception;
+    //public void changeAdultHouseholdMemberBeneficiaryId(String oldHhUniqueId, String newHhUniqueId) throws Exception;
+    public void updateAdultHouseholdMemberWithoutDuplicateCheck(AdultHouseholdMember ahm,AdultHouseholdMember existingAhm) throws Exception;
+    public List getAdultHouseholdMembersWithBaselineAgeLessThan18() throws Exception;
+    public int updateAdultHouseholdMemberBaselineAge() throws Exception;
+    public List getAllAdultHouseholdMembers(String additionalQuery,int currentEnrollmentStatus,int hivStatus,String startDate, String endDate,int startAge,int endAge,String sex,boolean onTreatment) throws Exception;
+    public int getNoOfAdultHouseholdMembersByEnrollmentStatusAndHivStatus(String additionalQuery,int currentEnrollmentStatus,int hivStatus,String startDate, String endDate,int startAge,int endAge,String sex,int onTreatment) throws Exception;
+    public List getCaregiversPerHousehold(String hhUniqueId) throws Exception;
+    public AdultHouseholdMember getAdultHouseholdMemberByName(String hhUniqueId,String firstName,String surname) throws Exception;
+    public List getAdultHouseholdMemberRecordsMarkedForDelete(ReportParameterTemplate rpt) throws Exception;
+}

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+  <class name="com.nomis.ovc.business.User" table="APP.NOMISUSER">
+      <id name="username" column="USERNAME" type="string"/>
+      <property name="password" column="PASSWORD" type="string"/>
+      <property name="accountStatus" column="ACCOUNTSTATUS" type="string"/>
+      <property name="address" column="ADDRESS" type="string"/>
+      <property name="changePwd" column="CHANGEPWD" type="string"/>
+      <property name="dateCreated" column="DATECREATED" type="date"/>
+      <property name="email" column="EMAIL" type="string"/>
+      <property name="firstName" column="FIRSTNAME" type="string"/>
+      <property name="lastName" column="LASTNAME" type="string"/>
+      <property name="lastModifiedDate" column="DATEMODIFIED" type="date"/>
+      <property name="orgUnitGroupId" column="ORGUNITGROUPID" type="string"/>
+      <property name="phone" column="PHONE" type="string"/>
+      <property name="userGroupId" column="USERGROUPID" type="string"/>
+      <property name="userroleId" column="ROLEIDS" type="string"/>
+      <property name="viewClientDetails" column="VIEWCLIENTDETAILS" type="string"/>
+      <property name="accessPrivileges" column="ACCESSPRIVILEGES" type="string"/>
+      <property name="dataEntryOu" column="DATAENTRYOU" type="string"/>
+      <property name="reportOu" column="REPORTOU" type="string"/>
+  </class>
+</hibernate-mapping>
