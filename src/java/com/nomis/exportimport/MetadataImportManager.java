@@ -102,18 +102,21 @@ public List importOrganizationUnitRecordsFromXml(String xmlFileLocation)
                                 ou.setDateCreated(DateManager.getDateInstance(getNodeValue("dateCreated",s,listOfObjects)));
                                 ou.setLastModifiedDate(DateManager.getDateInstance(getNodeValue("lastModifiedDate",s,listOfObjects)));
                                                                                                
-                                existingOu=oudao.getOrganizationUnit(ou.getUid());
-                                if(existingOu==null)
+                                if(ou.getUid() !=null && ou.getOuPath() !=null && ou.getParentId() !=null && ou.getName() !=null)
                                 {
-                                    oudao.saveOrganizationUnit(ou);
-                                    numberSaved++;
+                                    existingOu=oudao.getOrganizationUnit(ou.getUid());
+                                    if(existingOu==null)
+                                    {
+                                        oudao.saveOrganizationUnit(ou);
+                                        numberSaved++;
+                                    }
+                                    else
+                                    {
+                                        oudao.updateOrganizationUnit(ou);
+                                        numberUpdated++;
+                                    }
+                                    System.err.println(exportFileName+" at "+numberSaved+" saved and "+numberUpdated+" updated");
                                 }
-                                else
-                                {
-                                    oudao.updateOrganizationUnit(ou);
-                                    numberUpdated++;
-                                }
-                                System.err.println(exportFileName+" at "+numberSaved+" saved and "+numberUpdated+" updated");
                              }
                         }
                     }

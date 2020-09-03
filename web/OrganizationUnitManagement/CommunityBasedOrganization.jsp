@@ -396,7 +396,7 @@ function setActionName(val)
                                     <tr bgcolor="#F0F0F0"><td> </td><td>
             <input type="button" value="Select all " onclick="selectChkBoxes('services')" />
                     <input type="button" value="Unselect all " onclick="unselectChkBoxes('services')" />
-                    </td></tr>
+                    </td></tr> <%----%>
                                     <tr><td colspan="4" align="center"><html:submit value="Save" onclick="setActionName('save')" disabled="${cboSaveDisabled}"/>
                                             <html:submit value="Modify" onclick="return confirmAction('modify')" disabled="${cboModifyDisabled}"/></td></tr>
                                     

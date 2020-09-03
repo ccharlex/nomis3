@@ -22,8 +22,8 @@ public class BeneficiaryAttributeManager implements Serializable
     }
     public ReferralFacility getReferralFacility(String facilityId) 
     {
-        ReferralFacilityManager rfm=new ReferralFacilityManager();
-        return rfm.getReferralFacilityById(facilityId);
+        //ReferralFacilityManager rfm=new ReferralFacilityManager();
+        return ReferralFacilityManager.getReferralFacilityById(facilityId);
     }
     public SchoolStatus getSchoolStatus(int code)
     {

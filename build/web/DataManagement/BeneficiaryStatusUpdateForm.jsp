@@ -129,27 +129,27 @@ function generateUniqueId(val)
     getValuesByAjaxApi('ajaxaction.do',req,'uniqueId')
     return true;
 }
-function activateEnrolledOnTreatment(value)
+function activateHivStatusField()
 {
-    if(value == "1") 
+    if(document.getElementById("updateChildHivStatus").checked) 
     {
-        document.getElementById("enrolledOnTreatment").disabled = false;
+        document.getElementById("childNewHivStatus").disabled = false;
     }
     else 
     {
-       document.getElementById("enrolledOnTreatment").value=2
-       document.getElementById("enrolledOnTreatment").disabled = true;
-       document.getElementById("facilityId").value="select"
-       document.getElementById("facilityId").disabled = true;
+       document.getElementById("childNewHivStatus").disabled = true;
     }
 }
-function activateEnrolledOnTreatment(value)
+function activateEnrolledOnTreatment(hivStatusValue)
 {
-    if(value == "1") 
+    if(hivStatusValue == "1") 
     {
         document.getElementById("enrolledOnTreatment").disabled = false;
-        document.getElementById("dateEnrolledOnTreatment").disabled = false;
         document.getElementById("dateOfNewHivStatus").disabled = false;
+        if(document.getElementById("enrolledOnTreatment").value==1)
+        document.getElementById("dateEnrolledOnTreatment").disabled = false;
+        else
+        document.getElementById("dateEnrolledOnTreatment").disabled = true;
     }
     else 
     {
@@ -169,12 +169,14 @@ function activateEnrolledOnTreatment(value)
        }
     }
 }
-function activateReferralList(value) 
+function activateReferralList(enrolledOnTreatmentValue) 
 {
-    if(value == "1") 
+    if(enrolledOnTreatmentValue == "1") 
     {
         document.getElementById("hivTreatmentFacilityId").disabled = false;
         document.getElementById("childTreatmentId").disabled = false;
+        document.getElementById("dateEnrolledOnTreatment").disabled = false;
+        
     }
     else 
     {
@@ -182,6 +184,8 @@ function activateReferralList(value)
         document.getElementById("hivTreatmentFacilityId").disabled = true;
         document.getElementById("childTreatmentId").value = "";
         document.getElementById("childTreatmentId").disabled = true;
+        document.getElementById("dateEnrolledOnTreatment").value = "";
+        document.getElementById("dateEnrolledOnTreatment").disabled = true;
     }
 }
 function activateCaregiverEnrolledOnTreatment(value)
@@ -194,21 +198,21 @@ function activateCaregiverEnrolledOnTreatment(value)
     }
     else 
     {
-       document.getElementById("caregiverEnrolledOnTreatment").value=2
+       document.getElementById("caregiverEnrolledOnTreatment").value=0
        document.getElementById("caregiverEnrolledOnTreatment").disabled = true;
-       document.getElementById("hivTreatmentFacilityId").value="select"
-       document.getElementById("hivTreatmentFacilityId").disabled = true;
-       document.getElementById("childTreatmentId").value = "";
-       document.getElementById("childTreatmentId").disabled = true;
+       document.getElementById("facilityCaregiverEnrolled").value="select"
+       document.getElementById("facilityCaregiverEnrolled").disabled = true;
+       document.getElementById("caregiverTreatmentId").value = "";
+       document.getElementById("caregiverTreatmentId").disabled = true;
        
        document.getElementById("dateOfCaregiverHivStatus").value = "";
        document.getElementById("dateOfCaregiverHivStatus").disabled = false;
        document.getElementById("dateCaregiverEnrolledOnTreatment").value = "";
        document.getElementById("dateCaregiverEnrolledOnTreatment").disabled = true;
-       
+       //If HIV status is unknown or undisclosed or status selected
        if(value == "0" || value == "3" || value == "4") 
        {
-           document.getElementById("dateOfNewHivStatus").disabled = true;
+           document.getElementById("dateOfCaregiverHivStatus").disabled = true;
        }
     }
 }
@@ -433,9 +437,10 @@ function setActionName(val)
                                                 <html:option value="F">Female</html:option>
                                             </html:select>
                                         </td>
-                                        <td align="right">Last HIV status</td>
+                                        <td align="right">Current HIV status</td>
                                         <td >
                                             <html:select property="lastHivStatus" styleId="lastHivStatus"  onchange="activateEnrolledOnTreatment(this.value)" disabled="${lastHivDisabled}">
+                                                <html:option value="0">select...</html:option>
                                                 <logic:present name="allHivStatus">
                                                     <logic:iterate name="allHivStatus" id="hivStatus">
                                                         <html:option value="${hivStatus.code}">${hivStatus.name}</html:option>
@@ -452,19 +457,21 @@ function setActionName(val)
                              <td colspan="4">
                                  <fieldset><legend style="font-weight: bolder; text-decoration: blink">HIV STATUS INFORMATION UPDATE </legend>       
                          <table>   
-                             <tr><td align="right" colspan="2">Update child HIV status</td>
-                                <td colspan="2">
-                                    <html:select property="updateChildHivStatus" styleId="updateChildHivStatus" styleClass="smallfieldcellinput" onchange="activateEnrolledOnTreatment(this.value)" disabled="${newHivDisabled}">
+                             <tr><td align="right" colspan="2"> </td>
+                                <td>
+                                    Update child HIV status <html:checkbox property="updateChildHivStatus" styleId="updateChildHivStatus" styleClass="smallfieldcellinput" value="1" onclick="activateHivStatusField()" disabled="${newHivDisabled}"/>
+                                    <%--<html:select property="updateChildHivStatus" styleId="updateChildHivStatus" styleClass="smallfieldcellinput" onchange="activateEnrolledOnTreatment(this.value)" disabled="${newHivDisabled}">
                                         <html:option value="2">No</html:option>
                                         <html:option value="1">Yes</html:option>
-                                    </html:select>
+                                    </html:select>--%>
                                 </td>
-                                
+                                <td>&nbsp;</td>
                             </tr>
                              <tr><td align="right">New HIV status</td>
                                 <td>
                                     <html:select property="childNewHivStatus" styleId="childNewHivStatus" styleClass="smallfieldcellinput" onchange="activateEnrolledOnTreatment(this.value)" disabled="${newHivDisabled}">
-                                    <logic:present name="posNegUnkHivStatus">
+                                        <html:option value="0">select...</html:option>
+                                        <logic:present name="posNegUnkHivStatus">
                                                     <logic:iterate name="posNegUnkHivStatus" id="hivStatus">
                                                         <html:option value="${hivStatus.code}">${hivStatus.name}</html:option>
                                                     </logic:iterate>
@@ -480,7 +487,7 @@ function setActionName(val)
                                 <td align="right" >Enrolled on treatment? </td>
                                         <td>
                                             <html:select property="enrolledOnTreatment" styleClass="smallfieldcellinput" styleId="enrolledOnTreatment" style="width:100px;" onchange="activateReferralList(this.value)" disabled="${enrOnTreatmentDisabled}">
-                                              <html:option value="0">select...</html:option>
+                                              <html:option value="0">N/A</html:option>
                                                 <html:option value="2">No</html:option>
                                               <html:option value="1">Yes</html:option>
                                             </html:select>
@@ -646,7 +653,7 @@ function setActionName(val)
 
                          </tr>
                          <tr> 
-                             <td align="right">Last known HIV status </td>
+                             <td align="right">Current HIV status </td>
                             <td>
                                 <html:select property="caregiverLastHivStatus" styleId="caregiverLastHivStatus" styleClass="fieldcellinput" style="width:100px;" disabled="true">
                                   <logic:present name="allHivStatus">
@@ -656,7 +663,7 @@ function setActionName(val)
                                     </logic:present>  
                                 </html:select>
                             </td>
-                            <td align="right">Date of Last Hiv status </td>
+                            <td align="right">Date of Current Hiv status </td>
                             <td><html:text property="dateOfCaregiverLastHivStatus" styleClass="fieldcellinput" styleId="dateOfCaregiverLastHivStatus" readonly="true"/> 
                                 </td>
                          </tr>
@@ -676,24 +683,24 @@ function setActionName(val)
                                 </td>
                          </tr>
                          <tr> 
-                             <td align="right">Caregiver enrolled in care?</td>
+                             <td align="right">Enrolled on treatment?</td>
                             <td>
                                 <html:select property="caregiverEnrolledOnTreatment" styleClass="fieldcellinput" styleId="caregiverEnrolledOnTreatment" style="width:100px;">
-                                    <html:option value="0">select...</html:option>
+                                    <html:option value="0">N/A</html:option>
                                     <html:option value="2">No</html:option>
                                   <html:option value="1">Yes</html:option>
                                 </html:select>
                             </td>
-                            <td align="right">Date caregiver enrolled </td>
+                            <td align="right">Date enrolled on treatment </td>
                             <td><html:text property="dateCaregiverEnrolledOnTreatment" styleClass="fieldcellinput" styleId="dateCaregiverEnrolledOnTreatment" readonly="true"/> 
                                 </td>
                          </tr>
                          <tr> 
                              <td align="right">Facility enrolled </td>
                             <td colspan="3"> 
-                                <html:select property="facilityCaregiverEnrolled" styleId="facilityCaregiverEnrolled" styleClass="fieldcellinput" style="width:250px;">
+                                <html:select property="facilityCaregiverEnrolled" styleId="facilityCaregiverEnrolled" styleClass="fieldcellinput" style="width:450px;">
                                     <html:option value="select">select...</html:option>
-                                      <html:option value="xxxxxxxxxxx">Default facility</html:option>
+                                      <html:option value="xxxxxxxxxxx">Unknown facility</html:option>
                                       <logic:present name="ovcfacilityList">
                                           <logic:iterate name="ovcfacilityList" id="facility">
                                               <html:option value="${facility.facilityId}">${facility.facilityName}</html:option>

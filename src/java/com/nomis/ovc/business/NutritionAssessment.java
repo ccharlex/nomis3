@@ -51,6 +51,8 @@ public class NutritionAssessment implements Serializable
     private int markedForDelete;
     private int recordStatus;
     private String recordedBy;
+    private int ageAtAssessment;
+    private int ageUnitAtAssessment;
 
     public double getBmi() {
         return bmi;
@@ -354,6 +356,22 @@ public class NutritionAssessment implements Serializable
 
     public void setRecordedBy(String recordedBy) {
         this.recordedBy = recordedBy;
+    }
+
+    public int getAgeAtAssessment() {
+        return ageAtAssessment;
+    }
+
+    public void setAgeAtAssessment(int ageAtAssessment) {
+        this.ageAtAssessment = ageAtAssessment;
+    }
+
+    public int getAgeUnitAtAssessment() {
+        return ageUnitAtAssessment;
+    }
+
+    public void setAgeUnitAtAssessment(int ageUnitAtAssessment) {
+        this.ageUnitAtAssessment = ageUnitAtAssessment;
     }
     
 }

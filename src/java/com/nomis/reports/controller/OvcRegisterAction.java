@@ -8,6 +8,7 @@ import com.nomis.operationsManagement.AccessManager;
 import com.nomis.operationsManagement.BeneficiaryDetailsManager;
 import com.nomis.operationsManagement.OrganizationUnitAttributesManager;
 import com.nomis.ovc.business.AdultHouseholdMember;
+import com.nomis.ovc.business.CareAndSupportChecklist;
 import com.nomis.ovc.business.ChildService;
 import com.nomis.ovc.business.HivRiskAssessment;
 import com.nomis.ovc.business.HouseholdEnrollment;
@@ -351,6 +352,30 @@ public class OvcRegisterAction extends org.apache.struts.action.Action {
                 hhrf.reset(mapping, request);
                 System.err.println("hraRegister is hraRegister");
                 return mapping.findForward("hraRegister");
+            }
+            else if(registerType.equalsIgnoreCase("careAndSupportRegister"))
+            {
+                System.err.println("registerType in the inner block is "+registerType);
+                DaoUtility daoutil=new DaoUtility();
+                List hraList=new ArrayList();
+                List list=daoutil.getCareAndSupportChecklistDaoInstance().getCareAndSupportRecordsForExport(rpt);
+                //.getHouseholdServiceDaoInstance().getHouseholdServices(orgUnitQuery, AppConstant.EVER_ENROLLED_NUM, 0, startDate, endDate, 0, 200, null, false);
+                if(list==null)
+                list=new ArrayList();
+                CareAndSupportChecklist casc=null;
+                for(int i=0; i<list.size(); i++)
+                {
+                    casc=(CareAndSupportChecklist)list.get(i);
+                    casc.setSerialNo(i+1);
+                    if(i%2>0)
+                    casc.setRowColor("#D7E5F2");
+                    hraList.add(casc);
+                }
+                request.setAttribute("reportType", "Care and Support Register");
+                session.setAttribute("careAndSupportListForRegister", hraList);
+                hhrf.reset(mapping, request);
+                //System.err.println("hraRegister is hraRegister");
+                return mapping.findForward("careAndSupportRegister");
             }
             /*else if(registerType.equalsIgnoreCase("graduationBenchmark"))
             {

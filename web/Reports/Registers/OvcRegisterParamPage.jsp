@@ -71,30 +71,33 @@ a:active {
 
         </script>
     </head>
-    <body style="background-color: burlywood">
+    <body style="background-color: #F9FBFD">
         <br/><br/>
         <center>
             <html:form action="/ovcregister" method="POST">
                 <html:hidden property="actionName" styleId="actionName"/>
                 <table>
                     <tr><td align="center"><logic:present name="accessErrorMsg">${accessErrorMsg}</logic:present></td></tr>
-                    <tr><td>
-                <jsp:include page="/includes/ReportOrganizationUnitParameter.jsp" />
-                </td></tr>
+                    
                       <tr><td>
                         <table>
-                            <tr><td ><label style="margin-left: 120px;">Register</label></td>
+                            <tr><td colspan="3">
+                <jsp:include page="/includes/ReportOrganizationUnitParameter.jsp" />
+                </td></tr>
+                            <tr><td ><label>Register</label></td>
                                 <td colspan="2">
                                     <html:select property="registerType" styleId="registerType" style="width: 568px;">
                                 <html:option value="HouseholdRegister">Household register</html:option>
                                 <html:option value="caregiverRegister">Caregiver register</html:option>
                                 <html:option value="childRegister">Child register</html:option>
                                 <html:option value="ovcServiceRegister">Child Service register</html:option>
-                                <%--<html:option value="householdServiceRegister">Caregiver Service register</html:option>
-                                <html:option value="referralRegister">Referral register</html:option>
+                                <html:option value="householdServiceRegister">Caregiver Service register</html:option>
+                                <html:option value="hivRiskAssessmentRegister">HIV Risk assessment register</html:option>
+                                <html:option value="careAndSupportRegister">Care and Support register</html:option>
+                                <%--<html:option value="referralRegister">Referral register</html:option>
                                 <html:option value="gbvEnrollmentRegister">GBV Enrollment register</html:option>
                                 <html:option value="gbvServiceRegister">GBV Service register</html:option>
-                                <html:option value="hivRiskAssessmentRegister">HIV Risk assessment register</html:option>
+                                
                                 <html:option value="graduationBenchmark">Graduation Benchmark register</html:option>
                                 <html:option value="trainingRegister">Training register</html:option>--%>
                             </html:select>

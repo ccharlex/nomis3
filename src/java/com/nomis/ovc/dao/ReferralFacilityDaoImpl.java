@@ -110,12 +110,18 @@ public class ReferralFacilityDaoImpl implements ReferralFacilityDao
         try
         {
             SubQueryGenerator sqg=new SubQueryGenerator();
+            String query="from ReferralFacility rf order by rf.facilityName";
             String additionalOrgUnitQuery="";
+            /*if(rpt !=null && rpt.getLevel2OuId() !=null && (rpt.getLevel2OuId().equalsIgnoreCase("select") || rpt.getLevel2OuId().equalsIgnoreCase("All")))
+            {
+                facilityList=getAllReferralFacilities();
+            }*/
+            
             if(rpt !=null && rpt.getLevel2OuId() !=null && rpt.getLevel2OuId().trim().length()>0 && !rpt.getLevel2OuId().equalsIgnoreCase("select") && !rpt.getLevel2OuId().equalsIgnoreCase("All"))
             {
                 additionalOrgUnitQuery=sqg.getOrganizationUnitQueryWithoutCBO(rpt);
             }
-            String query=SubQueryGenerator.getReferralFacilityOrganizationUnitQuery()+additionalOrgUnitQuery+" order by rf.facilityName";
+            query=SubQueryGenerator.getReferralFacilityOrganizationUnitQuery()+additionalOrgUnitQuery+" order by rf.facilityName";
             System.err.println(query);
             session=HibernateUtil.getSession();
             tx=session.beginTransaction();
@@ -207,7 +213,7 @@ public class ReferralFacilityDaoImpl implements ReferralFacilityDao
         {
             session = HibernateUtil.getSession();
             tx = session.beginTransaction();
-            list = session.createQuery("from ReferralFacility rf").list();
+            list = session.createQuery("from ReferralFacility rf order by rf.facilityName").list();
             tx.commit();
             closeSession(session); 
         }

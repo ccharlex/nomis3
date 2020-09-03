@@ -12,6 +12,7 @@ import java.io.Serializable;
  */
 public class AppConstant implements Serializable
 {
+    public static final String VULNERABILITYSTATUS_SUBTYPE="vulnerabilitystatus";
     public static final String MAIN_INDICATOR_TYPE="main indicator";
     public static final String HIVRISK_POINTOFUPDATE="hra";
     public static final String HOUSEHOLD_TYPE="household";
@@ -29,9 +30,20 @@ public class AppConstant implements Serializable
     public static final String HIV_NEGATIVE="negative";
     public static final String HIV_UNKNOWN="unknown";
     public static final String HIV_UNDISCLOSED="unknown";
+    public static final String TRUEVALUE="true";
+    public static final String FALSEVALUE="false";
+    
+    public static final int NUTRITIONSTATUS_OBESSE_NUM=1;
+    public static final int NUTRITIONSTATUS_OVERWEIGHT_NUM=2;
+    public static final int NUTRITIONSTATUS_NORMAL_NUM=3;
+    public static final int NUTRITIONSTATUS_MILD_MALNUTRITION_NUM=4;
+    public static final int NUTRITIONSTATUS_MODERATE_MALNUTRITION_NUM=5;
+    public static final int NUTRITIONSTATUS_SEVERE_MALNUTRITION_NUM=6;
+    public static final int NUTRITIONSTATUS_MALNOURISHED_ALL_NUM=7;
     
     public static final int ENROLLED_ON_TREATMENT_YES_NUM=1;
     public static final int ENROLLED_ON_TREATMENT_NO_NUM=2;
+    public static final int ENROLLED_ON_TREATMENT_NOTAPPLICABLE=0;
     public static final int AGEUNIT_MONTH_NUM=1;
     public static final int AGEUNIT_YEAR_NUM=2;
     public static final int HIV_ALL_STATUS_NUM=0;
@@ -151,14 +163,16 @@ public class AppConstant implements Serializable
     public final static String REFERRALSERVICE_DEFAULT_CODE="ref";
     
     public static final int NO_TREATMENT_CRITERIA=0;
-    public static final int ON_TREATMENT=1;
-    public static final int NOT_ON_TREATMENT=2;
+    //public static final int ON_TREATMENT=1;
+    //public static final int NOT_ON_TREATMENT=2;
     public static final int ALL_SERVICE_DOMAIN=0;
     public static final int HEALTH_DOMAIN=1;
     public static final int REFERRAL_DOMAIN=2;
     public static final int SAFETY_DOMAIN=3;
     public static final int SCHOOL_DOMAIN=4;
     public static final int STABLE_DOMAIN=5;
+    public static final int REFERRALCOMPLETED_YES_NUM=1;
+    public static final int REFERRALCOMPLETED_NO_NUM=1;
     
     public static final int CHILD_IN_SCHOOL=1;
     public static final int CHILD_NOT_IN_SCHOOL=2;
@@ -174,6 +188,11 @@ public class AppConstant implements Serializable
     public static final int REF_CBO_TO_CBO=3;
     public static final int REF_FACILITY_TO_FACILITY=4;
     public final static String DEFAULT_FACILITY_ID="xxxxxxxxxxx";
+    
+    public final static int LISTOFINDICATORS_REPORTTYPE=1;
+    public final static int CUSTOMINDICATORS_REPORTTYPE=2;
+    public final static int HOUSEHOLDREGISTER_REPORTTYPE=3;
+    public final static int CHILDREGISTER_REPORTTYPE=4;
     public final static String DEFAULT_ACCESS_MSG="<label style='color:red; font-weight:bold;font-size:14px;'>Either your session has expired or you may not have data entry permission on this page</label>";
     public final static String LICENCE_ACCESS_MSG="<label style='color:red; font-weight:bold;font-size:16px;'>Oops. It seems your licence has expired. contact the administrator</label>";
 }

@@ -4,6 +4,7 @@
  */
 package com.nomis.reports.utils;
 
+import com.nomis.operationsManagement.VulnerabilityStatusManager;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,10 +42,10 @@ public class ReportIndicatorsManager implements Serializable
         List referralList=new ArrayList();
         List casePlanList=new ArrayList();
         
-        //ovcList.add(ind.getIndicatorForNumberOfNewOvcEnrolled());
-        //ovcList.add(ind.getIndicatorForNumberOfOvcCurrentlyEnrolled());
+        ovcList.add(ind.getIndicatorForNumberOfNewOvcEnrolled());
+        ovcList.add(ind.getIndicatorForNumberOfOvcCurrentlyEnrolled());
         ovcList.add(ind.getIndicatorForNumberOfOvcEverEnrolled());
-        /*ovcList.add(ind.getIndicatorForNumberOfOvcGraduated());
+        ovcList.add(ind.getIndicatorForNumberOfOvcGraduated());
         ovcList.add(ind.getIndicatorForNumberOfOvcWithdrawnDueToLostToFollowup());
         ovcList.add(ind.getIndicatorForNumberOfOvcWithdrawnDueToMigration());
         ovcList.add(ind.getIndicatorForNumberOfOvcWithdrawnDueToAgingOut());
@@ -53,34 +54,44 @@ public class ReportIndicatorsManager implements Serializable
         ovcList.add(ind.getIndicatorForNumberOfOvcTransferedToNonPEPFAR());
         ovcList.add(ind.getIndicatorForNumberOfOvcDeclaredInactive());
         ovcList.add(ind.getIndicatorForNumberOfOvcExitedWithoutGraduation());
-        ovcList.add(ind.getIndicatorForNumberOfOvcReenrolledIntoTheProgram());*/
+        ovcList.add(ind.getIndicatorForNumberOfOvcReenrolledIntoTheProgram());
         
         mainList.add(ovcList);
         
-        /*schoolEnrollmentList.add(ind.getIndicatorForNumberOfOvcCurrentlyInSchool());
-        schoolEnrollmentList.add(ind.getIndicatorForNumberOfOvcOutOfSchool());*/
+        schoolEnrollmentList.add(ind.getIndicatorForNumberOfOvcCurrentlyInSchool());
+        schoolEnrollmentList.add(ind.getIndicatorForNumberOfOvcOutOfSchool());
         mainList.add(schoolEnrollmentList);
         
+        vulnerabilityStatusList.add(ind.getIndicatorForNumberOfChildrenLivingWithHIVEnrolled());
+        //vulnerabilityStatusList.add(ind.getIndicatorForNumberOfChildrenWhoseSubPopulationStatusIsHivPositive());
+        vulnerabilityStatusList.add(ind.getIndicatorForNumberOfHIVExposedChildrenEnrolled());
+        vulnerabilityStatusList.add(ind.getIndicatorForNumberOfChildrenOfHIVPositiveCaregiversEnrolled());
+        vulnerabilityStatusList.add(ind.getIndicatorForNumberOfChildrenAtHeightenedRiskOfHIVInfectionEnrolled());
+        vulnerabilityStatusList.add(ind.getIndicatorForNumberOfChildrenAtRiskOfOrHaveExperiencedSexualViolenceEnrolled());
+        vulnerabilityStatusList.add(ind.getIndicatorForNumberOfAdolescentFemalesAtRiskOfTransactionalSexEnrolled());
+        vulnerabilityStatusList.add(ind.getIndicatorForNumberOfChildrenOfKeyPopEnrolled());
+        vulnerabilityStatusList.add(ind.getIndicatorForNumberOfChildrenOrphanedByAIDSEnrolled());
         /*vulnerabilityStatusList.add(ind.getIndicatorForNumberOfOvcWhoWereEnrolledAsOrphans());
         vulnerabilityStatusList.add(ind.getIndicatorForNumberOfOvcWhoWereEnrolledAsMaternalOrphans());
         vulnerabilityStatusList.add(ind.getIndicatorForNumberOfOvcWhoWereEnrolledAsPaternalOrphans());
         vulnerabilityStatusList.add(ind.getIndicatorForNumberOfOvcWhoWereEnrolledAsDoubleOrphans());
-        vulnerabilityStatusList.add(ind.getIndicatorForNumberOfChildrenOfKeyPopEnrolled());
+        
         vulnerabilityStatusList.add(ind.getIndicatorForNumberOfStreetChildrenEnrolled());
         vulnerabilityStatusList.add(ind.getIndicatorForNumberOfAbusedChildrenEnrolled());
-        vulnerabilityStatusList.add(ind.getIndicatorForNumberOfChildrenWhoseSubPopulationStatusIsHivPositive());
+        
         vulnerabilityStatusList.add(ind.getIndicatorForNumberOfChildrenLivingWithDisabilityEnrolled());
-        vulnerabilityStatusList.add(ind.getIndicatorForNumberOfHIVExposedChildrenEnrolled());
+        
         //vulnerabilityStatusList.add(ind.getIndicatorForNumberOfChildrenLivingWithHIVEnrolled());
-        vulnerabilityStatusList.add(ind.getIndicatorForNumberOfChildrenOfHIVPositiveCaregiversEnrolled());
+        
         vulnerabilityStatusList.add(ind.getIndicatorForNumberOfStuntedOrMalnourishedChildrenEnrolled());
         vulnerabilityStatusList.add(ind.getIndicatorForNumberOfAdolescentGirlsEnrolled());
         vulnerabilityStatusList.add(ind.getIndicatorForNumberOfTeenMothersEnrolled());
         vulnerabilityStatusList.add(ind.getIndicatorForNumberOfChildrenEnrolledFromUtraPoorHouseholds());*/
-        mainList.add(vulnerabilityStatusList);
+        //mainList.add(vulnerabilityStatusList);
+        mainList.add(VulnerabilityStatusManager.getVulnerabilityStatusIndicators());
         
-        //birthRegList.add(ind.getIndicatorForNumberOfOvcLessThan18CurrentlyEnrolledWithBirthCertificate());
-        //birthRegList.add(ind.getIndicatorForNumberOfOvcWithoutBirthCertificateCurrently());
+        birthRegList.add(ind.getIndicatorForNumberOfOvcLessThan18CurrentlyEnrolledWithBirthCertificate());
+        birthRegList.add(ind.getIndicatorForNumberOfOvcWithoutBirthCertificateCurrently());
         /*birthRegList.add(ind.getIndicatorForNumberOfOvcNewlyEnrolledWithBirthCertificateAtBaseline());
         birthRegList.add(ind.getIndicatorForNumberOfOvcCurrentlyEnrolledWithBirthCertAtBaseline());
         birthRegList.add(ind.getIndicatorForNumberOfOvcEverEnrolledWithBirthCertificateAtBaseline());
@@ -92,12 +103,18 @@ public class ReportIndicatorsManager implements Serializable
         
         mainList.add(birthRegList);
         
-        /*hivList.add(ind.getIndicatorForNumberOfHIVPositiveOvcCurrentlyEnrolled());
+        hivList.add(ind.getIndicatorForNumberOfHIVPositiveOvcCurrentlyEnrolled());
         hivList.add(ind.getIndicatorForNumberOfHIVNegativeOvcCurrentlyEnrolled());
-        hivList.add(ind.getIndicatorForNumberOfHIVUnknownOvcCurrentlyEnrolled());*/
+        hivList.add(ind.getIndicatorForNumberOfHIVUnknownOvcCurrentlyEnrolled());
         hivList.add(ind.getIndicatorForNumberOfHIVPositiveOvcEverEnrolled());
         hivList.add(ind.getIndicatorForNumberOfHIVNegativeOvcEverEnrolled());
         hivList.add(ind.getIndicatorForNumberOfHIVUnknownOvcEverEnrolled());
+        
+        hivList.add(ind.getIndicatorForNumberOfHivPositiveOnTreatment());
+        hivList.add(ind.getIndicatorForNumberOfHivPositiveNotOnTreatment());
+        hivList.add(ind.getIndicatorForNumberOfHivPositiveEnrolledOnTreatmentInReportPeriod());
+        
+        
         
         mainList.add(hivList);
         
@@ -167,9 +184,9 @@ public class ReportIndicatorsManager implements Serializable
         mainList.add(ovcHhLinkageList);
      
         ovcServiceList.add(ind.getIndicatorForNumberOfOvcServedWithinTheReportPeriod());
-        /*ovcServiceList.add(ind.getIndicatorForNumberOfOvcWithoutServiceRecords());
+        ovcServiceList.add(ind.getIndicatorForNumberOfOvcWithoutServiceRecords());
         
-        ovcServiceList.add(ind.getIndicatorForNumberOfOvcProvidedHIVAdherenceSupportGroupService());
+        /*ovcServiceList.add(ind.getIndicatorForNumberOfOvcProvidedHIVAdherenceSupportGroupService());
         ovcServiceList.add(ind.getIndicatorForNumberOfOvcProvidedStructuredPLHASupportGroupService());
         ovcServiceList.add(ind.getIndicatorForNumberOfOvcProvidedEarlyChildStimulationService());
         ovcServiceList.add(ind.getIndicatorForNumberOfOvcProvidedEmergencyTransportAssistanceService());
@@ -193,11 +210,11 @@ public class ReportIndicatorsManager implements Serializable
         ovcServiceList.add(ind.getIndicatorForNumberOfChildrenParticipatingInSupportGroup());*/
         //ovcServiceList.add(ind.getIndicatorForNumberOfActiveOvcServedInReportPeriod());
         
-        /*ovcServiceList.add(ind.getIndicatorForNumberOfNewOvcEnrolledAndServedWithinTheReportPeriod());
-        ovcServiceList.add(ind.getIndicatorForNumberOfOvcCurrentlyEnrolledAndServedInReportPeriod());
+        //ovcServiceList.add(ind.getIndicatorForNumberOfNewOvcEnrolledAndServedWithinTheReportPeriod());
+        //ovcServiceList.add(ind.getIndicatorForNumberOfOvcCurrentlyEnrolledAndServedInReportPeriod());
         
         
-        ovcServiceList.add(ind.getIndicatorForNumberOfOvcGraduatedButServedInReportPeriod());
+        /*ovcServiceList.add(ind.getIndicatorForNumberOfOvcGraduatedButServedInReportPeriod());
         ovcServiceList.add(ind.getIndicatorForNumberOfOvcLostToFollowupButServedInReportPeriod());
         ovcServiceList.add(ind.getIndicatorForNumberOfOvcMigratedButServedInReportPeriod());
         ovcServiceList.add(ind.getIndicatorForNumberOfOvcAgedoutButServedInReportPeriod());
@@ -287,8 +304,8 @@ public class ReportIndicatorsManager implements Serializable
         
         caregiverList.add(ind.getIndicatorForNumberOfAdultMembersEnrolledWithinTheReportPeriod());
         caregiverList.add(ind.getIndicatorForNumberOfCaregiversEverEnrolled());
-        /*caregiverList.add(ind.getIndicatorForNumberOfAdultMembersCurrentlyEnrolled());
-        caregiverList.add(ind.getIndicatorForNumberOfCaregiversGraduated());
+        caregiverList.add(ind.getIndicatorForNumberOfAdultMembersCurrentlyEnrolled());
+        /*caregiverList.add(ind.getIndicatorForNumberOfCaregiversGraduated());
         caregiverList.add(ind.getIndicatorForNumberOfCaregiversWithdrawnDueToMigration());
         caregiverList.add(ind.getIndicatorForNumberOfCaregiversWithdrawnDueToLostToFollowup());
         caregiverList.add(ind.getIndicatorForNumberOfCaregiversWithdrawnDueToKnownDeath());
@@ -322,8 +339,8 @@ public class ReportIndicatorsManager implements Serializable
         
         
         caregiverServiceList.add(ind.getIndicatorForNumberOfCaregiversServedWithinReportPeriod());
-         /*caregiverServiceList.add(ind.getIndicatorForNumberOfAdultMembersWithoutServiceRecords());
-        caregiverServiceList.add(ind.getIndicatorForNumberOfAdultMembersProvidedHIVAdherenceSupportGroupService());
+        caregiverServiceList.add(ind.getIndicatorForNumberOfAdultMembersWithoutServiceRecords());
+        /*caregiverServiceList.add(ind.getIndicatorForNumberOfAdultMembersProvidedHIVAdherenceSupportGroupService());
         caregiverServiceList.add(ind.getIndicatorForNumberOfAdultMembersProvidedStructuredPLHASupportGroupService());
         caregiverServiceList.add(ind.getIndicatorForNumberOfAdultMembersProvidedEarlyChildStimulationService());
         caregiverServiceList.add(ind.getIndicatorForNumberOfAdultMembersProvidedEmergencyTransportAssistanceService());
@@ -353,10 +370,10 @@ public class ReportIndicatorsManager implements Serializable
         
         
                         
-        /*householdList.add(ind.getIndicatorForNumberOfHouseholdsNewlyEnrolled());
+        householdList.add(ind.getIndicatorForNumberOfHouseholdsNewlyEnrolled());
         householdList.add(ind.getIndicatorForNumberOfHouseholdsCurrentlyEnrolled());
         householdList.add(ind.getIndicatorForNumberOfHouseholdsEverEnrolled());
-        householdList.add(ind.getIndicatorForNumberOfHouseholdsWithdrawnDueToGraduation());
+        /*householdList.add(ind.getIndicatorForNumberOfHouseholdsWithdrawnDueToGraduation());
         householdList.add(ind.getIndicatorForNumberOfHouseholdsWithdrawnDueToMigration());
         householdList.add(ind.getIndicatorForNumberOfHouseholdsWithdrawnDueToLostToFollowup());
         householdList.add(ind.getIndicatorForNumberOfHouseholdsWithdrawnDueToTransfer());
@@ -396,6 +413,24 @@ public class ReportIndicatorsManager implements Serializable
         newMERList.add(ind.getIndicatorForNumberOfOVC_HIVSTATUNKNOWN());
         newMERList.add(ind.getIndicatorForNumberOfOvcLinkedToGovtForPostViolenceServicesWithinReportPeriod());
         newMERList.add(ind.getIndicatorForNumberOfAdolescentsProvidedHIVPreventionServices());*/
+         newMERList.add(ind.getIndicatorForNumberOfOvcProvidedReferralForHIVRelatedTestingService());
+        newMERList.add(ind.getIndicatorForNumberOfAdultMembersProvidedReferralForHIVRelatedTestingService());
+        newMERList.add(ind.getIndicatorForNumberOfOvcNewlyTestedPositiveWithinTheReportPeriod());
+        newMERList.add(ind.getIndicatorForNumberOfCaregiversNewlyTestedPositive());
+        newMERList.add(ind.getIndicatorForNumberOfHivPositiveOvcEnrolledOnARTWithinTheReportPeriod());
+        newMERList.add(ind.getIndicatorForNumberOfHIVPositiveCaregiversNewlyEnrolledOnARTWithinTheReportPeriod());
+        newMERList.add(ind.getIndicatorForNumberOfOvcSelfReportingAdherenceToTreatment());
+        //newMERList.add(ind.getOvc_ARTSUPPIndicator());
+        newMERList.add(ind.getIndicatorForNumberOfAdultMembersSelfReportingAdherenceToTreatment());
+        newMERList.add(ind.getOvc_BIRTHCERTIndicator());
+        newMERList.add(ind.getNoOfHivUnknownOvcAssessedForHIVRiskAndServedWithinReportPeriod());
+        //getIndicatorForNumberOfHivUnknownOvcAssessedonHIVRisk()
+        newMERList.add(ind.getNoOfHivNegativeOvcAssessedForHIVRiskAndServedWithinReportPeriod());
+        newMERList.add(ind.getIndicatorForNumberOfNewOvcEnrolled());
+        newMERList.add(ind.getIndicatorForNumberOfAdultMembersEnrolledWithinTheReportPeriod());
+        newMERList.add(ind.getOvc_EDUIndicator());
+        newMERList.add(ind.getIndicatorForNumberOfSeverelyMalnourishedOvcCurrently());
+        newMERList.add(ind.getIndicatorForNumberOfSeverelyMalnourishedOvcServedNutritonalServices());//getOvc_NUTRITIONIndicator());
         mainList.add(newMERList);
         
         

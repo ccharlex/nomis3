@@ -65,6 +65,7 @@ public class HouseholdEnrollment implements Serializable
     
     OrganizationUnitAttributesManager ouam=new OrganizationUnitAttributesManager();
     private AdultHouseholdMember prCaregiver;
+    private CommunityWorker communityWorker=null;
     
     private SingleOptionManager som=new SingleOptionManager();
     
@@ -379,5 +380,7 @@ public class HouseholdEnrollment implements Serializable
     public void setRhva(RevisedHouseholdVulnerabilityAssessment rhva) {
         this.rhva = rhva;
     }
-
+    public CommunityWorker getCommunityWorker() {
+        return communityWorker=BeneficiaryManager.getCommunityWorker(volunteerName);
+    }
 }

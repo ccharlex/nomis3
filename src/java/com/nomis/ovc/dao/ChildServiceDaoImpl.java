@@ -7,6 +7,7 @@ package com.nomis.ovc.dao;
 import com.nomis.operationsManagement.OvcServiceAttributesManager;
 import com.nomis.operationsManagement.FinancialYearManager;
 import com.nomis.ovc.business.ChildService;
+import com.nomis.ovc.business.HouseholdEnrollment;
 import com.nomis.ovc.business.Ovc;
 import com.nomis.ovc.util.AppConstant;
 import com.nomis.ovc.util.DateManager;
@@ -30,6 +31,69 @@ public class ChildServiceDaoImpl implements ChildServiceDao
     SubQueryGenerator sqg=new SubQueryGenerator();
     Ovc ovc=null;
     String markedForDeleteQuery=" and service.markedForDelete=0";
+    public int getNumberOfMalnourishedChildrenProvidedNutritionalServices(ReportParameterTemplate rpt,String startDate, String endDate,int startAge, int endAge,int enrollmentStatus,int currentNutritionStatus,String sex) throws Exception
+    {
+        int count=0;
+        try
+        {
+            String serviceDateQuery=sqg.getOvcServiceDateQuery(startDate, endDate);
+            String ageQuery=sqg.getOvcCurrentAgeQuery(startAge, endAge);
+            String sexQuery=SubQueryGenerator.getOvcSexQuery(sex);
+            String enrollmentStatusQuery=SubQueryGenerator.getOvcCurrentEnrollmentStatusQuery(enrollmentStatus);
+            session = HibernateUtil.getSession();
+            tx = session.beginTransaction();
+            List list = session.createQuery("select count(distinct service.ovcId)"+SubQueryGenerator.getHheOvcOrganizationUnitServiceNutritionStatusQuery()+sexQuery+ageQuery+enrollmentStatusQuery+SubQueryGenerator.getCurrentNutritionStatusQuery(currentNutritionStatus)+serviceDateQuery+markedForDeleteQuery).list();
+            tx.commit();
+            closeSession(session);
+            if(list !=null && !list.isEmpty())
+            {
+                count=Integer.parseInt(list.get(0).toString());
+            }
+        }
+         catch (Exception ex)
+         {
+             closeSession(session);
+            throw new Exception(ex);
+         }
+        return count;
+    }
+    public List getListOfMalnourishedChildrenProvidedNutritionalServices(ReportParameterTemplate rpt,String startDate, String endDate,int startAge, int endAge,int enrollmentStatus,int currentNutritionStatus,String sex) throws Exception
+    {
+        List mainList=new ArrayList();
+        try
+        {
+            String serviceDateQuery=sqg.getOvcServiceDateQuery(startDate, endDate);
+            String ageQuery=sqg.getOvcCurrentAgeQuery(startAge, endAge);
+            String sexQuery=SubQueryGenerator.getOvcSexQuery(sex);
+            String enrollmentStatusQuery=SubQueryGenerator.getOvcCurrentEnrollmentStatusQuery(enrollmentStatus);
+            session = HibernateUtil.getSession();
+            tx = session.beginTransaction();
+            List list = session.createQuery(SubQueryGenerator.getHheOvcOrganizationUnitServiceNutritionStatusQuery()+sexQuery+ageQuery+enrollmentStatusQuery+SubQueryGenerator.getCurrentNutritionStatusQuery(currentNutritionStatus)+serviceDateQuery+markedForDeleteQuery).list();
+            tx.commit();
+            closeSession(session);
+            if(list !=null && !list.isEmpty())
+            {
+                List uniqueIdList=new ArrayList();
+                Ovc ovc=null;
+                for(Object obj:list)
+                {
+                    Object[] objArray=(Object[])obj;
+                    ovc=(Ovc)objArray[1];
+                    if(!uniqueIdList.contains(ovc.getOvcId()))
+                    {
+                        uniqueIdList.add(ovc.getOvcId());
+                        mainList.add(ovc);
+                    }  
+                }
+            }
+        }
+         catch (Exception ex)
+         {
+             closeSession(session);
+            throw new Exception(ex);
+         }
+        return mainList;
+    }
     public List getAndUpdateWashRecords() throws Exception
     {
         List list=null;
@@ -363,7 +427,8 @@ public class ChildServiceDaoImpl implements ChildServiceDao
                 for(Object obj:list)
                 {
                     Object[] objArray=(Object[])obj;
-                    ovc=(Ovc)objArray[2];
+                    ovc=(Ovc)objArray[1];
+                    ovc.setHhe((HouseholdEnrollment)objArray[0]); 
                     if(!uniqueIdList.contains(ovc.getOvcId()))
                     {
                         mainList.add(ovc);
@@ -770,9 +835,9 @@ public class ChildServiceDaoImpl implements ChildServiceDao
                 sexQuery=SubQueryGenerator.getOvcSexQuery(sex);
             }
             String hivTreatmentQuery="";
-            if(hivStatus==AppConstant.HIV_POSITIVE_NUM && onTreatment==AppConstant.ON_TREATMENT)
+            if(hivStatus==AppConstant.HIV_POSITIVE_NUM && onTreatment==AppConstant.ENROLLED_ON_TREATMENT_YES_NUM)
             hivTreatmentQuery=SubQueryGenerator.getOvcHivPositiveOnTreatmentQuery();
-            else if(hivStatus==AppConstant.HIV_POSITIVE_NUM && onTreatment==AppConstant.NOT_ON_TREATMENT)
+            else if(hivStatus==AppConstant.HIV_POSITIVE_NUM && onTreatment==AppConstant.ENROLLED_ON_TREATMENT_NO_NUM)
             hivTreatmentQuery=SubQueryGenerator.getOvcHivPositiveNotOnTreatmentQuery();
             session = HibernateUtil.getSession();
             tx = session.beginTransaction();

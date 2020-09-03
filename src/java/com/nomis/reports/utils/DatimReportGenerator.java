@@ -235,7 +235,7 @@ public class DatimReportGenerator
     {
         DatimReportTemplate rt=new DatimReportTemplate();;
         DatimReportTemplate pepfarRt=getNoOfCaregiversServedAndTransferedToPEPFAR(rpt,startDate,endDate,sex);
-        DatimReportTemplate nonPepfarRt=getNoOfCaregiversServedAndTransferedToPEPFAR(rpt,startDate,endDate,sex);
+        DatimReportTemplate nonPepfarRt=getNoOfCaregiversServedAndTransferedToNonPEPFAR(rpt,startDate,endDate,sex);
         rt.setOvc_servTransfered(pepfarRt.getOvc_servTransfered()+nonPepfarRt.getOvc_servTransfered());
         return rt;
     }
@@ -527,7 +527,7 @@ public class DatimReportGenerator
         try
         {
             String orgUnitQuery=sqg.getOrganizationUnitQuery(rpt);
-            countOfOvc=util.getChildServiceDaoInstance().getNumberOfOvcServedByEnrollmentStatusAndHivStatusForDatim(orgUnitQuery, enrollmentStatus,1, startDate, endDate,startAge,endAge,sex,AppConstant.ON_TREATMENT);
+            countOfOvc=util.getChildServiceDaoInstance().getNumberOfOvcServedByEnrollmentStatusAndHivStatusForDatim(orgUnitQuery, enrollmentStatus,1, startDate, endDate,startAge,endAge,sex,AppConstant.ENROLLED_ON_TREATMENT_YES_NUM);
             
         }
         catch(Exception ex)

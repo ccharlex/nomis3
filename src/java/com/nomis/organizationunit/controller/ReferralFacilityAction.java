@@ -13,8 +13,10 @@ import com.nomis.ovc.dao.DaoUtility;
 import com.nomis.ovc.metadata.OrganizationUnit;
 import com.nomis.ovc.util.AppConstant;
 import com.nomis.ovc.util.AppManager;
+import com.nomis.ovc.util.AppUtility;
 import com.nomis.ovc.util.DateManager;
 import com.nomis.reports.utils.ReportParameterTemplate;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
@@ -156,16 +158,25 @@ public class ReferralFacilityAction extends org.apache.struts.action.Action {
     }
     public void setButtonState(HttpSession session,String saveDisabled,String modifyDisabled)
     {
-        session.setAttribute("rfSaveDisabled", saveDisabled);
-        session.setAttribute("rfModifyDisabled", modifyDisabled);
+        if(AppUtility.isMetadataAccessEnabled())
+        {
+            session.setAttribute("rfSaveDisabled", saveDisabled);
+            session.setAttribute("rfModifyDisabled", modifyDisabled);
+        }
+        else
+        {
+            session.setAttribute("rfSaveDisabled", "true");
+            session.setAttribute("rfModifyDisabled","true");
+        }
     }
     private void loadfacility(HttpSession session,ReportParameterTemplate rpt)
     {
         try
-        {
+        {//.getReferralFacilitiesByOrgUnit(rpt);
             DaoUtility util=new DaoUtility();
-            List facilityList=util.getReferralFacilityDaoInstance().getReferralFacilitiesByOrgUnit(rpt);//.getAllReferralFacilities();
-            if(facilityList !=null)
+            List facilityList=util.getReferralFacilityDaoInstance().getAllReferralFacilities();
+            if(facilityList ==null)
+            facilityList=new ArrayList();
             session.setAttribute("facilityList", facilityList);
         }
         catch(Exception ex)

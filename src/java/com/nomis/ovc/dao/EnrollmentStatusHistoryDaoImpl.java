@@ -106,7 +106,7 @@ public class EnrollmentStatusHistoryDaoImpl implements EnrollmentStatusHistoryDa
           ex.printStackTrace();
         }
     }
-    public void updateHivStatus(String beneficiaryId,int hivStatus,Date dateOfHivStatus,int age,String ageUnit) throws Exception
+    public void updateHivStatus(String beneficiaryId,int hivStatus,Date dateOfHivStatus,int age,int ageUnit) throws Exception
     {
         try
         {
@@ -119,6 +119,7 @@ public class EnrollmentStatusHistoryDaoImpl implements EnrollmentStatusHistoryDa
                     EnrollmentStatusHistory esh=(EnrollmentStatusHistory)list.get(0);
                     if(esh.getDateOfHivStatus().before(dateOfHivStatus))
                     {
+                        esh.setCurrentAgeUnit(ageUnit);
                         esh.setHivStatus(hivStatus);
                         esh.setDateOfHivStatus(dateOfHivStatus);
                         session = HibernateUtil.getSession();

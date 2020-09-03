@@ -163,12 +163,24 @@ function stateChanged()
 }
 function activateEnrolledOnTreatment(value)
 {
+    //if beneficiary is hiv positive
     if(value == "1") 
     {
         document.getElementById("enrolledOnTreatment").disabled = false;
-        document.getElementById("dateEnrolledOnTreatment").disabled = false;
+        
         document.getElementById("dateOfBaselineHivStatus").disabled = false;
-        document.getElementById("treatmentId").disabled = false;
+        if(document.getElementById("enrolledOnTreatment").value==1)
+        {
+            document.getElementById("dateEnrolledOnTreatment").disabled = false;
+            document.getElementById("treatmentId").disabled = false;
+        }
+        else
+        {
+            document.getElementById("dateEnrolledOnTreatment").value = "";
+            document.getElementById("dateEnrolledOnTreatment").disabled = true;
+            document.getElementById("treatmentId").value = "";
+            document.getElementById("treatmentId").disabled = true;
+        }
     }
     else 
     {
@@ -193,11 +205,16 @@ function activateReferralList(value)
     if(value == "1") 
     {
         document.getElementById("hivTreatmentFacilityId").disabled = false;
+        document.getElementById("treatmentId").disabled = false;
+        document.getElementById("dateEnrolledOnTreatment").disabled = false;
     }
     else 
     {
         document.getElementById("hivTreatmentFacilityId").value="select"
         document.getElementById("hivTreatmentFacilityId").disabled = true;
+        document.getElementById("dateEnrolledOnTreatment").disabled = true;
+        document.getElementById("treatmentId").value = "";
+        document.getElementById("treatmentId").disabled = true;
     }
 }
 function generateUniqueId()
@@ -475,15 +492,15 @@ function setActionName(val)
                          <tr> 
                      <td width="300">Enrolled on treatment? </td>
                             <td>
-                                <html:select property="enrolledOnTreatment" styleId="enrolledOnTreatment" style="width:148px;" onchange="activateReferralList(this.value)" disabled="${enrhivDisabled}">
-                                  <html:option value="0">select...</html:option>
+                                <html:select property="enrolledOnTreatment" styleId="enrolledOnTreatment" style="width:148px;" onchange="activateReferralList(this.value)" disabled="${hhHivDisabled}">
+                                  <html:option value="0">N/A</html:option>
                                     <html:option value="2">No</html:option>
                                   <html:option value="1">Yes</html:option>
                                 </html:select>
                             </td>
                              <td align="right">Date enrolled</td>
                             <td>
-                                <html:text property="dateEnrolledOnTreatment" styleId="dateEnrolledOnTreatment"/>
+                                <html:text property="dateEnrolledOnTreatment" styleId="dateEnrolledOnTreatment" disabled="${hhHivDisabled}"/>
                                     
                             </td>
                             
@@ -492,7 +509,7 @@ function setActionName(val)
                          <tr>
                 <td >Facility enrolled</td>
                 <td colspan="3" > 
-                    <html:select property="hivTreatmentFacilityId" styleId="hivTreatmentFacilityId"  style="width:500px;" disabled="${enrhivDisabled}">
+                    <html:select property="hivTreatmentFacilityId" styleId="hivTreatmentFacilityId"  style="width:500px;" disabled="${hhHivDisabled}">
                           <html:option value="select">select...</html:option>
                           <html:option value="xxxxxxxxxxx">Default facility</html:option>
                           <logic:present name="ovcfacilityList">
@@ -506,7 +523,7 @@ function setActionName(val)
               <tr>
                 <td >Treatment/ART No.</td>
                 <td colspan="3" > 
-                    <html:text property="treatmentId" styleId="treatmentId"  style="width:150px;" disabled="${enrhivDisabled}"/>
+                    <html:text property="treatmentId" styleId="treatmentId"  style="width:150px;" disabled="${hhHivDisabled}"/>
                           
                 </td>
               </tr>

@@ -20,6 +20,7 @@ import com.nomis.ovc.util.EnrolledOnTreatmentManager;
 import com.nomis.ovc.util.EnrollmentStatus;
 import com.nomis.ovc.util.HivPropertiesManager;
 import com.nomis.ovc.util.HivStatus;
+import com.nomis.ovc.util.ReferralFacilityManager;
 import com.nomis.ovc.util.SchoolStatus;
 import com.nomis.ovc.util.SchoolStatusManager;
 import com.nomis.ovc.util.SingleOptionManager;
@@ -52,7 +53,7 @@ public class Ovc implements Serializable,Beneficiary
     //private int beneficiaryType;
     private int currentAge;
     private int currentAgeUnit;
-    //private int currentAgeUnitCode;
+    private int currentNutritionalStatus;
     
     private String phoneNumber;
     private int baselineHivStatus;
@@ -533,7 +534,7 @@ public class Ovc implements Serializable,Beneficiary
         
     public ReferralFacility getReferralFacility() 
     {
-        referralFacility=bcam.getReferralFacility(hivTreatmentFacilityId);
+        referralFacility=ReferralFacilityManager.getReferralFacilityById(hivTreatmentFacilityId);
         return referralFacility;
     }
 
@@ -873,6 +874,14 @@ public class Ovc implements Serializable,Beneficiary
 
     public void setViralLoad(int viralLoad) {
         this.viralLoad = viralLoad;
+    }
+
+    public int getCurrentNutritionalStatus() {
+        return currentNutritionalStatus;
+    }
+
+    public void setCurrentNutritionalStatus(int currentNutritionalStatus) {
+        this.currentNutritionalStatus = currentNutritionalStatus;
     }
     
 }

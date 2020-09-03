@@ -4,6 +4,7 @@
  */
 package com.nomis.login.controller;
 
+import com.nomis.operationsManagement.OrganizationUnitHierarchyManager;
 import com.nomis.operationsManagement.UserActivityManager;
 import com.nomis.ovc.business.User;
 import com.nomis.ovc.dao.DaoUtility;
@@ -48,7 +49,7 @@ public class LoginAction extends org.apache.struts.action.Action {
         String requiredAction=lform.getActionName();
         String userName=lform.getUserName();
         String password=lform.getPassword();
-        
+        OrganizationUnitHierarchyManager.setOrganizationUnitHierachyAttributes(session);
         AppUtility appUtil=new AppUtility();
         System.err.println("requiredAction is "+requiredAction);
         //loadDatabase();

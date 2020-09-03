@@ -23,5 +23,6 @@
     <property column="MARKEDFORDELETE" name="markedForDelete" type="int"/>
     <property column="RECEIVINGORGANIZATION" name="receivingOrganization" type="string"/>
     <property column="REFERRINGORGANIZATION" name="referringOrganization" type="string"/>
+    <property column="REFERRALCOMPLETED" name="referralCompleted" type="int"/>
   </class>
 </hibernate-mapping>

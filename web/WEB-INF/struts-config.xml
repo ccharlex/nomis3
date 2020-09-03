@@ -7,6 +7,7 @@
 
 <struts-config>
     <form-beans>
+        <form-bean name="CustomIndicatorReportForm" type="com.nomis.reports.controller.CustomIndicatorReportForm"/>
         <form-bean name="OvcRegisterForm" type="com.nomis.reports.controller.OvcRegisterForm"/>
         <form-bean name="DatimDataGenerationForm" type="com.nomis.reports.controller.DatimDataGenerationForm"/>
         <form-bean name="DatabaseDefragmentationForm" type="com.nomis.maintenance.controller.DatabaseDefragmentationForm"/>
@@ -170,6 +171,7 @@
             <forward name="success" path="/Reports/StatisticalReports/ListOfIndicatorsResultPage.jsp"/>
             <forward name="childRegister" path="/Reports/Registers/ChildEnrollmentRegister.jsp"/>
             <forward name="cgiverRegister" path="/Reports/Registers/CaregiverEnrollmentRegister.jsp"/>
+            <forward name="householdRegister" path="/Reports/Registers/HouseholdEnrollmentRegister.jsp"/>
         </action>
         <action input="/EnvironmentSetup/BeneficiaryServicesSetup.jsp" name="BeneficiaryServiceForm" path="/servicesetup" scope="session" type="com.nomis.beneficiaryservices.controller.BeneficiaryServiceAction">
             <forward name="success" path="/EnvironmentSetup/BeneficiaryServicesSetup.jsp"/>
@@ -252,6 +254,12 @@
             <forward name="cgiverRegister" path="/Reports/Registers/CaregiverEnrollmentRegister.jsp"/>
             <forward name="childregister" path="/Reports/Registers/ChildEnrollmentRegister.jsp"/>
             <forward name="ovcServiceRegister" path="/Reports/Registers/ChildServiceRegister.jsp"/>
+            <forward name="householdServiceRegister" path="/Reports/Registers/HouseholdServiceRegister.jsp"/>
+            <forward name="hraRegister" path="/Reports/Registers/HIVRiskAssessmentRegister.jsp"/>
+            <forward name="careAndSupportRegister" path="/Reports/Registers/CareAndSupportRegister.jsp"/>
+        </action>
+        <action input="/Reports/StatisticalReports/CustomIndicatorsReport.jsp" name="CustomIndicatorReportForm" path="/customIndicatorsreport" scope="session" type="com.nomis.reports.controller.CustomIndicatorsReportAction">
+            <forward name="paramPage" path="/Reports/StatisticalReports/CustomIndicatorsReport.jsp"/>
         </action>
         <action path="/ajaxaction" type="com.nomis.ajax.controller.StrutsAjaxAction"/>
     </action-mappings>

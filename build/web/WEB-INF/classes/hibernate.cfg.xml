@@ -44,9 +44,10 @@
     <mapping resource="com/nomis/ovc/hibernate/QuarterlyStatusTracker.hbm.xml"/>
     <mapping resource="com/nomis/ovc/hibernate/EnrollmentStatusHistory.hbm.xml"/>
     <mapping resource="com/nomis/ovc/hibernate/HivStatusHistory.hbm.xml"/>
-    <!--<mapping resource="com/nomis/ovc/hibernate/CustomIndicatorsReport.hbm.xml"/>-->
+    <mapping resource="com/nomis/ovc/hibernate/CustomIndicatorsReport.hbm.xml"/>
     <mapping resource="com/nomis/ovc/hibernate/ChildStatusIndex.hbm.xml"/>
     <mapping resource="com/nomis/ovc/hibernate/DatimReport.hbm.xml"/>
     <mapping resource="com/nomis/ovc/hibernate/DatimReportTemplateTest.hbm.xml"/>
+    <mapping resource="com/nomis/ovc/hibernate/NutritionStatus.hbm.xml"/>
   </session-factory>
 </hibernate-configuration>

@@ -383,23 +383,21 @@ function setActionName(val)
                                         <td align="right">Baseline HIV status</td>
                                         <td>
                                             <html:select property="baselineHivStatus" styleId="baselineHivStatus" disabled="true">
-                                                <logic:present name="riskAssessmentCurrentHivStatus">
-                                                    <logic:iterate name="riskAssessmentCurrentHivStatus" id="hivStatus">
+                                                <logic:present name="mainHivStatus">
+                                                    <logic:iterate name="mainHivStatus" id="hivStatus">
                                                         <html:option value="${hivStatus.code}">${hivStatus.name}</html:option>
                                                     </logic:iterate>
                                                 </logic:present>
-                                                
                                             </html:select>
                                         </td>
                                         <td align="right">Current HIV status</td>
-                                        <td>
+                                        <td> 
                                             <html:select property="currentHivStatus" styleId="currentHivStatus" disabled="true">
-                                                <logic:present name="riskAssessmentCurrentHivStatus">
-                                                    <logic:iterate name="riskAssessmentCurrentHivStatus" id="hivStatus">
+                                                <logic:present name="allHivStatus">
+                                                    <logic:iterate name="allHivStatus" id="hivStatus">
                                                         <html:option value="${hivStatus.code}">${hivStatus.name}</html:option>
                                                     </logic:iterate>
-                                                </logic:present>
-                                                
+                                                </logic:present>                                                                          
                                             </html:select>
                                         </td>
                                         
@@ -440,11 +438,12 @@ function setActionName(val)
                                               </html:select> </td>
                                           <td><html:select property="hivStatusAtRiskAssessment" styleId="hivStatusAtRiskAssessment" onchange="setAnswerToHivStatusQuestion(this.value)"> 
                                                     <html:option value="0">select...</html:option>
-                                                <logic:present name="mainHivStatus">
-                                                    <logic:iterate name="mainHivStatus" id="hivStatus">
+                                                    <logic:present name="riskAssessmentCurrentHivStatus">
+                                                    <logic:iterate name="riskAssessmentCurrentHivStatus" id="hivStatus">
                                                         <html:option value="${hivStatus.code}">${hivStatus.name}</html:option>
                                                     </logic:iterate>
                                                 </logic:present>
+                                                
                                               </html:select>
                                               </td>
                                       </tr>

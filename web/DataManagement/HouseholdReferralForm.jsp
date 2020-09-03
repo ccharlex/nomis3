@@ -371,8 +371,8 @@ function setActionName(val)
                                         <td align="right">HIV status</td>
                                         <td colspan="3">
                                             <html:select property="hivStatus" styleId="hivStatus" onchange="setEnrolledOnTreatmentStatus(this.value)" disabled="true">
-                                                <logic:present name="mainHivStatus">
-                                                    <logic:iterate name="mainHivStatus" id="hivStatus">
+                                                <logic:present name="allHivStatus">
+                                                    <logic:iterate name="allHivStatus" id="hivStatus">
                                                         <html:option value="${hivStatus.code}">${hivStatus.name}</html:option>
                                                     </logic:iterate>
                                                 </logic:present>
@@ -400,9 +400,13 @@ function setActionName(val)
                                                 <td colspan="2">
                                                     <html:select property="referringOrganization" styleId="referringOrganization" style="min-width:300px;" >
                                                         <html:option value="select">select...</html:option>
-                                                        <html:option value="xxxxxxxxxxx">Default</html:option>
+                                                        <logic:present name="referringOrganizationList">
+                                                            <logic:iterate name="referringOrganizationList" id="cbo">
+                                                              <html:option value="${cbo.uniqueId}">${cbo.cboName}</html:option>
+                                                            </logic:iterate>
+                                                        </logic:present>
                                                     </html:select>
-
+                                                        
                                                 </td>   
                                             </tr>
                                             <tr>
@@ -410,7 +414,11 @@ function setActionName(val)
                                                 <td colspan="2">
                                                     <html:select property="receivingOrganization" styleId="receivingOrganization" style="min-width:300px;">
                                                         <html:option value="select">select...</html:option>
-                                                        <html:option value="xxxxxxxxxxx">Default</html:option>
+                                                        <logic:present name="refFacilityList">
+                                                            <logic:iterate name="refFacilityList" id="facility">
+                                                              <html:option value="${facility.facilityId}">${facility.facilityName}</html:option>
+                                                            </logic:iterate>
+                                                        </logic:present> 
                                                     </html:select>
 
                                                 </td>   
@@ -620,6 +628,22 @@ function setActionName(val)
                   </td>
                 </tr>
                 <tr>
+                  <td>Referral completed</td>
+                <td > 
+                    <html:select property="referralCompleted" styleId="referralCompleted" style="width:200px;" >
+                          <html:option value="0">select...</html:option>
+                          <html:option value="1">Yes</html:option>
+                          <html:option value="2">No</html:option>
+                          
+                      </html:select>
+                </td>
+
+                <td  align="right"> </td>
+                <td > 
+
+                </td>
+              </tr>
+              <tr>
                   <td>Name of referring person</td>
                 <td > 
                     <html:select property="volunteerName" styleId="volunteerName" style="width:200px;" >

@@ -69,9 +69,11 @@ public class ChildServiceAction extends org.apache.struts.action.Action {
         String userName=appManager.getCurrentUserName(session);
         String level3OuId=csform.getLevel3OuId();
         String organizationUnitId=csform.getOrganizationUnitId();
+        int hhSerialNo=csform.getHhSerialNo();
         String hhUniqueId=csform.getHhUniqueId();
         ouaManager.setOrganizationUnitAttributes(session, level3OuId,userName,csform.getCboId());
-        HivPropertiesManager.setHivStatusList(session, HivPropertiesManager.getThreeMainHivStatus());
+        HivPropertiesManager.setAllHivStatusList(session);
+        //HivPropertiesManager.setHivStatusList(session, HivPropertiesManager.getThreeMainHivStatus());
         CommunityWorkerRecordsManager.setEnumeratorsRegistrationList(session);
         DatasetSetting dsts=util.getDatasetSettingDaoInstance().getDatasetSettingByModuleId(DatabasetManager.getChildServiceModuleId());
         if(dsts !=null && dsts.getDatasetId().equalsIgnoreCase(DatabasetManager.getNatChildServiceDatasetId()))
@@ -116,7 +118,6 @@ public class ChildServiceAction extends org.apache.struts.action.Action {
         }
         else if(requiredAction.equalsIgnoreCase("householdDetails"))
         {
-            int hhSerialNo=csform.getHhSerialNo();
             csform.setHhSerialNo(hhSerialNo);
             csform.setHhUniqueId(hhUniqueId);
             loadChildrenPerHousehold(session, hhUniqueId);
@@ -127,6 +128,8 @@ public class ChildServiceAction extends org.apache.struts.action.Action {
         {
             String ovcId=csform.getOvcId();
             csform.reset(mapping, request);
+            
+            csform.setHhSerialNo(hhSerialNo);
             csform.setOvcId(ovcId);
             csform.setOrganizationUnitId(organizationUnitId);
             setOvcDetails(csform,session);
@@ -165,6 +168,7 @@ public class ChildServiceAction extends org.apache.struts.action.Action {
                 csform.setServiceDate(csformServiceDate);
                 csform.setOvcId(ovcId);
             }
+            csform.setHhSerialNo(hhSerialNo);
             csform.setOrganizationUnitId(organizationUnitId);
             return mapping.findForward(SUCCESS);
         }
@@ -172,7 +176,7 @@ public class ChildServiceAction extends org.apache.struts.action.Action {
         {
             String hhName=csform.getHhName();
             hhUniqueId=UniqueIdManager.cleanUniqueId(hhUniqueId);
-            if(csform.getBeneficiaryType()==3)
+            if(csform.getBeneficiaryType()==AppConstant.OVC_TYPE_NUM)
             {
                 String ovcId=hhUniqueId;
                 Ovc ovc=util.getChildEnrollmentDaoInstance().getOvc(ovcId);

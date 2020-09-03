@@ -38,5 +38,7 @@
     <property column="VOLUNTEERNAME" name="volunteerName" type="string"/>
     <property column="WEIGHT" name="weight" type="double"/>
     <property column="YELLOWMUACSERVICES" name="yellowMuacServices" type="string"/>
+    <property column="AGEATASSESSMENT" name="ageAtAssessment" type="int"/>
+    <property column="AGEUNITATASSESSMENT" name="ageUnitAtAssessment" type="int"/>
   </class>
 </hibernate-mapping>

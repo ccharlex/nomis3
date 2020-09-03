@@ -4,6 +4,11 @@
  */
 package com.nomis.ovc.business;
 
+import com.nomis.operationsManagement.BeneficiaryManager;
+import com.nomis.ovc.util.HivPropertiesManager;
+import com.nomis.ovc.util.HivStatus;
+import com.nomis.ovc.util.SingleChoiceOption;
+import com.nomis.ovc.util.SingleOptionManager;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -49,7 +54,25 @@ public class HivRiskAssessment implements Serializable
     private String nameOfAssessor;
     int serialNo=0;
     String rowColor="#FFFFFF";
-
+    
+    private Ovc ovc;
+    private SingleChoiceOption hivParentAnswer;
+    private SingleChoiceOption motherSicknessAnswer;
+    private SingleChoiceOption hivSibblingAnswer;
+    private SingleChoiceOption sibblingSicknessAnswer;
+    private SingleChoiceOption childSickAnswer;
+    private SingleChoiceOption childHasMoreThanTwoIllnessAnswer;
+    private SingleChoiceOption bloodTransfusionAnswer;
+    private SingleChoiceOption childCircumcisedOrEarPiercedAnswer;
+    private SingleChoiceOption childEverPregnantAnswer;
+    private SingleChoiceOption sexualAbuseAnswer;
+    private SingleChoiceOption childAtRiskAnswer;
+    private SingleChoiceOption childAgeAnswer;
+    private SingleChoiceOption childTestedAnswer;
+    private SingleChoiceOption hivStatusAnswer;
+    private HivStatus hivStatusAtRiskAssessmentAnswer;
+    
+    
     public int getAgeAtRiskAssessment() {
         return ageAtRiskAssessment;
     }
@@ -320,6 +343,102 @@ public class HivRiskAssessment implements Serializable
 
     public void setSerialNo(int serialNo) {
         this.serialNo = serialNo;
+    }
+
+    public Ovc getOvc() 
+    {
+        ovc=BeneficiaryManager.getOvc(ovcId);
+        return ovc;
+    }
+    
+    public SingleChoiceOption getBloodTransfusionAnswer() 
+    {
+        bloodTransfusionAnswer=SingleOptionManager.getSingleChoiceOption(bloodTransfusionQuestion);
+        return bloodTransfusionAnswer;
+    }
+
+    public SingleChoiceOption getChildAgeAnswer() 
+    {
+        childAgeAnswer=SingleOptionManager.getSingleChoiceOption(childAgeQuestion);
+        return childAgeAnswer;
+    }
+
+    public SingleChoiceOption getChildAtRiskAnswer() 
+    {
+        childAtRiskAnswer=SingleOptionManager.getSingleChoiceOption(childAtRiskQuestion);
+        return childAtRiskAnswer;
+    }
+
+    public SingleChoiceOption getChildCircumcisedOrEarPiercedAnswer() 
+    {
+        childCircumcisedOrEarPiercedAnswer=SingleOptionManager.getSingleChoiceOption(childCircumcisedOrEarPierced);
+        return childCircumcisedOrEarPiercedAnswer;
+    }
+
+    public SingleChoiceOption getChildEverPregnantAnswer() 
+    {
+        childEverPregnantAnswer=SingleOptionManager.getSingleChoiceOption(childEverPregnantQuestion);
+        return childEverPregnantAnswer;
+    }
+
+    public SingleChoiceOption getChildHasMoreThanTwoIllnessAnswer() 
+    {
+        childHasMoreThanTwoIllnessAnswer=SingleOptionManager.getSingleChoiceOption(childHasMoreThanTwoIllnessQuestion);
+        return childHasMoreThanTwoIllnessAnswer;
+    }
+
+    public SingleChoiceOption getChildSickAnswer() 
+    {
+        childSickAnswer=SingleOptionManager.getSingleChoiceOption(childSickQuestion);
+        return childSickAnswer;
+    }
+
+    public SingleChoiceOption getChildTestedAnswer() 
+    {
+        childTestedAnswer=SingleOptionManager.getSingleChoiceOption(childTestedQuestion);
+        return childTestedAnswer;
+    }
+
+    public SingleChoiceOption getHivParentAnswer() 
+    {
+        hivParentAnswer=SingleOptionManager.getSingleChoiceOption(hivParentQuestion);
+        return hivParentAnswer;
+    }
+
+    public SingleChoiceOption getHivSibblingAnswer() 
+    {
+        hivSibblingAnswer=SingleOptionManager.getSingleChoiceOption(hivSibblingQuestion);
+        return hivSibblingAnswer;
+    }
+
+    public SingleChoiceOption getHivStatusAnswer() 
+    {
+        hivStatusAnswer=SingleOptionManager.getSingleChoiceOption(hivStatusQuestion);
+        return hivStatusAnswer;
+    }
+
+    public HivStatus getHivStatusAtRiskAssessmentAnswer() 
+    {
+        hivStatusAtRiskAssessmentAnswer=HivPropertiesManager.getHivStatus(hivStatusAtRiskAssessment);
+        return hivStatusAtRiskAssessmentAnswer;
+    }
+
+    public SingleChoiceOption getMotherSicknessAnswer() 
+    {
+        motherSicknessAnswer=SingleOptionManager.getSingleChoiceOption(motherSicknessQuestion);
+        return motherSicknessAnswer;
+    }
+
+    public SingleChoiceOption getSexualAbuseAnswer() 
+    {
+        sexualAbuseAnswer=SingleOptionManager.getSingleChoiceOption(sexualAbuseQuestion);
+        return sexualAbuseAnswer;
+    }
+
+    public SingleChoiceOption getSibblingSicknessAnswer() 
+    {
+        sibblingSicknessAnswer=SingleOptionManager.getSingleChoiceOption(sibblingSicknessQuestion);
+        return sibblingSicknessAnswer;
     }
 
 }

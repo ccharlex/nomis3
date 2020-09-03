@@ -4,10 +4,13 @@
  */
 package com.nomis.careandsupport.controller;
 
+import com.fhi.nomis.test.CipherAESExample;
+import com.fhi.nomis.test.CipherSample;
 import com.nomis.operationsManagement.AccessManager;
 import com.nomis.operationsManagement.CommunityWorkerRecordsManager;
 import com.nomis.operationsManagement.OrganizationUnitAttributesManager;
 import com.nomis.operationsManagement.UserActivityManager;
+import com.nomis.ovc.business.AdultHouseholdMember;
 import com.nomis.ovc.business.Beneficiary;
 import com.nomis.ovc.business.CareAndSupportChecklist;
 import com.nomis.ovc.business.HouseholdEnrollment;
@@ -83,8 +86,14 @@ public class CareAndSupportAction extends org.apache.struts.action.Action {
         String dateOfAssessment=casform.getDateOfAssessment();
         ouaManager.setOrganizationUnitAttributes(session, level3OuId,userName,casform.getCboId());
         //session.setAttribute("hivStatusForRiskAssessment", HivPropertiesManager.getHivStatusWithoutPositive());
-        loadfacility(session,level2OuId,level3OuId);
+        loadfacility(session,level2OuId,null);
         setOvcPerHouseholdList(session, casform.getHhUniqueId());
+        int beneficiaryType=getBeneficiaryType(beneficiaryId);
+        if(beneficiaryType==0 || beneficiaryType==3)
+        disableChildSpecificQuestions(session,"false");
+        else
+        disableChildSpecificQuestions(session,"true");
+        
         setButtonState(session,"false","true");
         setBeneficiaryDetails(casform,session);
         CommunityWorkerRecordsManager.setEnumeratorsRegistrationList(session);
@@ -94,6 +103,8 @@ public class CareAndSupportAction extends org.apache.struts.action.Action {
         System.err.println("requiredAction is "+requiredAction);
         if(requiredAction==null)
         {
+            CipherAESExample.showEncryptedResult("SiakaMomoh Mathematician Abejukolo");
+            //CipherSample.testCipher("Dan Asabe");
             casform.reset(mapping, request);
             setButtonState(session,"false","true");
             return mapping.findForward(SUCCESS);
@@ -136,7 +147,8 @@ public class CareAndSupportAction extends org.apache.struts.action.Action {
         {
             AppUtility appUtil=new AppUtility();//UniqueIdManager uim=new UniqueIdManager();
             Date ddateOfAssessment=DateManager.getDateInstance(DateManager.processMthDayYearToMysqlFormat(dateOfAssessment));
-            CareAndSupportChecklist casc=util.getCareAndSupportChecklistDaoInstance().getCareAndSupportChecklist(casform.getBeneficiaryId(), ddateOfAssessment);
+            CareAndSupportChecklist casc=util.getCareAndSupportChecklistDaoInstance()
+                    .getCareAndSupportChecklist(casform.getBeneficiaryId(), ddateOfAssessment);
             casform.reset(mapping, request);
             
             if(casc !=null)
@@ -187,7 +199,8 @@ public class CareAndSupportAction extends org.apache.struts.action.Action {
         {
             CareAndSupportChecklist casc=getCareAndSupportChecklist(casform, userName);
             util.getCareAndSupportChecklistDaoInstance().updateCareAndSupportChecklist(casc);
-            saveUserActivity(userName,moduleName,"Updated Care and Support with beneficiary Id "+casc.getBeneficiaryId()+" and date of assessment "+casc.getDateOfAssessment());
+            saveUserActivity(userName,moduleName,"Updated Care and Support with beneficiary Id "
+                    +casc.getBeneficiaryId()+" and date of assessment "+casc.getDateOfAssessment());
             setButtonState(session,"false","true");
             casform.reset(mapping, request);
         }
@@ -196,7 +209,8 @@ public class CareAndSupportAction extends org.apache.struts.action.Action {
         {
             CareAndSupportChecklist casc=getCareAndSupportChecklist(casform, userName);
             util.getCareAndSupportChecklistDaoInstance().markForDelete(casc);
-            saveUserActivity(userName,moduleName,"Marked Care and Support record with beneficiary Id "+casc.getBeneficiaryId()+" and date of assessment "+casc.getDateOfAssessment());
+            saveUserActivity(userName,moduleName,"Marked Care and Support record with beneficiary Id "
+                    +casc.getBeneficiaryId()+" and date of assessment "+casc.getDateOfAssessment());
            setButtonState(session,"false","true");
            casform.reset(mapping, request);
         }
@@ -292,13 +306,25 @@ public class CareAndSupportAction extends org.apache.struts.action.Action {
         List childrenList=util.getChildEnrollmentDaoInstance().getOvcPerHousehold(hhUniqueId);
         if(childrenList !=null)
         {
-            beneficiaryList.addAll(childrenList);
+            Ovc ovc=null;
+            for(Object obj:childrenList)
+            {
+                ovc=(Ovc)obj;
+                if(ovc.getCurrentHivStatus()==AppConstant.HIV_POSITIVE_NUM)
+                beneficiaryList.add(ovc);
+            }
            
         }
         List adultList=util.getAdultHouseholdMemberDaoInstance().getAdultHouseholdMembersPerHousehold(hhUniqueId);
         if(adultList !=null)
         {
-            beneficiaryList.addAll(adultList);
+            AdultHouseholdMember ahm=null;
+            for(Object obj:adultList)
+            {
+                ahm=(AdultHouseholdMember)obj;
+                if(ahm.getCurrentHivStatus()==AppConstant.HIV_POSITIVE_NUM)
+                beneficiaryList.add(ahm);
+            }
         }
         session.setAttribute("cascBeneficiaryList", beneficiaryList);
     }
@@ -321,12 +347,48 @@ public class CareAndSupportAction extends org.apache.struts.action.Action {
                 hhrform.setHivStatus(beneficiary.getCurrentHivStatus());
                 hhrform.setSex(beneficiary.getSex());
                 hhrform.setPhoneNumber(beneficiary.getPhoneNumber());
+                if(beneficiary.getEnrolledOnTreatment()==AppConstant.ENROLLED_ON_TREATMENT_YES_NUM)
+                {
+                    hhrform.setEnrolledOnTreatment(AppConstant.ENROLLED_ON_TREATMENT_YES_NUM);
+                    session.setAttribute("casHealthFacilityDisabled", "false");
+                    session.setAttribute("casOnTreatmentQuestionsDisabled", "false");
+                }
+                else
+                {
+                    session.setAttribute("casHealthFacilityDisabled", "true");
+                    session.setAttribute("casOnTreatmentQuestionsDisabled", "true");
+                }
             }
         }
         catch(Exception ex)
         {
             ex.printStackTrace();
         }
+    }
+    private int getBeneficiaryType(String beneficiaryId)
+    {
+        int beneficiaryType=0;
+        try
+        {
+            if(beneficiaryId !=null)
+            {
+                DaoUtility util=new DaoUtility();
+                Beneficiary beneficiary=util.getChildEnrollmentDaoInstance().getOvc(beneficiaryId);
+                if(beneficiary !=null)
+                beneficiaryType=3;
+                else
+                {
+                    beneficiary=util.getAdultHouseholdMemberDaoInstance().getAdultHouseholdMember(beneficiaryId);
+                    if(beneficiary !=null)
+                    beneficiaryType=2;
+                } 
+            }
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        return beneficiaryType;
     }
     private void setOvcDetails(CareAndSupportForm casform,HttpSession session)
     {
@@ -400,5 +462,9 @@ public class CareAndSupportAction extends org.apache.struts.action.Action {
     {
         session.setAttribute("cascSaveDisabled", saveDisabled);
         session.setAttribute("cascModifyDisabled", modifyDisabled);
+    }
+    public void disableChildSpecificQuestions(HttpSession session,String disabled)
+    {
+        session.setAttribute("childSpecificQuestionDisabled", disabled);
     }
 }

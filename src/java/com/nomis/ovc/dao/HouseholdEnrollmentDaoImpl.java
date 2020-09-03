@@ -28,6 +28,78 @@ public class HouseholdEnrollmentDaoImpl implements HouseholdEnrollmentDao
     SessionFactory sessions;
     SubQueryGenerator sqg=new SubQueryGenerator();
     String markedForDeleteQuery=" and hhe.markedForDelete=0";
+    public int getNumberOfHouseholdsEnrolled(ReportParameterTemplate rpt,String startDate,String endDate,int enrollmentStatus) throws Exception
+    {
+        int count=0;
+        try
+        {
+            SubQueryGenerator sqg=new SubQueryGenerator();
+            String additionalOrgUnitQuery="";
+            if(rpt !=null && rpt.getLevel2OuId() !=null && rpt.getLevel2OuId().trim().length()>0 && !rpt.getLevel2OuId().equalsIgnoreCase("select") && !rpt.getLevel2OuId().equalsIgnoreCase("All"))
+            {
+                additionalOrgUnitQuery=sqg.getOrganizationUnitQuery(rpt);
+            }
+            String enrollmentStatusQuery=SubQueryGenerator.getHouseholdEnrollmentStatusQuery(enrollmentStatus);
+            session = HibernateUtil.getSession();
+            tx = session.beginTransaction();
+            List list= session.createQuery("select count(distinct hhe.hhUniqueId) "+SubQueryGenerator.getHheAdultHouseholdMemberOrganizationUnitQuery()+enrollmentStatusQuery+additionalOrgUnitQuery+SubQueryGenerator.getHheAssessmentDateQuery(startDate,endDate)).list();
+            tx.commit();
+            closeSession(session);
+            if(list !=null && !list.isEmpty())
+            {
+                count=Integer.parseInt(list.get(0).toString());
+            }
+         }
+         catch (Exception ex)
+         {
+             closeSession(session);
+            throw new Exception(ex);
+         }
+        return count;
+    }
+    public List getListOfHouseholdsEnrolled(ReportParameterTemplate rpt,String startDate,String endDate,int enrollmentStatus) throws Exception
+    {
+        List mainList=new ArrayList();
+        try
+        {
+            SubQueryGenerator sqg=new SubQueryGenerator();
+            String additionalOrgUnitQuery="";
+            if(rpt !=null && rpt.getLevel2OuId() !=null && rpt.getLevel2OuId().trim().length()>0 && !rpt.getLevel2OuId().equalsIgnoreCase("select") && !rpt.getLevel2OuId().equalsIgnoreCase("All"))
+            {
+                additionalOrgUnitQuery=sqg.getOrganizationUnitQuery(rpt);
+            }
+            String enrollmentStatusQuery=SubQueryGenerator.getHouseholdEnrollmentStatusQuery(enrollmentStatus);
+            session = HibernateUtil.getSession();
+            tx = session.beginTransaction();
+            List list= session.createQuery(SubQueryGenerator.getHheAdultHouseholdMemberOrganizationUnitQuery()+enrollmentStatusQuery+additionalOrgUnitQuery+SubQueryGenerator.getHheAssessmentDateQuery(startDate,endDate)).list();
+            tx.commit();
+            closeSession(session);
+            if(list !=null && !list.isEmpty())
+            {
+                HouseholdEnrollment hhe=null;
+                AdultHouseholdMember ahm=null;
+                List idList=new ArrayList();
+                for(Object obj:list)
+                {
+                    Object[] objArray=(Object[])obj;
+                    hhe=(HouseholdEnrollment)objArray[0];
+                    if(!idList.contains(hhe.getHhUniqueId()))
+                    {
+                        ahm=(AdultHouseholdMember)objArray[1];
+                        hhe.setPrCaregiver(ahm);
+                        mainList.add(hhe);
+                        idList.add(hhe.getHhUniqueId());
+                    }
+                }
+            }
+         }
+         catch (Exception ex)
+         {
+             closeSession(session);
+            throw new Exception(ex);
+         }
+        return mainList;
+    }
     public List getDistinctPartnerCodes(ReportParameterTemplate rpt) throws Exception
     {
         List list=new ArrayList();
@@ -489,15 +561,18 @@ public class HouseholdEnrollmentDaoImpl implements HouseholdEnrollmentDao
             //System.err.println("hhe.getHhUniqueId(): "+hhe.getHhUniqueId()+" hhe.getDateOfEnrollment(): "+DateManager.convertDateToString(hhe.getDateOfEnrollment(),DateManager.DB_DATE_FORMAT));
             if(hhe !=null && hhe.getDateOfAssessment() !=null && hhe.getHhUniqueId() !=null)
             {
-                if(hhe.getDateCasePlanDeveloped()==null)
-                hhe.setDateCasePlanDeveloped(hhe.getDateOfAssessment());
-                //hhe=getPreparedHouseholdEnrollment(hhe);
-                session = HibernateUtil.getSession();
-                tx = session.beginTransaction();
-                session.save(hhe);
-                tx.commit();
-                closeSession(session);
-                System.err.println("Household profile with id "+hhe.getHhUniqueId()+" saved");
+                if(this.getHouseholdEnrollment(hhe.getHhUniqueId())==null)
+                {
+                    if(hhe.getDateCasePlanDeveloped()==null)
+                    hhe.setDateCasePlanDeveloped(hhe.getDateOfAssessment());
+                    //hhe=getPreparedHouseholdEnrollment(hhe);
+                    session = HibernateUtil.getSession();
+                    tx = session.beginTransaction();
+                    session.save(hhe);
+                    tx.commit();
+                    closeSession(session);
+                    System.err.println("Household enrollment with id "+hhe.getHhUniqueId()+" saved");
+                }
             }
         }
         catch(Exception ex)

@@ -7,6 +7,7 @@ package com.nomis.operationsManagement;
 
 import com.fhi.nomis.logs.NomisLogManager;
 import com.nomis.ovc.business.AdultHouseholdMember;
+import com.nomis.ovc.business.Beneficiary;
 import com.nomis.ovc.business.CareAndSupportChecklist;
 import com.nomis.ovc.business.CommunityWorker;
 import com.nomis.ovc.business.HouseholdEnrollment;
@@ -121,9 +122,9 @@ public class BeneficiaryManager
           List ahmList=util.getAdultHouseholdMemberDaoInstance().getAdultHouseholdMembersPerHousehold(hhUniqueId);
           if(ahmList !=null)
           list.addAll(ahmList);
-          //List ovcList=util.getOvcDaoInstance().getOvcPerHousehold(hhUniqueId);
-          //if(ovcList !=null)
-          //list.addAll(ovcList);
+          List ovcList=util.getChildEnrollmentDaoInstance().getOvcPerHousehold(hhUniqueId);
+          if(ovcList !=null)
+          list.addAll(ovcList);
         }
         catch(Exception ex)
         {
@@ -147,6 +148,26 @@ public class BeneficiaryManager
         }
         return gbv;
     }*/
+    public static Beneficiary getBeneficiary(String beneficiaryId)
+    {
+        Beneficiary beneficiary=null;
+        try
+        {
+          DaoUtility util=new DaoUtility();  
+          beneficiary=util.getAdultHouseholdMemberDaoInstance().getAdultHouseholdMember(beneficiaryId);
+          if(beneficiary==null)
+          {
+              beneficiary=util.getChildEnrollmentDaoInstance().getOvc(beneficiaryId);
+          }
+          if(beneficiary==null)
+          beneficiary=new AdultHouseholdMember();
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        return beneficiary;
+    }
     public static AdultHouseholdMember getAdultHouseholdMember(String beneficiaryId)
     {
         AdultHouseholdMember ahm=null;

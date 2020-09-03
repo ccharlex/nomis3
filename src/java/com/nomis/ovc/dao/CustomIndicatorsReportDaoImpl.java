@@ -46,7 +46,8 @@ public class CustomIndicatorsReportDaoImpl implements CustomIndicatorsReportDao
         {
             if(rt !=null)
             {
-                if(getCustomIndicatorsReport(rt)==null)
+                CustomIndicatorsReport cirb2=getCustomIndicatorsReport(rt);
+                if(cirb2==null)
                 {
                     session = HibernateUtil.getSession();
                     tx = session.beginTransaction();
@@ -55,7 +56,16 @@ public class CustomIndicatorsReportDaoImpl implements CustomIndicatorsReportDao
                     closeSession(session);
                 }
                 else
-                updateCustomIndicatorsReport(rt);
+                {
+                    rt.setRecordId(cirb2.getRecordId());
+                    session = HibernateUtil.getSession();
+                    tx = session.beginTransaction();
+                    session.update(rt);
+                    tx.commit();
+                    closeSession(session);
+                    //updateCustomIndicatorsReport(rt);
+                }
+                
             }
         }
         catch(Exception ex)
@@ -138,7 +148,7 @@ public class CustomIndicatorsReportDaoImpl implements CustomIndicatorsReportDao
         {
             session = HibernateUtil.getSession();
             tx = session.beginTransaction();
-            list = session.createQuery("select distinct rt.period from CustomIndicatorsReport rt").list();
+            list = session.createQuery("select distinct rt.reportPeriod from CustomIndicatorsReport rt").list();
             tx.commit();
             closeSession(session);
         }
@@ -149,14 +159,14 @@ public class CustomIndicatorsReportDaoImpl implements CustomIndicatorsReportDao
          }
         return list;
     }
-    public List getDistinctStates() throws Exception
+    public List getDistinctLevel2Ous() throws Exception
     {
         List list = null;
         try
         {
             session = HibernateUtil.getSession();
             tx = session.beginTransaction();
-            list = session.createQuery("select distinct rt.state from CustomIndicatorsReport rt").list();
+            list = session.createQuery("select distinct rt.level2OuId from CustomIndicatorsReport rt").list();
             tx.commit();
             closeSession(session);
         }
@@ -167,14 +177,14 @@ public class CustomIndicatorsReportDaoImpl implements CustomIndicatorsReportDao
          }
         return list;
     }
-    public List getDistinctStatesByPartner(String partnerCode) throws Exception
+    public List getDistinctLevel2OusByPartner(String partnerCode) throws Exception
     {
         List list = null;
         try
         {
             session = HibernateUtil.getSession();
             tx = session.beginTransaction();
-            list = session.createQuery("select distinct rt.state from CustomIndicatorsReport rt where rt.partnerCode=:pc").setString("pc", partnerCode).list();
+            list = session.createQuery("select distinct rt.level2OuId from CustomIndicatorsReport rt where rt.partnerCode=:pc").setString("pc", partnerCode).list();
             tx.commit();
             closeSession(session);
         }
@@ -192,7 +202,7 @@ public class CustomIndicatorsReportDaoImpl implements CustomIndicatorsReportDao
         {
             session = HibernateUtil.getSession();
             tx = session.beginTransaction();
-            List list = session.createQuery("from CustomIndicatorsReport rt where rt.lga=:lg and rt.cbo=:cb and rt.partnerCode=:pc and rt.indicatorName=:indn and rt.merCode=:mer and rt.otherDisaggregation=:od and rt.period=:prd")
+            List list = session.createQuery("from CustomIndicatorsReport rt where rt.level3OuId=:lg and rt.cboId=:cb and rt.partnerCode=:pc and rt.indicatorName=:indn and rt.merCode=:mer and rt.otherDisaggregation=:od and rt.reportPeriod=:prd")
                     .setString("lg", lga).setString("cb", cbo).setString("pc", partnerCode).setString("indn", indicatorName).setString("mer", merCode).setString("od", otherDisaggregation).setString("prd", period).list();
             tx.commit();
             closeSession(session);
@@ -208,14 +218,14 @@ public class CustomIndicatorsReportDaoImpl implements CustomIndicatorsReportDao
          }
         return rt;
     }
-    public List getDistinctStatesByPeriod(String period) throws Exception
+    public List getDistinctLevel2OusByPeriod(String period) throws Exception
     {
         List list = null;
         try
         {
             session = HibernateUtil.getSession();
             tx = session.beginTransaction();
-            list = session.createQuery("select distinct rt.state from CustomIndicatorsReport rt where rt.period=:prd").setString("prd", period).list();
+            list = session.createQuery("select distinct rt.level2OuId from CustomIndicatorsReport rt where rt.reportPeriod=:prd").setString("prd", period).list();
             tx.commit();
             closeSession(session);
         }
@@ -226,14 +236,14 @@ public class CustomIndicatorsReportDaoImpl implements CustomIndicatorsReportDao
          }
         return list;
     }
-    public List getDistinctStatesByPeriodAndPartner(String partnerCode,String period) throws Exception
+    public List getDistinctLevel2OusByPeriodAndPartner(String partnerCode,String period) throws Exception
     {
         List list = null;
         try
         {
             session = HibernateUtil.getSession();
             tx = session.beginTransaction();
-            list = session.createQuery("select distinct rt.state from CustomIndicatorsReport rt where rt.partnerCode=:pc and rt.period=:prd").setString("pc", partnerCode).setString("prd", period).list();
+            list = session.createQuery("select distinct rt.level2OuId from CustomIndicatorsReport rt where rt.partnerCode=:pc and rt.reportPeriod=:prd").setString("pc", partnerCode).setString("prd", period).list();
             tx.commit();
             closeSession(session);
         }
@@ -271,7 +281,7 @@ public class CustomIndicatorsReportDaoImpl implements CustomIndicatorsReportDao
         {
             session = HibernateUtil.getSession();
             tx = session.beginTransaction();
-            list = session.createQuery("from CustomIndicatorsReport rt where rt.state=:st").setString("st", state).list();
+            list = session.createQuery("from CustomIndicatorsReport rt where rt.level2OuId=:st").setString("st", state).list();
             tx.commit();
             closeSession(session);
         }
@@ -316,7 +326,7 @@ public class CustomIndicatorsReportDaoImpl implements CustomIndicatorsReportDao
         {
             session = HibernateUtil.getSession();
             tx = session.beginTransaction();
-            List list = session.createQuery("from CustomIndicatorsReport rt where rt.state=:st and rt.lga=:lg and rt.cbo=:cb and rt.indicator=:ind and rt.sex=:sx and rt.ageCategory=:ac and rt.otherDisaggregation=:disag and rt.period=:prd").setString("st", state).setString("lg", lga).setString("cb", cbo).setString("ind", indicator).setString("disag", otherDisaggregation).setString("prd", period).list();
+            List list = session.createQuery("from CustomIndicatorsReport rt where rt.level2OuId=:st and rt.lga=:lg and rt.cbo=:cb and rt.indicator=:ind and rt.sex=:sx and rt.ageCategory=:ac and rt.otherDisaggregation=:disag and rt.reportPeriod=:prd").setString("st", state).setString("lg", lga).setString("cb", cbo).setString("ind", indicator).setString("disag", otherDisaggregation).setString("prd", period).list();
             tx.commit();
             closeSession(session);
             if(list !=null && !list.isEmpty())
@@ -331,7 +341,7 @@ public class CustomIndicatorsReportDaoImpl implements CustomIndicatorsReportDao
          }
         return rt;
     }
-    public List getCustomIndicatorsReportsByStatePartnerAndPeriod(String state,String partnerCode,String period) throws Exception
+    public List getCustomIndicatorsReportsByLevel2OuPartnerAndPeriod(String state,String partnerCode,String period) throws Exception
     {
         List list=null;
         try
@@ -339,9 +349,9 @@ public class CustomIndicatorsReportDaoImpl implements CustomIndicatorsReportDao
             session = HibernateUtil.getSession();
             tx = session.beginTransaction();
             if(partnerCode !=null && !partnerCode.equalsIgnoreCase("All"))
-            list = session.createQuery("from CustomIndicatorsReport rt where rt.state=:st and rt.partnerCode=:ptc and rt.period=:prd").setString("st", state).setString("ptc", partnerCode).setString("prd", period).list();
+            list = session.createQuery("from CustomIndicatorsReport rt where rt.level2OuId=:st and rt.partnerCode=:ptc and rt.reportPeriod=:prd").setString("st", state).setString("ptc", partnerCode).setString("prd", period).list();
             else
-            list = session.createQuery("from CustomIndicatorsReport rt where rt.state=:st and rt.period=:prd").setString("st", state).setString("prd", period).list();
+            list = session.createQuery("from CustomIndicatorsReport rt where rt.level2OuId=:st and rt.reportPeriod=:prd").setString("st", state).setString("prd", period).list();
             tx.commit();
             closeSession(session);   
         }
@@ -359,7 +369,7 @@ public class CustomIndicatorsReportDaoImpl implements CustomIndicatorsReportDao
         {
             session = HibernateUtil.getSession();
             tx = session.beginTransaction();
-            list = session.createQuery("from CustomIndicatorsReport rt where rt.state=:st and rt.lga=:lg").setString("st", state).setString("lg", lga).list();
+            list = session.createQuery("from CustomIndicatorsReport rt where rt.level2OuId=:st and rt.lga=:lg").setString("st", state).setString("lg", lga).list();
             tx.commit();
             closeSession(session);   
         }
@@ -377,7 +387,7 @@ public class CustomIndicatorsReportDaoImpl implements CustomIndicatorsReportDao
         {
             session = HibernateUtil.getSession();
             tx = session.beginTransaction();
-            list = session.createQuery("from CustomIndicatorsReport rt where rt.state=:st and rt.lga=:lg and and rt.cbo=:cb").setString("st", state).setString("lg", lga).setString("cb", cbo).list();
+            list = session.createQuery("from CustomIndicatorsReport rt where rt.level2OuId=:st and rt.lga=:lg and and rt.cbo=:cb").setString("st", state).setString("lg", lga).setString("cb", cbo).list();
             tx.commit();
             closeSession(session);   
         }

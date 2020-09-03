@@ -55,4 +55,7 @@ public interface Beneficiary extends Serializable
     public void setSurname(String surname);
     public int getViralLoad();
     public void setViralLoad(int viralLoad);
+    public HouseholdEnrollment getHhe();
+    public void setHhe(HouseholdEnrollment hhe);        
+    public CommunityWorker getCommunityWorker();    
 }

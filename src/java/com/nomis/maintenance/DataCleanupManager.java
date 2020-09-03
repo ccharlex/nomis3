@@ -6,12 +6,14 @@ package com.nomis.maintenance;
 
 import com.nomis.exportimport.ZipHandler;
 import com.nomis.ovc.business.AdultHouseholdMember;
+import com.nomis.ovc.business.HivRiskAssessment;
 import com.nomis.ovc.business.HouseholdEnrollment;
 import com.nomis.ovc.business.Ovc;
 import com.nomis.ovc.dao.AdultHouseholdMemberDao;
 import com.nomis.ovc.dao.ChildEnrollmentDao;
 import com.nomis.ovc.dao.DaoUtility;
 import com.nomis.ovc.dao.HouseholdEnrollmentDao;
+import com.nomis.ovc.util.AppConstant;
 import com.nomis.ovc.util.AppUtility;
 import com.nomis.ovc.util.TaskManager;
 import java.io.File;
@@ -466,5 +468,45 @@ private List getFiles(String filePath)
         }
     }
     return fileList;
+}
+public static String resetCurrentHivStatusForPositiveBaselineStatus()
+{
+    String message="No records found";
+    int count=0;
+    int riskAssessmentCount=0;
+    try
+    {
+    DaoUtility util=new DaoUtility();
+    
+    //get records with positive baseline hiv status whose current hiv status is not positive
+    List list=util.getChildEnrollmentDaoInstance().getRecordsWithPositiveHivStatusAtBaselineButOtherStatusCurrently();
+        if(list !=null)
+        {
+            
+            Ovc ovc=null;
+            for(Object obj:list)
+            {
+               ovc=(Ovc)obj; 
+               if(ovc.getCurrentHivStatus()==AppConstant.HIV_TEST_NOT_INDICATED_NUM || ovc.getCurrentHivStatus()==AppConstant.HIV_TEST_REQUIRED_NUM)
+               {
+                   //This child was erroneously risk assessed, delete all risk assessment records
+                   util.getHivRiskAssessmentDaoInstance().markRiskAssessmentRecordsForDelete(ovc.getOvcId());
+                   riskAssessmentCount++;
+               }
+               ovc.setCurrentHivStatus(ovc.getBaselineHivStatus());
+               ovc.setDateOfCurrentHivStatus(ovc.getDateOfEnrollment());
+               util.getChildEnrollmentDaoInstance().updateOvcOnly(ovc);
+               count++;
+               message=count+" HIV positive records corrected and "+riskAssessmentCount+" records with HIV Risk assessment records marked for delete";
+               System.err.println(message);
+            }
+            
+        }
+    }
+    catch(Exception ex)
+    {
+        ex.printStackTrace();
+    }
+    return message;
 }
 }

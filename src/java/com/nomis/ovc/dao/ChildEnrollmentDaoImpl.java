@@ -32,6 +32,219 @@ public class ChildEnrollmentDaoImpl implements ChildEnrollmentDao
     HivOperationsManager hom=new HivOperationsManager();
     SubQueryGenerator sqg=new SubQueryGenerator();
     String markedForDeleteQuery=" and ovc.markedForDelete=0";
+    public int getNumberOfOvcSupportedToAccessARTServicesInReportPeriod(ReportParameterTemplate rpt,String startDate,String endDate,int enrollmentStatus,String sex) throws Exception
+    {
+        int count=0;
+        try
+        {
+            SubQueryGenerator sqg=new SubQueryGenerator();
+            String additionalOrgUnitQuery="";
+            String ageQuery=sqg.getOvcCurrentAgeQuery(rpt.getStartAge(), rpt.getEndAge());
+            String currentEnrollmentQuery=SubQueryGenerator.getOvcCurrentEnrollmentStatusQuery(enrollmentStatus);
+            //ART support value is 1 if given transportation support and 2 when not given
+            String artSupportQuery=SubQueryGenerator.getARTSupportQuery(1);
+            String dateOfArtSupportQuery=SubQueryGenerator.getDateOfCareAndSupportAssessmentQuery(startDate,endDate);
+            if(rpt !=null && rpt.getLevel2OuId() !=null && rpt.getLevel2OuId().trim().length()>0 && !rpt.getLevel2OuId().equalsIgnoreCase("select") && !rpt.getLevel2OuId().equalsIgnoreCase("All"))
+            {
+                additionalOrgUnitQuery=sqg.getOrganizationUnitQuery(rpt);
+            }
+            String query="select count(distinct ovc.ovcId) "+SubQueryGenerator.getHheAdultHouseholdMemberOvcOrganizationUnitCareAndSupportQuery()+sqg.getOvcSexQuery(sex)+artSupportQuery+dateOfArtSupportQuery+currentEnrollmentQuery+ageQuery+additionalOrgUnitQuery+markedForDeleteQuery;
+            System.err.println(query);
+            session = HibernateUtil.getSession();
+            tx = session.beginTransaction();
+            List list = session.createQuery(query).list();
+            tx.commit();
+            closeSession(session);
+            if(list !=null && !list.isEmpty())
+            {
+                count=Integer.parseInt(list.get(0).toString());
+            }
+        }
+         catch (Exception ex)
+         {
+             closeSession(session);
+            throw new Exception(ex);
+         }
+        return count;
+    }
+    public List getListOfOvcSupportedToAccessARTServicesInReportPeriod(ReportParameterTemplate rpt,String startDate,String endDate,int enrollmentStatus,String sex) throws Exception
+    {
+        List hheList=new ArrayList();
+        try
+        {
+            SubQueryGenerator sqg=new SubQueryGenerator();
+            String ageQuery=sqg.getOvcCurrentAgeQuery(rpt.getStartAge(), rpt.getEndAge());
+            String currentEnrollmentQuery=SubQueryGenerator.getOvcCurrentEnrollmentStatusQuery(enrollmentStatus);
+            String artSupportQuery=SubQueryGenerator.getARTSupportQuery(1);
+            String dateOfArtSupportQuery=SubQueryGenerator.getDateOfCareAndSupportAssessmentQuery(startDate,endDate);
+            String additionalOrgUnitQuery="";
+            if(rpt !=null && rpt.getLevel2OuId() !=null && rpt.getLevel2OuId().trim().length()>0 && !rpt.getLevel2OuId().equalsIgnoreCase("select") && !rpt.getLevel2OuId().equalsIgnoreCase("All"))
+            {
+                additionalOrgUnitQuery=sqg.getOrganizationUnitQuery(rpt);
+            }
+            String query=SubQueryGenerator.getHheAdultHouseholdMemberOvcOrganizationUnitCareAndSupportQuery()+sqg.getOvcSexQuery(sex)+artSupportQuery+dateOfArtSupportQuery+currentEnrollmentQuery+ageQuery+additionalOrgUnitQuery+markedForDeleteQuery;
+            System.err.println(query);
+            session = HibernateUtil.getSession();
+            tx = session.beginTransaction();
+            List list = session.createQuery(query).list();
+            tx.commit();
+            closeSession(session);
+            if(list !=null)
+            {
+                for(Object obj:list)
+                {
+                    Object[] objArray=(Object[])obj;
+                    hheList.add(objArray[1]);
+                }
+            }
+        }
+         catch (Exception ex)
+         {
+             closeSession(session);
+            throw new Exception(ex);
+         }
+        return hheList;
+    }
+    public int getNumberOfOvcTestedAndRecievedResultInReportPeriodByEnrollmentStatusAndHivStatus(ReportParameterTemplate rpt,String startDate,String endDate,int enrolledOnTreatmentValue,int enrollmentStatus,int hivStatus,String sex) throws Exception
+    {
+        int count=0;
+        try
+        {
+            SubQueryGenerator sqg=new SubQueryGenerator();
+            String additionalOrgUnitQuery="";
+            String ageQuery=sqg.getOvcCurrentAgeQuery(rpt.getStartAge(), rpt.getEndAge());
+            String currentEnrollmentQuery=SubQueryGenerator.getOvcCurrentEnrollmentStatusQuery(enrollmentStatus);
+            String hivStatusQuery=sqg.getOvcHivStatusQuery(hivStatus);
+            String dateOfHivStatusQuery=SubQueryGenerator.getOvcDateOfCurrentHivStatusQuery(startDate,endDate);
+            if(rpt !=null && rpt.getLevel2OuId() !=null && rpt.getLevel2OuId().trim().length()>0 && !rpt.getLevel2OuId().equalsIgnoreCase("select") && !rpt.getLevel2OuId().equalsIgnoreCase("All"))
+            {
+                additionalOrgUnitQuery=sqg.getOrganizationUnitQuery(rpt);
+            }
+            String query="select count(distinct ovc.ovcId) "+SubQueryGenerator.getHheOvcOrganizationUnitQuery()+sqg.getOvcSexQuery(sex)+hivStatusQuery+dateOfHivStatusQuery+currentEnrollmentQuery+ageQuery+additionalOrgUnitQuery+markedForDeleteQuery;
+            System.err.println(query);
+            session = HibernateUtil.getSession();
+            tx = session.beginTransaction();
+            List list = session.createQuery(query).list();
+            tx.commit();
+            closeSession(session);
+            if(list !=null && !list.isEmpty())
+            {
+                count=Integer.parseInt(list.get(0).toString());
+            }
+        }
+         catch (Exception ex)
+         {
+             closeSession(session);
+            throw new Exception(ex);
+         }
+        return count;
+    }
+    public List getListOfOvcTestedAndRecievedResultInReportPeriodByEnrollmentStatusAndHivStatus(ReportParameterTemplate rpt,String startDate,String endDate,int enrolledOnTreatmentValue,int enrollmentStatus,int hivStatus,String sex) throws Exception
+    {
+        List hheList=new ArrayList();
+        try
+        {
+            SubQueryGenerator sqg=new SubQueryGenerator();
+            String ageQuery=sqg.getOvcCurrentAgeQuery(rpt.getStartAge(), rpt.getEndAge());
+            String currentEnrollmentQuery=SubQueryGenerator.getOvcCurrentEnrollmentStatusQuery(enrollmentStatus);
+            String hivStatusQuery=sqg.getOvcHivStatusQuery(hivStatus);
+            String dateOfHivStatusQuery=SubQueryGenerator.getOvcDateOfCurrentHivStatusQuery(startDate,endDate);
+            String additionalOrgUnitQuery="";
+            if(rpt !=null && rpt.getLevel2OuId() !=null && rpt.getLevel2OuId().trim().length()>0 && !rpt.getLevel2OuId().equalsIgnoreCase("select") && !rpt.getLevel2OuId().equalsIgnoreCase("All"))
+            {
+                additionalOrgUnitQuery=sqg.getOrganizationUnitQuery(rpt);
+            }
+            String query=SubQueryGenerator.getHheOvcOrganizationUnitQuery()+sqg.getOvcSexQuery(sex)+hivStatusQuery+dateOfHivStatusQuery+currentEnrollmentQuery+ageQuery+additionalOrgUnitQuery+markedForDeleteQuery;
+            System.err.println(query);
+            session = HibernateUtil.getSession();
+            tx = session.beginTransaction();
+            List list = session.createQuery(query).list();
+            tx.commit();
+            closeSession(session);
+            if(list !=null)
+            {
+                for(Object obj:list)
+                {
+                    Object[] objArray=(Object[])obj;
+                    hheList.add(objArray[1]);
+                }
+            }
+        }
+         catch (Exception ex)
+         {
+             closeSession(session);
+            throw new Exception(ex);
+         }
+        return hheList;
+    }
+    public int getNumberOfOvcEnrolledOnTreatment(ReportParameterTemplate rpt,String startDate,String endDate,int enrolledOnTreatmentValue,int enrollmentStatus,String sex) throws Exception
+    {
+        int count=0;
+        try
+        {
+            SubQueryGenerator sqg=new SubQueryGenerator();
+            String additionalOrgUnitQuery="";
+            String ageQuery=sqg.getOvcCurrentAgeQuery(rpt.getStartAge(), rpt.getEndAge());
+            String currentEnrollmentQuery=SubQueryGenerator.getOvcCurrentEnrollmentStatusQuery(enrollmentStatus);
+            if(rpt !=null && rpt.getLevel2OuId() !=null && rpt.getLevel2OuId().trim().length()>0 && !rpt.getLevel2OuId().equalsIgnoreCase("select") && !rpt.getLevel2OuId().equalsIgnoreCase("All"))
+            {
+                additionalOrgUnitQuery=sqg.getOrganizationUnitQuery(rpt);
+            }
+            String query="select count(distinct ovc.ovcId) "+SubQueryGenerator.getHheOvcOrganizationUnitQuery()+sqg.getOvcSexQuery(sex)+currentEnrollmentQuery+ageQuery+sqg.getOvcEnrolledOnTreatmentQuery(enrolledOnTreatmentValue)+additionalOrgUnitQuery+sqg.getOvcEnrolledOnTreatmentDateQuery(startDate,endDate)+markedForDeleteQuery;
+            System.err.println(query);
+            session = HibernateUtil.getSession();
+            tx = session.beginTransaction();
+            List list = session.createQuery(query).list();
+            tx.commit();
+            closeSession(session);
+            if(list !=null && !list.isEmpty())
+            {
+                count=Integer.parseInt(list.get(0).toString());
+            }
+        }
+         catch (Exception ex)
+         {
+             closeSession(session);
+            throw new Exception(ex);
+         }
+        return count;
+    }
+    public List getListOfOvcEnrolledOnTreatment(ReportParameterTemplate rpt,String startDate,String endDate,int enrolledOnTreatmentValue,int enrollmentStatus,String sex) throws Exception
+    {
+        List hheList=new ArrayList();
+        try
+        {
+            SubQueryGenerator sqg=new SubQueryGenerator();
+            String ageQuery=sqg.getOvcCurrentAgeQuery(rpt.getStartAge(), rpt.getEndAge());
+            String currentEnrollmentQuery=SubQueryGenerator.getOvcCurrentEnrollmentStatusQuery(enrollmentStatus);
+            String additionalOrgUnitQuery="";
+            if(rpt !=null && rpt.getLevel2OuId() !=null && rpt.getLevel2OuId().trim().length()>0 && !rpt.getLevel2OuId().equalsIgnoreCase("select") && !rpt.getLevel2OuId().equalsIgnoreCase("All"))
+            {
+                additionalOrgUnitQuery=sqg.getOrganizationUnitQuery(rpt);
+            }
+            String query=SubQueryGenerator.getHheOvcOrganizationUnitQuery()+sqg.getOvcSexQuery(sex)+currentEnrollmentQuery+ageQuery+sqg.getOvcEnrolledOnTreatmentQuery(enrolledOnTreatmentValue)+additionalOrgUnitQuery+sqg.getOvcEnrolledOnTreatmentDateQuery(startDate,endDate)+markedForDeleteQuery;
+            System.err.println(query);
+            session = HibernateUtil.getSession();
+            tx = session.beginTransaction();
+            List list = session.createQuery(query).list();
+            tx.commit();
+            closeSession(session);
+            if(list !=null)
+            {
+                for(Object obj:list)
+                {
+                    Object[] objArray=(Object[])obj;
+                    hheList.add(objArray[1]);
+                }
+            }
+        }
+         catch (Exception ex)
+         {
+             closeSession(session);
+            throw new Exception(ex);
+         }
+        return hheList;
+    }
     public int getNumberOfOvcPerCaregiver(String caregiverId) throws Exception
     {
         int count=0;
@@ -56,14 +269,14 @@ public class ChildEnrollmentDaoImpl implements ChildEnrollmentDao
         }
         return count;
     }
-    public List getCurrentHivStatusrecordsOfChildrenAtRiskOfHivBeforeOctober2018() throws Exception
+    public List getRecordsWithPositiveHivStatusAtBaselineButOtherStatusCurrently() throws Exception
     {
         List list=null;
         try
         {
             session = HibernateUtil.getSession();
             tx = session.beginTransaction();
-            String query="from Ovc ovc where ovc.currentHivStatusCode="+AppConstant.HIV_TEST_REQUIRED_NUM+" and ovc.dateOfCurrentHivStatus <'2018-10-01'";
+            String query="from Ovc ovc where ovc.baselineHivStatus="+AppConstant.HIV_POSITIVE_NUM+" and ovc.currentHivStatus !="+AppConstant.HIV_POSITIVE_NUM;
             System.err.println("query is "+query);
             list = session.createQuery(query).list();
             tx.commit();
@@ -501,7 +714,7 @@ public class ChildEnrollmentDaoImpl implements ChildEnrollmentDao
          }
         return ovcList;
     }
-    public int getOvcBirthCertificateData(ReportParameterTemplate rpt,String sex) throws Exception
+    public int getOvcBirthCertificateData(ReportParameterTemplate rpt,int enrollmentStatus,String sex) throws Exception
     {
         int numberOfOvc=0;
         try
@@ -512,7 +725,7 @@ public class ChildEnrollmentDaoImpl implements ChildEnrollmentDao
             {
                 additionalOrgUnitQuery=sqg.getOrganizationUnitQuery(rpt);
             }
-            String query="select count (distinct ovc.ovcId) "+SubQueryGenerator.getHheOvcOrganizationUnitQuery()+additionalOrgUnitQuery+sqg.getOvcCurrentAgeQuery(rpt.getStartAge(), rpt.getEndAge())+SubQueryGenerator.getOvcCurrentBirthCertificateQuery(rpt.getBirthCertificateValue())+SubQueryGenerator.getOvcSexQuery(sex)+SubQueryGenerator.getOvcCurrentEnrollmentStatusQuery(rpt.getEnrollmentStatus())+markedForDeleteQuery;
+            String query="select count (distinct ovc.ovcId) "+SubQueryGenerator.getHheOvcOrganizationUnitQuery()+additionalOrgUnitQuery+sqg.getOvcCurrentAgeQuery(rpt.getStartAge(), rpt.getEndAge())+SubQueryGenerator.getOvcCurrentBirthCertificateQuery(rpt.getBirthCertificateValue())+SubQueryGenerator.getOvcSexQuery(sex)+SubQueryGenerator.getOvcCurrentEnrollmentStatusQuery(enrollmentStatus)+markedForDeleteQuery;
             System.err.println(query);
             session = HibernateUtil.getSession();
             tx = session.beginTransaction();
@@ -531,7 +744,7 @@ public class ChildEnrollmentDaoImpl implements ChildEnrollmentDao
          }
         return numberOfOvc;
     }
-    public List getOvcBirthCertificateList(ReportParameterTemplate rpt,String sex) throws Exception
+    public List getOvcBirthCertificateList(ReportParameterTemplate rpt,int enrollmentStatus,String sex) throws Exception
     {
         List ovcList=new ArrayList();
         try
@@ -542,7 +755,7 @@ public class ChildEnrollmentDaoImpl implements ChildEnrollmentDao
             {
                 additionalOrgUnitQuery=sqg.getOrganizationUnitQuery(rpt);
             }
-            String query=SubQueryGenerator.getHheOvcOrganizationUnitQuery()+additionalOrgUnitQuery+sqg.getOvcCurrentAgeQuery(rpt.getStartAge(), rpt.getEndAge())+SubQueryGenerator.getOvcCurrentBirthCertificateQuery(rpt.getBirthCertificateValue())+SubQueryGenerator.getOvcSexQuery(sex)+SubQueryGenerator.getOvcCurrentEnrollmentStatusQuery(rpt.getEnrollmentStatus())+markedForDeleteQuery;
+            String query=SubQueryGenerator.getHheOvcOrganizationUnitQuery()+additionalOrgUnitQuery+sqg.getOvcCurrentAgeQuery(rpt.getStartAge(), rpt.getEndAge())+SubQueryGenerator.getOvcCurrentBirthCertificateQuery(rpt.getBirthCertificateValue())+SubQueryGenerator.getOvcSexQuery(sex)+SubQueryGenerator.getOvcCurrentEnrollmentStatusQuery(enrollmentStatus)+markedForDeleteQuery;
             System.err.println(query);
             session = HibernateUtil.getSession();
             tx = session.beginTransaction();
@@ -615,9 +828,9 @@ public class ChildEnrollmentDaoImpl implements ChildEnrollmentDao
             String queryPart= additionalQuery+ageQuery+SubQueryGenerator.getOvcSexQuery(sex)+dateQuery;
             
             String hivTreatmentQuery="";
-            if(hivStatus==AppConstant.HIV_POSITIVE_NUM && onTreatment==AppConstant.ON_TREATMENT)
+            if(hivStatus==AppConstant.HIV_POSITIVE_NUM && onTreatment==AppConstant.ENROLLED_ON_TREATMENT_YES_NUM)
             hivTreatmentQuery=SubQueryGenerator.getOvcHivPositiveOnTreatmentQuery();
-            else if(hivStatus==AppConstant.HIV_POSITIVE_NUM && onTreatment==AppConstant.NOT_ON_TREATMENT)
+            else if(hivStatus==AppConstant.HIV_POSITIVE_NUM && onTreatment==AppConstant.ENROLLED_ON_TREATMENT_NO_NUM)
             hivTreatmentQuery=SubQueryGenerator.getOvcHivPositiveNotOnTreatmentQuery();
             
             String query="select count(distinct ovc.ovcId) "+SubQueryGenerator.getHheOvcOrganizationUnitQuery()+queryPart+SubQueryGenerator.getOvcCurrentEnrollmentStatusQuery(currentEnrollmentStatus)+SubQueryGenerator.getOvcHivStatusQuery(hivStatus)+hivTreatmentQuery+markedForDeleteQuery;
@@ -934,7 +1147,7 @@ public class ChildEnrollmentDaoImpl implements ChildEnrollmentDao
             surname=surname.trim().toUpperCase();
             session = HibernateUtil.getSession();
             tx = session.beginTransaction();
-            List list = session.createQuery("from Ovc ovc where ovc.hhUniqueId=:id and UPPER(ovc.firstName)=:fn and UPPER(ovc.surname=:sn)").setString("id", hhUniqueId).setString("fn", firstName).setString("sn", surname).list();
+            List list = session.createQuery("from Ovc ovc where ovc.hhUniqueId=:id and ((UPPER(ovc.firstName)=:fn and UPPER(ovc.surname)=:sn) or (UPPER(ovc.firstName)=:sn and UPPER(ovc.surname)=:fn))").setString("id", hhUniqueId).setString("fn", firstName).setString("sn", surname).list();
             tx.commit();
             closeSession(session);
             if(list !=null && !list.isEmpty())
@@ -1022,15 +1235,15 @@ public class ChildEnrollmentDaoImpl implements ChildEnrollmentDao
     {
         try
         {
-            System.err.println(" ovc.getDateOfEnrollment() in SaveOvc is "+ovc.getDateOfEnrollment());
+            //System.err.println(" ovc.getDateOfEnrollment() in SaveOvc is "+ovc.getDateOfEnrollment());
             if(ovc !=null && getOvc(ovc.getOvcId())==null)
             {
-                System.err.println("Ovc with Id "+ovc.getOvcId()+" about to be saved");
+                //System.err.println("Ovc with Id "+ovc.getOvcId()+" about to be saved");
                 ovc=getCleanedOvc(ovc);
                 System.err.println(" ovc.getDateOfEnrollment() 2 in SaveOvc is "+ovc.getDateOfEnrollment());
                 ovc=(Ovc)hom.processBeneficiaryHivStatus(ovc);
-                System.err.println(" ovc.getDateOfEnrollment() 3 in SaveOvc is "+ovc.getDateOfEnrollment());
-                System.err.println("Ovc with Id "+ovc.getOvcId()+" about to be saved after cleanup");
+                //System.err.println(" ovc.getDateOfEnrollment() 3 in SaveOvc is "+ovc.getDateOfEnrollment());
+                //System.err.println("Ovc with Id "+ovc.getOvcId()+" about to be saved after cleanup");
                 session = HibernateUtil.getSession();
                 tx = session.beginTransaction();
                 session.save(ovc);
@@ -1088,9 +1301,9 @@ public class ChildEnrollmentDaoImpl implements ChildEnrollmentDao
                     System.err.println("Inside updateOvc, ovc2.getLastModifiedDate().before(ovc.getLastModifiedDate())");
                     
                     ovc=getCleanedOvc(ovc);
-                    System.err.println(" ovc.getDateOfEnrollment() 2 in updateOvc is "+ovc.getDateOfEnrollment());
+                    //System.err.println(" ovc.getDateOfEnrollment() 2 in updateOvc is "+ovc.getDateOfEnrollment());
                     ovc=getOvcWithUpdatedCurrentParameters(ovc,ovc2);
-                    System.err.println(" ovc.getDateOfEnrollment()3 in updateOvc is "+ovc.getDateOfEnrollment());
+                    //System.err.println(" ovc.getDateOfEnrollment()3 in updateOvc is "+ovc.getDateOfEnrollment());
                     if(ovc.getDateOfCurrentHivStatus().before(ovc2.getDateOfCurrentHivStatus()))
                     {
                         ovc.setCurrentHivStatus(ovc2.getCurrentHivStatus());

@@ -151,12 +151,12 @@ function disableComponents(id)
                           <logic:present name="sunstatIndictors">
                           <fieldset>
                             <table width="720" border="1" bordercolor="#D7E5F2" class="regsitertable">
-                                <tr><td colspan="2" align="center" style="background-color: #ccc;">OVC indicators</td></tr>
+                                <tr><td colspan="2" align="center" style="background-color: #FFEBCD;">OVC indicators</td></tr>
                                 
                               <logic:iterate collection="${sunstatIndictors[0]}" id="indicator">
                                   <tr><td><html:multibox property='indicatorIndexes' styleId="${indicator.indicatorId}" value="${indicator.indicatorId}" styleClass='smallfieldcellselect'/> </td><td>${indicator.indicatorName} </td> </tr>
                               </logic:iterate>
-                              <%--<tr><td colspan="2" align="center" style="background-color:#FFEBCD;">School enrollment indicators</td></tr>
+                              <tr><td colspan="2" align="center" style="background-color:#FFEBCD;">School enrollment indicators</td></tr>
                               <logic:iterate collection="${sunstatIndictors[1]}" id="indicator">
                                   <tr><td><html:multibox property='indicatorIndexes' styleId="${indicator.indicatorId}" value="${indicator.indicatorId}" styleClass='smallfieldcellselect'/> </td><td>${indicator.indicatorName} </td> </tr>
                               </logic:iterate>
@@ -170,8 +170,8 @@ function disableComponents(id)
                               <logic:iterate collection="${sunstatIndictors[3]}" id="indicator">
                                   <tr><td><html:multibox property='indicatorIndexes' styleId="${indicator.indicatorId}" value="${indicator.indicatorId}" styleClass='smallfieldcellselect'/> </td><td>${indicator.indicatorName} </td> </tr>
                               </logic:iterate>
-                              --%>
-                             <tr><td colspan="2" align="center" style="background-color: #ccc" >OVC HIV indicators</td></tr>
+                              
+                             <tr><td colspan="2" align="center" style="background-color:#FFEBCD;" >OVC HIV indicators</td></tr>
                               <logic:iterate collection="${sunstatIndictors[4]}" id="indicator">
                                   <tr><td><html:multibox property='indicatorIndexes' styleId="${indicator.indicatorId}" value="${indicator.indicatorId}" styleClass='smallfieldcellselect'/> </td><td>${indicator.indicatorName} </td> </tr>
                               </logic:iterate>
@@ -181,7 +181,7 @@ function disableComponents(id)
                                   <tr><td><html:multibox property='indicatorIndexes' styleId="${indicator.indicatorId}" value="${indicator.indicatorId}" styleClass='smallfieldcellselect'/> </td><td>${indicator.indicatorName} </td> </tr>
                               </logic:iterate>--%>
                                                                
-                             <tr><td colspan="2" align="center" style="background-color:  #ccc">OVC Service indicators</td></tr>
+                             <tr><td colspan="2" align="center" style="background-color: #FFEBCD;">OVC Service indicators</td></tr>
                               <logic:iterate collection="${sunstatIndictors[11]}" id="indicator">
                                   <tr><td><html:multibox property='indicatorIndexes' styleId="${indicator.indicatorId}" value="${indicator.indicatorId}" styleClass='smallfieldcellselect'/> </td><td>${indicator.indicatorName} </td> </tr>
                               </logic:iterate>
@@ -192,16 +192,23 @@ function disableComponents(id)
                                   <tr><td><html:multibox property='indicatorIndexes' styleId="${indicator.indicatorId}" value="${indicator.indicatorId}" styleClass='smallfieldcellselect'/> </td><td>${indicator.indicatorName} </td> </tr>
                               </logic:iterate>--%>
                                
-                                  <tr><td colspan="2" align="center" style="background-color: #ccc;">Caregiver indicators</td></tr>
+                                  <tr><td colspan="2" align="center" style="background-color: #FFEBCD;">Caregiver indicators</td></tr>
                               <logic:iterate collection="${sunstatIndictors[16]}" id="indicator">
                                   <tr><td><html:multibox property='indicatorIndexes' styleId="${indicator.indicatorId}" value="${indicator.indicatorId}" styleClass='smallfieldcellselect'/> </td><td>${indicator.indicatorName} </td> </tr>
                               </logic:iterate>
                               
-                                 <tr><td colspan="2" align="center" style="background-color: #ccc">Caregiver service indicators</td></tr>
+                                 <tr><td colspan="2" align="center" style="background-color: #FFEBCD;">Caregiver service indicators</td></tr>
                               <logic:iterate collection="${sunstatIndictors[18]}" id="indicator">
                                   <tr><td><html:multibox property='indicatorIndexes' styleId="${indicator.indicatorId}" value="${indicator.indicatorId}" styleClass='smallfieldcellselect'/> </td><td>${indicator.indicatorName} </td> </tr>
                               </logic:iterate> 
-                                                            
+                               <tr><td colspan="2" align="center" style="background-color:#FFEBCD;">Household indicators</td></tr>
+                              <logic:iterate collection="${sunstatIndictors[19]}" id="indicator">
+                                  <tr><td><html:multibox property='indicatorIndexes' styleId="${indicator.indicatorId}" value="${indicator.indicatorId}" styleClass='smallfieldcellselect'/> </td><td>${indicator.indicatorName} </td> </tr>
+                              </logic:iterate>
+                              <tr><td colspan="2" align="center" style="background-color:#FFEBCD;">Special indicators</td></tr>
+                              <logic:iterate collection="${sunstatIndictors[21]}" id="indicator">
+                                  <tr><td><html:multibox property='indicatorIndexes' styleId="${indicator.indicatorId}" value="${indicator.indicatorId}" styleClass='smallfieldcellselect'/> </td><td>${indicator.indicatorName} </td> </tr>
+                              </logic:iterate>
                             </table>
                           </fieldset>
                          </logic:present>

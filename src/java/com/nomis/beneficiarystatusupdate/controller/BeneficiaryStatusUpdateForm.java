@@ -432,7 +432,7 @@ public void reset(ActionMapping mapping, HttpServletRequest request)
     hhSerialNo=0;
     hhUniqueId=null;
     dateOfEnrollment=null;
-    sex=null;
+    sex="select";
     lastHivStatus=0;
     educationLevel=0;
     beneficiaryId=null;
@@ -482,12 +482,17 @@ public void reset(ActionMapping mapping, HttpServletRequest request)
         if(child !=null)
         {
             childCurrentAge=child.getCurrentAge();
+            
             if(this.getUpdateChildHivStatus()==1)
-            {//validate HIV status
+            {//if request is to update HIV status, then validate HIV status
                 Date dateOfBirth=DateManager.getPreviousDate(DateManager.getCurrentDateInstance(), childCurrentAge);
                 Date dDateOfBaselineHivStatus=child.getDateOfBaselineHivStatus();//DateManager.getDateInstance(DateManager.processMthDayYearToMysqlFormat(this.getDateOfBaselineHivStatus()));
                 if(this.getChildNewHivStatus()==0)
                 errors.add("childNewHivStatus", new ActionMessage("errors.childNewHivStatus.required"));
+                else if(child.getBaselineHivStatus()==AppConstant.HIV_NEGATIVE_NUM && this.getChildNewHivStatus()>AppConstant.HIV_NEGATIVE_NUM)
+                errors.add("childNewHivStatus", new ActionMessage("errors.vcBaselineHivStatusNegativeAndNewStatusUnknown"));
+                else if(child.getBaselineHivStatus()==AppConstant.HIV_POSITIVE_NUM && this.getChildNewHivStatus()>AppConstant.HIV_POSITIVE_NUM)
+                errors.add("childNewHivStatus", new ActionMessage("errors.vcBaselineHivStatusPositiveAndNewStatusUnknownOrNegative"));
                 else if((getChildNewHivStatus()==AppConstant.HIV_POSITIVE_NUM || getChildNewHivStatus()==AppConstant.HIV_NEGATIVE_NUM) && (this.getDateOfNewHivStatus()==null || this.getDateOfNewHivStatus().indexOf("/")==-1))
                 errors.add("dateOfNewHivStatus", new ActionMessage("errors.dateOfBaselineHivStatus.required"));
                 else if(dateOfBirth !=null && dDateOfBaselineHivStatus !=null && dateOfBirth.after(dDateOfBaselineHivStatus))
@@ -523,6 +528,7 @@ public void reset(ActionMapping mapping, HttpServletRequest request)
                 }
             }
         }
+        //this checks if the user indicates that caregiver information be updated
         if(this.getUpdateCaregiverHivStatus()==1)
         {
             Beneficiary adultHouseholdMember=ValidationManager.getBeneficiary(this.getCaregiverId(),AppConstant.CAREGIVER_TYPE_NUM);
@@ -531,8 +537,13 @@ public void reset(ActionMapping mapping, HttpServletRequest request)
                 int caregiverCurrentAge=adultHouseholdMember.getCurrentAge();
                 Date dateOfBirth=DateManager.getPreviousDate(DateManager.getCurrentDateInstance(), caregiverCurrentAge);
                 Date dDateOfBaselineHivStatus=adultHouseholdMember.getDateOfBaselineHivStatus();//DateManager.getDateInstance(DateManager.processMthDayYearToMysqlFormat(this.getDateOfBaselineHivStatus()));
-                if(this.getChildNewHivStatus()==0)
-                errors.add("childNewHivStatus", new ActionMessage("errors.childNewHivStatus.required"));
+                if(this.getCaregiverHivStatus()==0)
+                errors.add("caregiverHivStatus", new ActionMessage("errors.caregiverHivStatus.required"));
+                else if(adultHouseholdMember.getBaselineHivStatus()==AppConstant.HIV_NEGATIVE_NUM && getCaregiverHivStatus()>AppConstant.HIV_NEGATIVE_NUM)
+                errors.add("caregiverHivStatus", new ActionMessage("errors.cgBaselineHivStatusNegativeAndNewStatusUnknown"));
+                else if(adultHouseholdMember.getBaselineHivStatus()==AppConstant.HIV_POSITIVE_NUM && getCaregiverHivStatus()>AppConstant.HIV_POSITIVE_NUM)
+                errors.add("caregiverHivStatus", new ActionMessage("errors.cgBaselineHivStatusPositiveAndNewStatusUnknownOrNegative"));
+                
                 else if((getChildNewHivStatus()==AppConstant.HIV_POSITIVE_NUM || getChildNewHivStatus()==AppConstant.HIV_NEGATIVE_NUM) && (this.getDateOfNewHivStatus()==null || this.getDateOfNewHivStatus().indexOf("/")==-1))
                 errors.add("dateOfNewHivStatus", new ActionMessage("errors.dateOfBaselineHivStatus.required"));
                 else if(dateOfBirth !=null && dDateOfBaselineHivStatus !=null && dateOfBirth.after(dDateOfBaselineHivStatus))

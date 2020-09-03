@@ -1091,6 +1091,10 @@ public void moveAllImportFilesToDoneDirectory()
     {
         return getConfigurationDirectory()+seperator+"loginconfig.txt";
     }
+    public static String getMetadataConfigFile()
+    {
+        return getConfigurationDirectory()+seperator+"metadataconfig.txt";
+    }
     public static String getConfigurationDirectory()
     {
         return getResourceLocation()+seperator+"conf";
@@ -1170,8 +1174,6 @@ public void moveAllImportFilesToDoneDirectory()
         String result=readFiles(getLoginConfigFile(), "");
         if(result==null || result.equalsIgnoreCase("filedoesnotexist"))
         return false;
-        //else if(result !=null && result.equalsIgnoreCase("filedoesnotexist"))
-        //return true;
         else
         {
             String[] defaultParameter=result.split(":");
@@ -1185,6 +1187,25 @@ public void moveAllImportFilesToDoneDirectory()
         createDirectories(getConfigurationDirectory());
         writeFile(getLoginConfigFile(), "DefaultLogin:off");
     }
+    public static boolean isMetadataAccessEnabled()
+    {
+        String result=readFiles(getMetadataConfigFile(), "");
+        if(result==null || result.equalsIgnoreCase("filedoesnotexist"))
+        return false;
+        else
+        {
+            String[] defaultParameter=result.split(":");
+            if(defaultParameter.length >1 && defaultParameter[1].equalsIgnoreCase("on"))
+            return true;
+        }
+        return false;
+    }
+    public void disableMetadataAccss()
+    {
+        createDirectories(getConfigurationDirectory());
+        writeFile(getMetadataConfigFile(), "Metadataaccess:off");
+    }
+    //
     /*public boolean hasPriviledgeToAccessPage(HttpSession session)
     {
         if(!isUserInRole(session, "Administrator") && !isUserInRole(session, "DataEntry"))

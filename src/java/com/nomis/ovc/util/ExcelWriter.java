@@ -4,9 +4,12 @@
  */
 package com.nomis.ovc.util;
 
+import com.nomis.operationsManagement.OrganizationUnitHierarchyManager;
+import com.nomis.ovc.business.CustomIndicatorsReport;
 import com.nomis.ovc.business.Partner;
 import com.nomis.ovc.dao.DaoUtility;
 import com.nomis.ovc.metadata.OrganizationUnit;
+import com.nomis.ovc.metadata.OrganizationUnitHierachyAttribute;
 import com.nomis.reports.utils.Indicator;
 import com.nomis.reports.utils.ReportTemplate;
 import jxl.write.Label;
@@ -28,6 +31,11 @@ public class ExcelWriter implements Serializable {
     AppUtility appUtil = new AppUtility();
     DaoUtility util = new DaoUtility();
     int numberOfServices = 0;
+    OrganizationUnitHierachyAttribute orgUnitHierachyAttribute=null;
+    public ExcelWriter()
+    {
+        orgUnitHierachyAttribute=OrganizationUnitHierarchyManager.getOrgUnitHierachyAttribute();
+    }
     public WritableWorkbook writeRevisedQuarterlyReportTemplateToExcel(OutputStream os, List mainList) 
     {
         WritableWorkbook wworkbook = null;
@@ -230,7 +238,7 @@ public class ExcelWriter implements Serializable {
         WritableSheet wsheet = null;
         Label label = null;
         Number number = null;
-
+        
         try 
         {
             wworkbook = Workbook.createWorkbook(os);
@@ -238,8 +246,8 @@ public class ExcelWriter implements Serializable {
 
             int t = 0;
             int row = 1;
-            String[] columnHeadings = {"Indicator","MER Code","State","Lga","CBO","Partner","Period", "<1", "1-4", "5-9", "10-14","15-17","18-24","25+","Male total","<1", "1-4", "5-9", "10-14","15-17","18-24","25+","Female total","Total"};
-            ReportTemplate rt = null;
+            String[] columnHeadings = {"Indicator","MER Code",orgUnitHierachyAttribute.getLevel2HierachyName(),orgUnitHierachyAttribute.getLevel3HierachyName(),"CBO","Partner","Period", "<1", "1-4", "5-9", "10-14","15-17","18-24","25+","Male total","<1", "1-4", "5-9", "10-14","15-17","18-24","25+","Female total","Total"};
+            CustomIndicatorsReport rt = null;
             OrganizationUnit level2Ou=null;
             OrganizationUnit level3Ou=null;
             String level2OuName=null;
@@ -264,7 +272,7 @@ public class ExcelWriter implements Serializable {
                         level2OuName=null;
                         level3OuName=null;
                         cell = 0;
-                        rt = (ReportTemplate) stateValueList.get(k);
+                        rt = (CustomIndicatorsReport) stateValueList.get(k);
                         level2Ou=util.getOrganizationUnitDaoInstance().getOrganizationUnit(rt.getLevel2OuId());
                         level3Ou=util.getOrganizationUnitDaoInstance().getOrganizationUnit(rt.getLevel3OuId());
                         if(level2Ou !=null)
@@ -286,7 +294,7 @@ public class ExcelWriter implements Serializable {
                         wsheet.addCell(label);
                         label = new Label(++cell, row, partnerName);
                         wsheet.addCell(label);
-                        label = new Label(++cell, row, rt.getPeriod());
+                        label = new Label(++cell, row, rt.getReportPeriod());
                         wsheet.addCell(label);
                         number = new Number(++cell, row, rt.getMaleLessThan1());
                         wsheet.addCell(number);

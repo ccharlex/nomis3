@@ -94,7 +94,9 @@ public class ValidationManager
           if(beneficiaryType==AppConstant.OVC_TYPE_NUM)
           beneficiary=util.getChildEnrollmentDaoInstance().getOvcByName(hhUniqueId, firstName, surname);
           else
-          beneficiary=util.getAdultHouseholdMemberDaoInstance().getAdultHouseholdMemberByName(hhUniqueId, firstName, surname);
+          {
+            beneficiary=util.getAdultHouseholdMemberDaoInstance().getAdultHouseholdMemberByName(hhUniqueId, firstName, surname);
+          }
       }
       catch(Exception ex)
       {

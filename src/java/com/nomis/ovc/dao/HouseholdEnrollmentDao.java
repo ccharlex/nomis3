@@ -45,4 +45,6 @@ public interface HouseholdEnrollmentDao
     public List getDistinctCommunityBasedOrganizationIds(ReportParameterTemplate rpt) throws Exception;
     public List getDistinctLevel3OuList(ReportParameterTemplate rpt) throws Exception;
     public List getHouseholdEnrollmentAndRevisedAssessmentRecords(ReportParameterTemplate rpt) throws Exception;
+    public int getNumberOfHouseholdsEnrolled(ReportParameterTemplate rpt,String startDate,String endDate,int enrollmentStatus) throws Exception;
+    public List getListOfHouseholdsEnrolled(ReportParameterTemplate rpt,String startDate,String endDate,int enrollmentStatus) throws Exception;
 }

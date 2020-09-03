@@ -174,11 +174,39 @@ function generateUniqueId(val)
     getValuesByAjaxApi('ajaxaction.do',req,'uniqueId')
     return true;
 }
+function activateReferralList(value) 
+{
+    //if beneficiary on ART
+    if(value == "1") 
+    {
+       document.getElementById("facilityId").disabled = false;
+       document.getElementById("pickedUpMedication").disabled = false;
+       document.getElementById("missedARVsRecently").disabled = false;
+       //document.getElementById("treatmentId").disabled = false;
+       //document.getElementById("dateEnrolledOnTreatment").disabled = false; 
+    }
+    else 
+    {
+        document.getElementById("facilityId").value="select"
+        document.getElementById("facilityId").disabled = true;
+        document.getElementById("pickedUpMedication").disabled = true;
+        document.getElementById("missedARVsRecently").disabled = true;
+        //disableARVSkippingOptions(value);
+        //document.getElementById("dateEnrolledOnTreatment").disabled = true;
+        //document.getElementById("treatmentId").value = "";
+        //document.getElementById("treatmentId").disabled = true; 
+    }
+    disableARVSkippingOptions(value);
+    enableDisableViralLoadRelatedFields(value)
+    enableDisableViralTestDoneQuestionField(value)
+    enableDisableTransportationSupportQuestionField(value)
+}
 function disableARVSkippingOptions(value)
 {
     if(value==1)
     {
-        document.getElementById("drugsideeffect").disabled=false
+        disableChkBoxes("reasonsPeopleSkipARV",value)
+        /*document.getElementById("drugsideeffect").disabled=false
         document.getElementById("stigma").disabled=false
         document.getElementById("dfdailylife").disabled=false
         document.getElementById("hopelessness").disabled=false
@@ -186,19 +214,40 @@ function disableARVSkippingOptions(value)
         document.getElementById("lackoffood").disabled=false
         document.getElementById("relbelief").disabled=false
         document.getElementById("lackofmotivation").disabled=false
+        document.getElementById("dateEnrolledOnART").disabled=false*/
     }
     else
     {
-        unselectChkBoxes("reasonsPeopleSkipARV")
-        document.getElementById("drugsideeffect").disabled="disabled"
-        document.getElementById("stigma").disabled="disabled"
-        document.getElementById("dfdailylife").disabled="disabled"
-        document.getElementById("hopelessness").disabled="disabled"
-        document.getElementById("feelingwell").disabled="disabled"
-        document.getElementById("lackoffood").disabled="disabled"
-        document.getElementById("relbelief").disabled="disabled"
-        document.getElementById("lackofmotivation").disabled="disabled"
-        document.getElementById("dateEnrolledOnART").disabled="disabled"        
+        unselectChkBoxes("reasonsPeopleSkipARV") 
+        disableChkBoxes("reasonsPeopleSkipARV",value)
+        /*document.getElementById("drugsideeffect").disabled=true
+        document.getElementById("stigma").disabled=true
+        document.getElementById("dfdailylife").disabled=true
+        document.getElementById("hopelessness").disabled=true
+        document.getElementById("feelingwell").disabled=true
+        document.getElementById("lackoffood").disabled=true
+        document.getElementById("relbelief").disabled=true
+        document.getElementById("lackofmotivation").disabled=true
+        document.getElementById("dateEnrolledOnART").disabled=true*/        
+    }
+}
+function unselectChkBoxes(chkname)
+{
+   var elements=document.getElementsByName(chkname)
+    for(var i=0; i<elements.length; i++)
+    {
+        elements[i].checked=false
+    }
+}
+function disableChkBoxes(chkname,disabled)
+{
+   var elements=document.getElementsByName(chkname)
+    for(var i=0; i<elements.length; i++)
+    {
+        if(disabled==1)
+        elements[i].disabled=false
+        else
+        elements[i].disabled=true
     }
 }
 function submitForm(requiredAction,formId)
@@ -210,6 +259,69 @@ function submitForm(requiredAction,formId)
 function setActionName(val)
 {
     document.getElementById("actionName").value=val
+}
+function enableDisableViralLoadRelatedFields(val)
+{
+    if(val==1)
+    {
+        document.getElementById("dateOfViralLoadTest").disabled=false
+        document.getElementById("viralLoadResultKnown").disabled=false
+        document.getElementById("viralLoadResult").disabled=false
+        document.getElementById("reasonViralLoadNotDone").disabled=false
+    }
+    else
+    {
+        document.getElementById("dateOfViralLoadTest").disabled=true
+        document.getElementById("viralLoadResultKnown").disabled=true
+        document.getElementById("viralLoadResult").disabled=true
+        document.getElementById("reasonViralLoadNotDone").disabled=true
+    }
+}
+function enableDisableViralTestDoneQuestionField(value)
+{
+    if(value==1)
+    {
+        document.getElementById("viralLoadTestDone").disabled=false
+    }
+    else
+    {
+        document.getElementById("viralLoadTestDone").disabled=true
+    }
+}
+function enableDisableTransportationSupportQuestionField(value)
+{
+    if(value==1)
+    {
+        document.getElementById("receivedTransportationSupport").disabled=false
+    }
+    else
+    {
+        document.getElementById("receivedTransportationSupport").disabled=true
+    }
+}
+function enableDisableViralLoadResultField(val)
+{
+    if(val==1)
+    {
+        document.getElementById("viralLoadResult").disabled=false
+        document.getElementById("reasonViralLoadNotDone").disabled=true
+    }
+    else
+    {
+        document.getElementById("viralLoadResult").disabled=true
+        document.getElementById("reasonViralLoadNotDone").disabled=false
+    }
+}
+function enableDisableTransportationSupportField(val)
+{
+    if(val==1)
+    {
+        document.getElementById("monthsOfTransportationSupport").disabled=false 
+    }
+    else
+    {
+        document.getElementById("monthsOfTransportationSupport").disabled=true
+    }
 }
 </script>
 <link href="kidmap-default.css" rel="stylesheet" type="text/css" />
@@ -432,7 +544,7 @@ function setActionName(val)
                          <tr>
                               <td class="right" colspan="2">Has the child been coughing for up to two weeks or more?</td>
                               <td >
-                                  <html:select styleClass="fieldcellinput" property="coughSymptom" style="width:82px;" styleId="coughSymptom" >
+                                  <html:select styleClass="fieldcellinput" property="coughSymptom" style="width:82px;" styleId="coughSymptom" disabled="${childSpecificQuestionDisabled}">
                                       <html:option value="0">select...</html:option>
                                       <html:option value="1">Yes</html:option>
                                       <html:option value="2">No</html:option>
@@ -443,7 +555,7 @@ function setActionName(val)
                               <td class="right" colspan="2">Has the child been losing weight recently or is not growing properly?
                                 </td>
                               <td colspan="2">
-                                  <html:select styleClass="fieldcellinput" property="childLossinWeight" style="width:82px;" styleId="childLossinWeight" >
+                                  <html:select styleClass="fieldcellinput" property="childLossinWeight" style="width:82px;" styleId="childLossinWeight" disabled="${childSpecificQuestionDisabled}">
                                       <html:option value="0">select...</html:option><html:option value="2">No</html:option><html:option value="1">Yes</html:option>
                                       
                                   </html:select> </td>
@@ -451,21 +563,21 @@ function setActionName(val)
                           <tr>
                               <td class="right" colspan="2">Has the child been having fever for a long period of time?</td>
                               <td colspan="2">
-                                  <html:select styleClass="fieldcellinput" property="childHasFever" style="width:82px;" styleId="childHasFever" >
+                                  <html:select styleClass="fieldcellinput" property="childHasFever" style="width:82px;" styleId="childHasFever" disabled="${childSpecificQuestionDisabled}">
                                       <html:option value="0">select...</html:option><html:option value="2">No</html:option><html:option value="1">Yes</html:option>
                                   </html:select> </td>
                           </tr>
                           <tr>
                               <td class="right" colspan="2">Has the child been having night sweats?</td>
                               <td colspan="2">
-                                  <html:select styleClass="fieldcellinput" property="childHasNightSweat" style="width:82px;" styleId="childHasNightSweat" >
+                                  <html:select styleClass="fieldcellinput" property="childHasNightSweat" style="width:82px;" styleId="childHasNightSweat" disabled="${childSpecificQuestionDisabled}">
                                       <html:option value="0">select...</html:option><html:option value="2">No</html:option><html:option value="1">Yes</html:option>
                                   </html:select> </td>
                           </tr>
                           <tr>
                               <td class="right" colspan="2">Does the child have swellings on the neck?</td>
                               <td colspan="2">
-                                  <html:select styleClass="fieldcellinput" property="childHasSwelling" style="width:82px;" styleId="childHasSwelling" >
+                                  <html:select styleClass="fieldcellinput" property="childHasSwelling" style="width:82px;" styleId="childHasSwelling" disabled="${childSpecificQuestionDisabled}">
                                       <html:option value="0">select...</html:option><html:option value="2">No</html:option><html:option value="1">Yes</html:option>
                                   </html:select> </td>
                           </tr>
@@ -473,14 +585,14 @@ function setActionName(val)
                           <tr>
                               <td class="right" colspan="2">Is the beneficiary currently on ART?</td>
                               <td colspan="2">
-                                  <html:select styleClass="fieldcellinput" property="enrolledOnTreatment" style="width:82px;" styleId="enrolledOnTreatment" >
+                                  <html:select styleClass="fieldcellinput" property="enrolledOnTreatment" style="width:82px;" styleId="enrolledOnTreatment" onchange="activateReferralList(this.value)">
                                       <html:option value="0">select...</html:option><html:option value="2">No</html:option><html:option value="1">Yes</html:option>
                                   </html:select> </td>
                           </tr>
                           <tr><%--Which health facility is beneficiary currently receiving ART? --%> 
                             <td>Which health facility is beneficiary currently receiving ART?</td>
                             <td colspan="3" > 
-                                <html:select property="facilityId" styleId="facilityId" styleClass="fieldcellinput"  style="width:350px;" disabled="${enrOnTreatmentDisabled}">
+                                <html:select property="facilityId" styleId="facilityId" styleClass="fieldcellinput"  style="width:350px;" disabled="${casHealthFacilityDisabled}">
                                       <html:option value="select">select...</html:option>
                                       <logic:present name="ovcfacilityList">
                                           <logic:iterate name="ovcfacilityList" id="facility">
@@ -494,14 +606,14 @@ function setActionName(val)
                           <tr>
                               <td class="right" colspan="2">Has the beneficiary picked up his/her medication?</td>
                               <td colspan="2">
-                                  <html:select styleClass="fieldcellinput" property="pickedUpMedication" style="width:82px;" styleId="pickedUpMedication">
+                                  <html:select styleClass="fieldcellinput" property="pickedUpMedication" style="width:82px;" styleId="pickedUpMedication" disabled="${casOnTreatmentQuestionsDisabled}">
                                       <html:option value="0">select...</html:option><html:option value="2">No</html:option><html:option value="1">Yes</html:option>
                                   </html:select> </td>
                           </tr>
                           <tr>
                               <td class="right" colspan="2">Has the beneficiary missed his/her ARVs more than two doses in a month in the last 3 months?</td>
                               <td colspan="2">
-                                  <html:select styleClass="fieldcellinput" property="missedARVsRecently" style="width:82px;" styleId="missedARVsRecently" onchange="disableARVSkippingOptions(this.value)">
+                                  <html:select styleClass="fieldcellinput" property="missedARVsRecently" style="width:82px;" styleId="missedARVsRecently" onchange="disableARVSkippingOptions(this.value)" disabled="${casOnTreatmentQuestionsDisabled}">
                                       <html:option value="0">select...</html:option><html:option value="2">No</html:option><html:option value="1">Yes</html:option>
                                   </html:select> </td>
                           </tr>
@@ -542,39 +654,39 @@ function setActionName(val)
                           <tr>
                               <td class="right" colspan="2">Has beneficiary carried out viral load test in the last one year?</td>
                               <td >
-                                  <html:select styleClass="fieldcellinput" property="viralLoadTestDone" style="width:82px;" styleId="viralLoadTestDone">
+                                  <html:select styleClass="fieldcellinput" property="viralLoadTestDone" style="width:82px;" styleId="viralLoadTestDone" disabled="${casOnTreatmentQuestionsDisabled}" onchange="enableDisableViralLoadRelatedFields(this.value)">
                                       <html:option value="0">select...</html:option><html:option value="2">No</html:option><html:option value="1">Yes</html:option>
                                   </html:select> </td>
-                                <td>When was the viral load test done? <html:text property="dateOfViralLoadTest" styleId="dateOfViralLoadTest" readonly="true"/> </td>
+                                <td>When was the viral load test done? <html:text property="dateOfViralLoadTest" styleId="dateOfViralLoadTest" readonly="true" disabled="${casOnTreatmentQuestionsDisabled}"/> </td>
                           </tr>
                           <tr>
                               <td class="right" colspan="2">Do you know the viral load test result?</td>
                               <td colspan="2">
-                                  <html:select styleClass="fieldcellinput" property="viralLoadResultKnown" style="width:82px;" styleId="viralLoadResultKnown">
+                                  <html:select styleClass="fieldcellinput" property="viralLoadResultKnown" style="width:82px;" styleId="viralLoadResultKnown" disabled="${casOnTreatmentQuestionsDisabled}" onchange="enableDisableViralLoadResultField(this.value)">
                                       <html:option value="0">select...</html:option><html:option value="2">No</html:option><html:option value="1">Yes</html:option>
                                   </html:select> </td>
                           </tr>
                           <tr>
                               <td class="right" colspan="2">What was the result? </td>
                               <td colspan="2">
-                                  <html:text styleClass="fieldcellinput" property="viralLoadResult" style="width:82px;" styleId="viralLoadResult"/>
+                                  <html:text styleClass="fieldcellinput" property="viralLoadResult" style="width:82px;" styleId="viralLoadResult" disabled="${casOnTreatmentQuestionsDisabled}"/>
                                        </td>
                           </tr>
                           <tr>
                               <td class="right" colspan="2">Why was the viral load not done? </td>
                               <td colspan="2">
-                                  <html:text styleClass="fieldcellinput" property="reasonViralLoadNotDone" style="width:82px;" styleId="reasonViralLoadNotDone"/>
+                                  <html:text styleClass="fieldcellinput" property="reasonViralLoadNotDone" style="width:82px;" styleId="reasonViralLoadNotDone" disabled="${casOnTreatmentQuestionsDisabled}"/>
                                        </td>
                           </tr>
                           
                           <tr>
                               <td class="right" colspan="2">Has beneficiary received transportation support to access ARVs in the last six months?</td>
                               <td >
-                                  <html:select styleClass="fieldcellinput" property="receivedTransportationSupport" style="width:82px;" styleId="receivedTransportationSupport" >
+                                  <html:select styleClass="fieldcellinput" property="receivedTransportationSupport" style="width:82px;" styleId="receivedTransportationSupport" disabled="${casOnTreatmentQuestionsDisabled}" onchange="enableDisableTransportationSupportField(this.value)">
                                       <html:option value="0">select...</html:option><html:option value="3">N/A</html:option><html:option value="2">No</html:option><html:option value="1">Yes</html:option>
                                   </html:select> </td>
                               <td> 
-                                  How many months?<html:select styleClass="fieldcellinput" property="monthsOfTransportationSupport" style="width:82px;" styleId="monthsOfTransportationSupport" >
+                                  How many months?<html:select styleClass="fieldcellinput" property="monthsOfTransportationSupport" style="width:82px;" styleId="monthsOfTransportationSupport" disabled="${casOnTreatmentQuestionsDisabled}">
                                       <html:option value="0">select...</html:option><html:option value="0">N/A</html:option>
                                       <html:option value="1">1</html:option><html:option value="2">2</html:option>
                                       <html:option value="3">3</html:option><html:option value="4">4</html:option>

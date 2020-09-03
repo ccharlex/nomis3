@@ -279,7 +279,7 @@ function confirmAction(value)
             <tr>
                 <td colspan="4"> </td>
             </tr>
-            <tr><td colspan="4" align="center">
+            <tr><td colspan="4" align="center"> 
             <html:submit value="Save" onclick="setActionName('save')" disabled="${rfSaveDisabled}"/>
             <html:submit value="Modify" onclick="return confirmAction('modify')" disabled="${rfModifyDisabled}"/></td>
         </tr>

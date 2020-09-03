@@ -5,6 +5,7 @@
 package com.nomis.exportimport.controller;
 
 import com.nomis.exportimport.MetadataImportManager;
+import com.nomis.ovc.util.AppManager;
 import com.nomis.ovc.util.AppUtility;
 import com.nomis.ovc.util.DateManager;
 import java.io.File;
@@ -45,6 +46,8 @@ public class MetadataImportAction extends org.apache.struts.action.Action {
     {
         MetadataImportForm mdif=(MetadataImportForm)form;
         HttpSession session=request.getSession();
+        AppManager appManager=new AppManager();
+        String userName=appManager.getCurrentUserName(session);
         String requiredAction=mdif.getActionName();
         System.err.println("requiredAction is "+requiredAction);        
         if(requiredAction==null)
@@ -57,6 +60,9 @@ public class MetadataImportAction extends org.apache.struts.action.Action {
            FormFile uploadedFile=mdif.getUploadedFile(); 
            if(uploadedFile !=null)
            {
+               /*InputStream is=uploadedFile.getInputStream();
+               ExcelReader er=new ExcelReader();
+               er.uploadFacilityList(is, userName);*/
                AppUtility appUtil=new AppUtility();
                String currentUser=appUtil.getCurrentUser(session);
                 String currentDate=DateManager.getCurrentDate();

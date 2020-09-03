@@ -25,11 +25,11 @@ public interface CustomIndicatorsReportDao
     public CustomIndicatorsReport getCustomIndicatorsReport(CustomIndicatorsReport rt) throws Exception;
     public CustomIndicatorsReport getCustomIndicatorsReport(String state,String lga,String cbo,String indicatorName,String otherDisaggregation,String period) throws Exception;
     public List getDistinctPeriods() throws Exception;
-    public List getDistinctStates() throws Exception;
-    public List getDistinctStatesByPeriod(String period) throws Exception;
+    public List getDistinctLevel2Ous() throws Exception;
+    public List getDistinctLevel2OusByPeriod(String period) throws Exception;
     public CustomIndicatorsReport getCustomIndicatorsReport(String lga,String cbo,String partnerCode,String indicatorName, String merCode,String otherDisaggregation,String period) throws Exception;
     public int deleteAllCustomIndicatorsReports(String state) throws Exception;
-    public List getDistinctStatesByPartner(String partnerCode) throws Exception;
-    public List getDistinctStatesByPeriodAndPartner(String partnerCode,String period) throws Exception;
-    public List getCustomIndicatorsReportsByStatePartnerAndPeriod(String state,String partnerCode,String period) throws Exception;
+    public List getDistinctLevel2OusByPartner(String partnerCode) throws Exception;
+    public List getDistinctLevel2OusByPeriodAndPartner(String partnerCode,String period) throws Exception;
+    public List getCustomIndicatorsReportsByLevel2OuPartnerAndPeriod(String state,String partnerCode,String period) throws Exception;
 }

@@ -23,4 +23,6 @@ public interface ChildEducationPerformanceAssessmentDao
     public ChildEducationPerformanceAssessment getChildEducationPerformanceAssessment(String ovcId,Date dateOfAssessment) throws Exception;
     public List getChildEducationPerformanceAssessment(String ovcId) throws Exception;
     public List getChildEducationPerformanceAssessmentRecordsForExport(ReportParameterTemplate rpt) throws Exception;
+    public int getNumberOfOvcAssessedForEducationalPerformance(ReportParameterTemplate rpt,String startDate,String endDate,int currentEnrollmentStatus,String sex) throws Exception;
+    public List getListOfOvcAssessedForEducationalPerformance(ReportParameterTemplate rpt,String startDate,String endDate,int currentEnrollmentStatus,String sex) throws Exception;
 }

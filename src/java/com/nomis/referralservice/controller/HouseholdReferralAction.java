@@ -12,6 +12,7 @@ import com.nomis.operationsManagement.OvcServiceAttributesManager;
 import com.nomis.operationsManagement.QuarterlyServiceTrackerManager;
 import com.nomis.operationsManagement.UserActivityManager;
 import com.nomis.ovc.business.Beneficiary;
+import com.nomis.ovc.business.CommunityBasedOrganization;
 import com.nomis.ovc.business.HouseholdEnrollment;
 import com.nomis.ovc.business.HouseholdReferral;
 import com.nomis.ovc.business.Ovc;
@@ -23,6 +24,7 @@ import com.nomis.ovc.util.AppManager;
 import com.nomis.ovc.util.AppUtility;
 import com.nomis.ovc.util.DateManager;
 import com.nomis.ovc.util.HivPropertiesManager;
+import com.nomis.ovc.util.ReferralFacilityManager;
 import com.nomis.ovc.util.UniqueIdManager;
 import java.util.ArrayList;
 import java.util.Date;
@@ -66,14 +68,16 @@ public class HouseholdReferralAction extends org.apache.struts.action.Action {
         OrganizationUnitAttributesManager ouaManager=new OrganizationUnitAttributesManager();
         AppManager appManager=new AppManager();
         String userName=appManager.getCurrentUserName(session);
+        String level2OuId=hhrform.getLevel2OuId();
         String level3OuId=hhrform.getLevel3OuId();
         String organizationUnitId=hhrform.getOrganizationUnitId();
+        String cboId=hhrform.getCboId();
         int hhSerialNo=hhrform.getHhSerialNo();
         String hhUniqueId=hhrform.getHhUniqueId();
         ouaManager.setOrganizationUnitAttributes(session, level3OuId,userName,hhrform.getCboId());
-        HivPropertiesManager.setHivStatusList(session, HivPropertiesManager.getThreeMainHivStatus());
+        HivPropertiesManager.setAllHivStatusList(session);
         CommunityWorkerRecordsManager.setEnumeratorsRegistrationList(session);
-        
+        loadfacility(session,level2OuId,null);
         AccessManager acm=new AccessManager();
         User user=appManager.getCurrentUser(session);
         requiredAction=acm.getActionName(requiredAction, user);
@@ -88,7 +92,7 @@ public class HouseholdReferralAction extends org.apache.struts.action.Action {
             return mapping.findForward(SUCCESS);
         }        
         setBeneficiaryList(session,hhUniqueId);
-        //setOvcPerHouseholdList(session, hhrform.getHhUniqueId());
+        loadReferringOrganization(session,cboId);
         //setButtonState(session,"false","true");
         System.err.println("requiredAction is "+requiredAction);
         if(requiredAction==null)
@@ -162,6 +166,7 @@ public class HouseholdReferralAction extends org.apache.struts.action.Action {
                 hhrform.setStableServices(appUtil.splitString(service.getStableServices(), ","));
                 hhrform.setGbvServices(appUtil.splitString(service.getGbvServices(), ","));
                 hhrform.setDateOfReferral(DateManager.convertDateToString(service.getDateOfReferral(),"MM/dd/yyyy"));
+                hhrform.setReferralCompleted(service.getReferralCompleted());
                 hhrform.setVolunteerName(service.getCommunityWorker());
                 setBeneficiaryDetails(hhrform,session);
                 if(service.getSafetyServices() !=null && service.getSafetyServices().indexOf(mbcServiceCode) !=-1)
@@ -273,6 +278,7 @@ public class HouseholdReferralAction extends org.apache.struts.action.Action {
         service.setSchooledServices(appUtil.concatStr(hhrform.getSchoolServices(), null));
         service.setReceivingOrganization(hhrform.getReceivingOrganization());
         service.setReferringOrganization(hhrform.getReferringOrganization());
+        service.setReferralCompleted(hhrform.getReferralCompleted());
         service.setNumberOfServices(0);
         service.setRecordedBy(userName);
         service.setId(hhrform.getId());
@@ -344,6 +350,35 @@ public class HouseholdReferralAction extends org.apache.struts.action.Action {
             beneficiaryList.addAll(adultList);
         }
         session.setAttribute("refBeneficiaryList", beneficiaryList);
+    }
+    private void loadfacility(HttpSession session,String level2OuId,String level3OuId)
+    {
+        try
+        {
+            ReferralFacilityManager rfm=new ReferralFacilityManager();
+            List facilityList=rfm.loadfacility(level2OuId, level3OuId);
+            session.setAttribute("refFacilityList", facilityList);
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+        }
+    }
+    private void loadReferringOrganization(HttpSession session,String cboId)
+    {
+        try
+        {
+            DaoUtility util=new DaoUtility();
+            List referringOrganizationList=new ArrayList();
+            CommunityBasedOrganization cbo=util.getCommunityBasedOrganizationDaoInstance().getCommunityBasedOrganization(cboId);
+            if(cbo !=null)
+            referringOrganizationList.add(cbo);
+            session.setAttribute("referringOrganizationList", referringOrganizationList);
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+        }
     }
     public void setButtonState(HttpSession session,String saveDisabled,String modifyDisabled)
     {

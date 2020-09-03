@@ -27,12 +27,12 @@
                                 <th >CBO </th>
                                 <th >Date of enrollment (yyyy-mm-dd)</th>
                                 <th>HH Unique Id</th>
-                                <th>Caregiver Id</th>
+                                <%--<th>Caregiver Id</th>--%>
                                 <th width="200">Caregiver name </th>
                                 <th width="200">Current age </th>
                                 <th >Sex(M/F)</th>
-                                <th >Date of birth</th>
-                                <%--<th >Village</th>--%> 
+                                <%--<th >Date of birth</th>
+                                <th >Village</th>--%> 
                                 <th >Address</th>
                                 <th >Phone</th>
                                 <th >Occupation</th>
@@ -45,6 +45,7 @@
                                 <th >Facility enrolled</th>
                                 <th >Treatment ID</th>
                                 <th >Viral load</th>
+                                <th >Name of volunteer</th>
                                 <th >Date created</th>
                                 <th >Last modified</th>
                                 <th >Recorded by</th>
@@ -70,14 +71,14 @@
                                        <td>${hhe.level3Ou.name}</td>
                                        <td>${hhe.level4Ou.name}</td>
                                        <td>${hhe.cbo.cboName}</td>
-                                       <td>${dateOfAssessment}</td>
+                                       <td>${hhe.dateOfAssessment}</td>
                                        <td>${hhe.hhUniqueId}</td>
-                                       <td> </td>
+                                       <%--<td> </td>--%>
                                        <td>${hhe.prCaregiver.firstName} ${prCaregiver.surname}</td>
                                        <td>${hhe.prCaregiver.currentAge}</td>
                                        <td>${hhe.prCaregiver.sex}</td>
-                                       <td>${hhe.prCaregiver.dateOfBirth}</td>
-                                       <%--<td>${prCaregiver.hhe.village}</td>--%>
+                                       <%--<td>${hhe.prCaregiver.dateOfBirth}</td>
+                                       <td>${prCaregiver.hhe.village}</td>--%>
                                        <td>${hhe.address}</td>
                                        <td>${hhe.prCaregiver.phoneNumber}</td>
                                        <td>${hhe.prCaregiver.occupation}</td>
@@ -90,6 +91,7 @@
                                        <td>${hhe.prCaregiver.referralFacility.facilityName}</td>
                                        <td>${hhe.prCaregiver.treatmentId}</td>
                                        <td>${hhe.prCaregiver.viralLoad}</td>
+                                       <td>${hhe.communityWorker.firstName} ${hhe.communityWorker.surname}</td>
                                        <td>${hhe.dateCreated}</td>
                                        <td>${hhe.lastModifiedDate}</td>
                                        <td>${hhe.recordedBy}</td>
@@ -102,7 +104,6 @@
                                        <td>${hhe.rhva.childrenHasBirthCertificateName}</td>
                                        <td>${hhe.rhva.stableAdultName}</td>
                                        <td>${hhe.rhva.violenceExperienceReportedName}</td>
-                                       
                                        <td>${hhe.rhva.childrenEnrolledInSchoolName}</td>
                                        <td>${hhe.rhva.regularSchoolAttendanceName}</td>
                                        <td>${hhe.rhva.cgEngagedInEconomicActivitiesName}</td>

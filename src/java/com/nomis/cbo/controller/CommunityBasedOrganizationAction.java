@@ -275,7 +275,15 @@ public class CommunityBasedOrganizationAction extends org.apache.struts.action.A
    
     public void setButtonState(HttpSession session,String saveDisabled,String modifyDisabled)
     {
-        session.setAttribute("cboSaveDisabled", saveDisabled);
-        session.setAttribute("cboModifyDisabled", modifyDisabled);
+        if(AppUtility.isMetadataAccessEnabled())
+        {
+            session.setAttribute("cboSaveDisabled", saveDisabled);
+            session.setAttribute("cboModifyDisabled", modifyDisabled);
+        }
+        else
+        {
+            session.setAttribute("cboSaveDisabled", "true");
+            session.setAttribute("cboModifyDisabled", "true");
+        }
     }
 }

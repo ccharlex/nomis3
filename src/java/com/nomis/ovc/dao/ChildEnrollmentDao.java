@@ -29,8 +29,8 @@ public interface ChildEnrollmentDao
     public List getOvcRecordsForExport(ReportParameterTemplate rpt) throws Exception;
     public List getListOfOvcWithDifferentPrimCaregiverId() throws Exception;
     public int updatePrimaryCaregiverIdWithHhUniqueId() throws Exception;
-    public int getOvcBirthCertificateData(ReportParameterTemplate rpt,String sex) throws Exception;
-    public List getOvcBirthCertificateList(ReportParameterTemplate rpt,String sex) throws Exception;
+    public int getOvcBirthCertificateData(ReportParameterTemplate rpt,int enrollmentStatus,String sex) throws Exception;
+    public List getOvcBirthCertificateList(ReportParameterTemplate rpt,int enrollmentStatus,String sex) throws Exception;
     public int getOvcSchoolEnrollmentData(ReportParameterTemplate rpt,String sex) throws Exception;
     public List getOvcSchoolEnrollmentList(ReportParameterTemplate rpt,String sex) throws Exception;
     public int getNumberOfOvcEnrollmentByVulnerabilityStatus(ReportParameterTemplate rpt,String sex,String vulnerabilityStatusCodeOrName) throws Exception;
@@ -50,10 +50,16 @@ public interface ChildEnrollmentDao
     public int getNoOfOvcByEnrollmentStatusAndHivStatus(String additionalQuery,int currentEnrollmentStatus,int hivStatus,String startDate, String endDate,int startAge,int endAge,String sex,int onTreatment) throws Exception;
     public List getListOfOvcByLevel4OrganizationUnitByEnrollmentStatus(String level4OuId,int enrollmentStatus) throws Exception;
     public void changeOvcId(String oldOvcId, String newOvcId) throws Exception;
-    public List getCurrentHivStatusrecordsOfChildrenAtRiskOfHivBeforeOctober2018() throws Exception;
+    public List getRecordsWithPositiveHivStatusAtBaselineButOtherStatusCurrently() throws Exception;
     public void updateOvcOnly(Ovc ovc) throws Exception;
     public void saveOvcCurrentHivStatus(Ovc ovc) throws Exception;
     public Ovc getOvcByName(String hhUniqueId,String firstName,String surname) throws Exception;
     public int getNumberOfOvcPerCaregiver(String caregiverId) throws Exception;
     public List getOvcRecordsMarkedForDelete(ReportParameterTemplate rpt) throws Exception;
+    public int getNumberOfOvcEnrolledOnTreatment(ReportParameterTemplate rpt,String startDate,String endDate,int enrolledOnTreatmentValue,int enrollmentStatus,String sex) throws Exception;
+    public List getListOfOvcEnrolledOnTreatment(ReportParameterTemplate rpt,String startDate,String endDate,int enrolledOnTreatmentValue,int enrollmentStatus,String sex) throws Exception;
+    public List getListOfOvcTestedAndRecievedResultInReportPeriodByEnrollmentStatusAndHivStatus(ReportParameterTemplate rpt,String startDate,String endDate,int enrolledOnTreatmentValue,int enrollmentStatus,int hivStatus,String sex) throws Exception;
+    public int getNumberOfOvcTestedAndRecievedResultInReportPeriodByEnrollmentStatusAndHivStatus(ReportParameterTemplate rpt,String startDate,String endDate,int enrolledOnTreatmentValue,int enrollmentStatus,int hivStatus,String sex) throws Exception;
+    public int getNumberOfOvcSupportedToAccessARTServicesInReportPeriod(ReportParameterTemplate rpt,String startDate,String endDate,int enrollmentStatus,String sex) throws Exception;
+    public List getListOfOvcSupportedToAccessARTServicesInReportPeriod(ReportParameterTemplate rpt,String startDate,String endDate,int enrollmentStatus,String sex) throws Exception;
 }

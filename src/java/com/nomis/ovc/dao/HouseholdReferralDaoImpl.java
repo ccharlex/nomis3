@@ -6,6 +6,7 @@ package com.nomis.ovc.dao;
 
 import com.nomis.operationsManagement.FinancialYearManager;
 import com.nomis.operationsManagement.OvcServiceAttributesManager;
+import com.nomis.ovc.business.AdultHouseholdMember;
 import com.nomis.ovc.business.HouseholdReferral;
 import com.nomis.ovc.business.Ovc;
 import com.nomis.ovc.util.AppConstant;
@@ -30,6 +31,136 @@ public class HouseholdReferralDaoImpl implements HouseholdReferralDao
     SubQueryGenerator sqg=new SubQueryGenerator();
     Ovc ovc=null;
     String markedForDeleteQuery=" and referral.markedForDelete=0";
+    public int getNumberOfOvcReferredForServiceWithCompletedReferralsByDomainAndServiceTypeAndAgeLimit(ReportParameterTemplate rpt,int domain,String serviveCode, String startDate,String endDate,int startAge,int endAge,String sex) throws Exception
+    {
+        int count=0;
+        try
+        {
+            String additionalOrgUnitQuery=sqg.getAdditionalOrgUnitQuery(rpt);
+            String completedReferralQuery=sqg.getReferralCompletedQuery(AppConstant.REFERRALCOMPLETED_YES_NUM);
+            String query="select count (distinct referral.beneficiaryId)"+SubQueryGenerator.getHheOvcHouseholdReferralOrganizationUnitQuery()+additionalOrgUnitQuery+SubQueryGenerator.getOvcSexQuery(sex) +SubQueryGenerator.getReferralServiceDateQuery(startDate, endDate) +completedReferralQuery+sqg.getAgeAtReferralQuery(startAge,endAge)+markedForDeleteQuery;
+            
+            System.err.println("query in getNumberOfOvcReferredForServiceWithCompletedReferralsByDomainAndServiceTypeAndAgeLimit is "+query);
+            session = HibernateUtil.getSession();
+            tx = session.beginTransaction();
+            List list = session.createQuery(query).list();
+            tx.commit();
+            closeSession(session);
+            if(list !=null && !list.isEmpty())
+            {
+                count=Integer.parseInt(list.get(0).toString());
+            }
+        }
+         catch (Exception ex)
+         {
+             closeSession(session);
+            throw new Exception(ex);
+         }
+        return count;
+    }
+    public List getListOfOvcReferredForServiceWithCompletedReferralsByDomainAndServiceTypeAndAgeLimit(ReportParameterTemplate rpt,int domain,String serviveCode, String startDate,String endDate,int startAge,int endAge,String sex) throws Exception
+    {
+        List mainList=new ArrayList();
+        try
+        {
+            String additionalOrgUnitQuery=sqg.getAdditionalOrgUnitQuery(rpt);
+            String completedReferralQuery=sqg.getReferralCompletedQuery(AppConstant.REFERRALCOMPLETED_YES_NUM);
+            String query=SubQueryGenerator.getHheOvcHouseholdReferralOrganizationUnitQuery()+additionalOrgUnitQuery+SubQueryGenerator.getOvcSexQuery(sex)+SubQueryGenerator.getReferralServiceDateQuery(startDate, endDate) +completedReferralQuery+sqg.getAgeAtReferralQuery(startAge,endAge)+markedForDeleteQuery;
+            
+            System.err.println("query in getListOfOvcReferredForServiceWithCompletedReferralsByDomainAndServiceTypeAndAgeLimit is "+query);
+            session = HibernateUtil.getSession();
+            tx = session.beginTransaction();
+            List list = session.createQuery(query).list();
+            tx.commit();
+            closeSession(session);
+            if(list !=null && !list.isEmpty())
+            {
+                List idList=new ArrayList();
+                Ovc ovc=null;
+                for(Object obj:list)
+                {
+                    Object[] objArray=(Object[])obj;
+                    ovc=(Ovc)objArray[1];
+                    if(!idList.contains(ovc.getOvcId()))
+                    {
+                        mainList.add(ovc);
+                        idList.add(ovc.getOvcId());
+                    }
+                }
+            }
+        }
+         catch (Exception ex)
+         {
+             closeSession(session);
+            throw new Exception(ex);
+         }
+        return mainList;
+    }
+    public int getNumberOfAdultHouseholdMembersReferredForServiceWithCompletedReferralsByDomainAndServiceTypeAndAgeLimit(ReportParameterTemplate rpt,int domain,String serviveCode, String startDate,String endDate,int startAge,int endAge,String sex) throws Exception
+    {
+        int count=0;
+        try
+        {
+            String additionalOrgUnitQuery=sqg.getAdditionalOrgUnitQuery(rpt);
+            String completedReferralQuery=sqg.getReferralCompletedQuery(AppConstant.REFERRALCOMPLETED_YES_NUM);
+            String query="select count (distinct referral.beneficiaryId)"+SubQueryGenerator.getHheAdultHouseholdMemberHouseholdReferralOrganizationUnitQuery()+additionalOrgUnitQuery+sqg.getAdultHouseholdMemberGenderQuery(sex) +SubQueryGenerator.getReferralServiceDateQuery(startDate, endDate) +completedReferralQuery+sqg.getAgeAtReferralQuery(startAge,endAge)+markedForDeleteQuery;
+            
+            System.err.println("query in getNumberOfAdultHouseholdMembersReferredForServiceWithCompletedReferralsByDomainAndServiceTypeAndAgeLimit is "+query);
+            session = HibernateUtil.getSession();
+            tx = session.beginTransaction();
+            List list = session.createQuery(query).list();
+            tx.commit();
+            closeSession(session);
+            if(list !=null && !list.isEmpty())
+            {
+                count=Integer.parseInt(list.get(0).toString());
+            }
+        }
+         catch (Exception ex)
+         {
+             closeSession(session);
+            throw new Exception(ex);
+         }
+        return count;
+    }
+    public List getListOfAdultHouseholdMembersReferredForServiceWithCompletedReferralsByDomainAndServiceTypeAndAgeLimit(ReportParameterTemplate rpt,int domain,String serviveCode, String startDate,String endDate,int startAge,int endAge,String sex) throws Exception
+    {
+        List mainList=new ArrayList();
+        try
+        {
+            String additionalOrgUnitQuery=sqg.getAdditionalOrgUnitQuery(rpt);
+            String completedReferralQuery=sqg.getReferralCompletedQuery(AppConstant.REFERRALCOMPLETED_YES_NUM);
+            String query=SubQueryGenerator.getHheAdultHouseholdMemberHouseholdReferralOrganizationUnitQuery()+additionalOrgUnitQuery+sqg.getAdultHouseholdMemberGenderQuery(sex)+SubQueryGenerator.getReferralServiceDateQuery(startDate, endDate) +completedReferralQuery+sqg.getAgeAtReferralQuery(startAge,endAge)+markedForDeleteQuery;
+            
+            System.err.println("query in getListOfAdultHouseholdMembersReferredForServiceWithCompletedReferralsByDomainAndServiceTypeAndAgeLimit is "+query);
+            session = HibernateUtil.getSession();
+            tx = session.beginTransaction();
+            List list = session.createQuery(query).list();
+            tx.commit();
+            closeSession(session);
+            if(list !=null && !list.isEmpty())
+            {
+                List idList=new ArrayList();
+                AdultHouseholdMember ahm=null;
+                for(Object obj:list)
+                {
+                    Object[] objArray=(Object[])obj;
+                    ahm=(AdultHouseholdMember)objArray[1];
+                    if(!idList.contains(ahm.getBeneficiaryId()))
+                    {
+                        mainList.add(ahm);
+                        idList.add(ahm.getBeneficiaryId());
+                    }
+                }
+            }
+        }
+         catch (Exception ex)
+         {
+             closeSession(session);
+            throw new Exception(ex);
+         }
+        return mainList;
+    }
     public List getDistinctYearOfserviceList() throws Exception
     {
         List list=null;
@@ -740,9 +871,9 @@ public class HouseholdReferralDaoImpl implements HouseholdReferralDao
                 sexQuery=SubQueryGenerator.getOvcSexQuery(sex);
             }
             String hivTreatmentQuery="";
-            if(hivStatus==AppConstant.HIV_POSITIVE_NUM && onTreatment==AppConstant.ON_TREATMENT)
+            if(hivStatus==AppConstant.HIV_POSITIVE_NUM && onTreatment==AppConstant.ENROLLED_ON_TREATMENT_YES_NUM)
             hivTreatmentQuery=SubQueryGenerator.getOvcHivPositiveOnTreatmentQuery();
-            else if(hivStatus==AppConstant.HIV_POSITIVE_NUM && onTreatment==AppConstant.NOT_ON_TREATMENT)
+            else if(hivStatus==AppConstant.HIV_POSITIVE_NUM && onTreatment==AppConstant.ENROLLED_ON_TREATMENT_NO_NUM)
             hivTreatmentQuery=SubQueryGenerator.getOvcHivPositiveNotOnTreatmentQuery();
             session = HibernateUtil.getSession();
             tx = session.beginTransaction();

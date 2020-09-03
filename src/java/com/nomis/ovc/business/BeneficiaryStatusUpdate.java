@@ -48,12 +48,14 @@ public class BeneficiaryStatusUpdate implements Serializable
     private int caregiverAge;
     private String caregiverPhone;
     private int caregiverLastHivStatus;
-    private String dateOfCaregiverLastHivStatus;
+    private Date dateOfCaregiverLastHivStatus;
+    
     private int caregiverHivStatus;
-    private String dateOfCaregiverHivStatus;
+    private Date dateOfCaregiverHivStatus;
     private int caregiverEnrolledOnTreatment;
-    private String dateCaregiverEnrolledOnTreatment;
+    private Date dateCaregiverEnrolledOnTreatment;
     private String facilityCaregiverEnrolled;
+        
     private int enrolledInVocationalTraining;
     private String nameOfVocationalTraining;
     private String volunteerName;
@@ -345,30 +347,30 @@ public class BeneficiaryStatusUpdate implements Serializable
         this.caregiverSex = caregiverSex;
     }
 
-    public String getDateCaregiverEnrolledOnTreatment() {
+    public Date getDateCaregiverEnrolledOnTreatment() {
         return dateCaregiverEnrolledOnTreatment;
     }
 
-    public void setDateCaregiverEnrolledOnTreatment(String dateCaregiverEnrolledOnTreatment) {
+    public void setDateCaregiverEnrolledOnTreatment(Date dateCaregiverEnrolledOnTreatment) {
         this.dateCaregiverEnrolledOnTreatment = dateCaregiverEnrolledOnTreatment;
     }
 
-    public String getDateOfCaregiverHivStatus() {
+    public Date getDateOfCaregiverHivStatus() {
         return dateOfCaregiverHivStatus;
     }
 
-    public void setDateOfCaregiverHivStatus(String dateOfCaregiverHivStatus) {
+    public void setDateOfCaregiverHivStatus(Date dateOfCaregiverHivStatus) {
         this.dateOfCaregiverHivStatus = dateOfCaregiverHivStatus;
     }
-
-    public String getDateOfCaregiverLastHivStatus() {
+    
+    public Date getDateOfCaregiverLastHivStatus() {
         return dateOfCaregiverLastHivStatus;
     }
 
-    public void setDateOfCaregiverLastHivStatus(String dateOfCaregiverLastHivStatus) {
+    public void setDateOfCaregiverLastHivStatus(Date dateOfCaregiverLastHivStatus) {
         this.dateOfCaregiverLastHivStatus = dateOfCaregiverLastHivStatus;
     }
-
+    
     public String getFacilityCaregiverEnrolled() {
         return facilityCaregiverEnrolled;
     }

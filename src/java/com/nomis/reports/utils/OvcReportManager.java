@@ -8,12 +8,17 @@ package com.nomis.reports.utils;
 import com.fhi.nomis.logs.NomisLogManager;
 import com.nomis.operationsManagement.FinancialYearManager;
 import com.nomis.operationsManagement.OvcServiceAttributesManager;
+import com.nomis.ovc.dao.AdultHouseholdMemberDao;
+import com.nomis.ovc.dao.ChildEducationPerformanceAssessmentDao;
 import com.nomis.ovc.dao.ChildEnrollmentDao;
 import com.nomis.ovc.dao.ChildEnrollmentDaoImpl;
 import com.nomis.ovc.dao.ChildServiceDao;
 import com.nomis.ovc.dao.DaoUtility;
+import com.nomis.ovc.dao.HivRiskAssessmentDao;
+import com.nomis.ovc.dao.HouseholdReferralDao;
 import com.nomis.ovc.dao.HouseholdServiceDao;
 import com.nomis.ovc.dao.HouseholdServiceDaoImpl;
+import com.nomis.ovc.dao.NutritionStatusDao;
 import com.nomis.ovc.dao.SubQueryGenerator;
 import com.nomis.ovc.util.AppConstant;
 import java.util.ArrayList;
@@ -27,6 +32,667 @@ public class OvcReportManager
 {
     DaoUtility util=new DaoUtility();
     int childrenEndAge=24;
+    public ReportTemplate getNumberOfCaregiversExitedWithoutGraduationServedWithinDatimReportPeriod(Indicator indicator,ReportParameterTemplate rpt)
+    {
+        ReportTemplate rt=new ReportTemplate();
+        DatimReportGenerator drg=new DatimReportGenerator();
+        String maleSex=AppConstant.MALESEX;
+        String femaleSex=AppConstant.FEMALESEX;
+        
+        try
+        {
+            //this method resets the age for adults
+            rpt=getAdultReportTemplate(rpt);
+            DatimReportTemplate drt=drg.getNoOfCaregiversExitedWithoutGraduationServed(rpt,rpt.getStartDate(),rpt.getEndDate(),maleSex);
+            int maleCount=drt.getOvc_servExitedWithoutGraduation();
+            drt=drg.getNoOfCaregiversExitedWithoutGraduationServed(rpt,rpt.getStartDate(),rpt.getEndDate(),femaleSex);
+            int femaleCount=drt.getOvc_servExitedWithoutGraduation();
+            int total=maleCount+femaleCount;
+            
+            rt.setMaleTotal(maleCount);
+            rt.setFemaleTotal(femaleCount);
+            rt.setGrandTotal(total);
+            if(indicator !=null)
+            {
+                rt.setIndicatorId(indicator.getIndicatorId());
+                rt.setIndicatorName(indicator.getIndicatorName());
+            }
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        return rt;
+    }
+    public ReportTemplate getNumberOfCaregiversServedAndTransferedWithinDatimReportPeriod(Indicator indicator,ReportParameterTemplate rpt)
+    {
+        ReportTemplate rt=new ReportTemplate();
+        DatimReportGenerator drg=new DatimReportGenerator();
+        String maleSex=AppConstant.MALESEX;
+        String femaleSex=AppConstant.FEMALESEX;
+        
+        try
+        {
+            //this method resets the age for adults
+            rpt=getAdultReportTemplate(rpt);
+            DatimReportTemplate drt=drg.getNoOfCaregiversServedAndTransfered(rpt,rpt.getStartDate(),rpt.getEndDate(),maleSex);
+            int maleCount=drt.getOvc_servTransfered();
+            drt=drg.getNoOfCaregiversServedAndTransfered(rpt,rpt.getStartDate(),rpt.getEndDate(),femaleSex);
+            int femaleCount=drt.getOvc_servTransfered();
+            int total=maleCount+femaleCount;
+            
+            rt.setMaleTotal(maleCount);
+            rt.setFemaleTotal(femaleCount);
+            rt.setGrandTotal(total);
+            if(indicator !=null)
+            {
+                rt.setIndicatorId(indicator.getIndicatorId());
+                rt.setIndicatorName(indicator.getIndicatorName());
+            }
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        return rt;
+    }
+    public ReportTemplate getNumberOfCaregiversServedAndGraduatedWithinDatimReportPeriod(Indicator indicator,ReportParameterTemplate rpt)
+    {
+        ReportTemplate rt=new ReportTemplate();
+        DatimReportGenerator drg=new DatimReportGenerator();
+        String maleSex=AppConstant.MALESEX;
+        String femaleSex=AppConstant.FEMALESEX;
+        
+        try
+        {
+            //this method resets the age for adults
+            rpt=getAdultReportTemplate(rpt);
+            DatimReportTemplate drt=drg.getNoOfGraduatedCaregiversServed(rpt,rpt.getStartDate(),rpt.getEndDate(),rpt.getStartAge(),rpt.getEndAge(),maleSex);
+            int maleCount=drt.getOvc_servGraduated();
+            drt=drg.getNoOfGraduatedCaregiversServed(rpt,rpt.getStartDate(),rpt.getEndDate(),rpt.getStartAge(),rpt.getEndAge(),femaleSex);
+            int femaleCount=drt.getOvc_servGraduated();
+            int total=maleCount+femaleCount;
+            
+            rt.setMaleTotal(maleCount);
+            rt.setFemaleTotal(femaleCount);
+            rt.setGrandTotal(total);
+            if(indicator !=null)
+            {
+                rt.setIndicatorId(indicator.getIndicatorId());
+                rt.setIndicatorName(indicator.getIndicatorName());
+            }
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        return rt;
+    }
+    public ReportTemplate getNumberOfActiveCaregiversServedWithinDatimReportPeriod(Indicator indicator,ReportParameterTemplate rpt)
+    {
+        ReportTemplate rt=new ReportTemplate();
+        DatimReportGenerator drg=new DatimReportGenerator();
+        
+        String maleSex=AppConstant.MALESEX;
+        String femaleSex=AppConstant.FEMALESEX;
+        
+        try
+        {
+            //this method resets the age for adults
+            rpt=getAdultReportTemplate(rpt);
+            
+            DatimReportTemplate drt=drg.getNoOfActiveCaregiversServed(rpt,rpt.getStartDate(),rpt.getEndDate(),rpt.getStartAge(),rpt.getEndAge(),maleSex);
+            int maleCount=drt.getOvc_servActive();
+            drt=drg.getNoOfActiveCaregiversServed(rpt,rpt.getStartDate(),rpt.getEndDate(),rpt.getStartAge(),rpt.getEndAge(),femaleSex);
+            int femaleCount=drt.getOvc_servActive();
+            int total=maleCount+femaleCount;
+            
+            rt.setMaleTotal(maleCount);
+            rt.setFemaleTotal(femaleCount);
+            rt.setGrandTotal(total);
+            if(indicator !=null)
+            {
+                rt.setIndicatorId(indicator.getIndicatorId());
+                rt.setIndicatorName(indicator.getIndicatorName());
+            }
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        return rt;
+    }
+    public ReportTemplate getNumberOfOvcReferredForHivRelatedTesting_HTSPMTCT(Indicator indicator,ReportParameterTemplate rpt,int enrollmentStatus)
+    {
+        ReportTemplate rt=new ReportTemplate();
+        HouseholdReferralDao dao=util.getHouseholdReferralDaoInstance();
+        
+        String maleSex=AppConstant.MALESEX;
+        String femaleSex=AppConstant.FEMALESEX;
+        
+        try
+        {
+            String serviceCode=OvcServiceAttributesManager.getReferralForHivRelatedTesting_HTSPMTCT().getServiceCode();
+            int maleCount=dao.getNumberOfOvcReferredForServiceWithCompletedReferralsByDomainAndServiceTypeAndAgeLimit(rpt,AppConstant.HEALTH_DOMAIN,serviceCode,rpt.getStartDate(), rpt.getEndDate(),rpt.getStartAge(),rpt.getEndAge(), maleSex);
+            int femaleCount=dao.getNumberOfOvcReferredForServiceWithCompletedReferralsByDomainAndServiceTypeAndAgeLimit(rpt,AppConstant.HEALTH_DOMAIN,serviceCode,rpt.getStartDate(), rpt.getEndDate(),rpt.getStartAge(),rpt.getEndAge(), femaleSex);
+            int total=maleCount+femaleCount;
+            
+            rt.setMaleTotal(maleCount);
+            rt.setFemaleTotal(femaleCount);
+            rt.setGrandTotal(total);
+            if(indicator !=null)
+            {
+                rt.setIndicatorId(indicator.getIndicatorId());
+                rt.setIndicatorName(indicator.getIndicatorName());
+            }
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        return rt;
+    }
+    public List getListOfOvcReferredForHivRelatedTesting_HTSPMTCT(ReportParameterTemplate rpt,String sex,int enrollmentStatus)
+    {
+        List mainList=new ArrayList();
+        HouseholdReferralDao dao=util.getHouseholdReferralDaoInstance();
+        
+        try
+        {
+            String serviceCode=OvcServiceAttributesManager.getReferralForHivRelatedTesting_HTSPMTCT().getServiceCode();
+            List list=dao.getListOfOvcReferredForServiceWithCompletedReferralsByDomainAndServiceTypeAndAgeLimit(rpt,AppConstant.HEALTH_DOMAIN,serviceCode,rpt.getStartDate(), rpt.getEndDate(),rpt.getStartAge(),rpt.getEndAge(), sex);
+            if(list !=null)
+            mainList.addAll(list);
+            
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        return mainList;
+    }
+    public ReportTemplate getNumberOfAdultHouseholdMembersReferredForHivRelatedTesting_HTSPMTCT(Indicator indicator,ReportParameterTemplate rpt,int enrollmentStatus)
+    {
+        ReportTemplate rt=new ReportTemplate();
+        HouseholdReferralDao dao=util.getHouseholdReferralDaoInstance();
+        
+        String maleSex=AppConstant.MALESEX;
+        String femaleSex=AppConstant.FEMALESEX;
+        
+        try
+        {
+            //this method resets the age for adults
+            rpt=getAdultReportTemplate(rpt);
+            String serviceCode=OvcServiceAttributesManager.getReferralForHivRelatedTesting_HTSPMTCT().getServiceCode();
+            int maleCount=dao.getNumberOfAdultHouseholdMembersReferredForServiceWithCompletedReferralsByDomainAndServiceTypeAndAgeLimit(rpt,AppConstant.HEALTH_DOMAIN,serviceCode,rpt.getStartDate(), rpt.getEndDate(),rpt.getStartAge(),rpt.getEndAge(), maleSex);
+            int femaleCount=dao.getNumberOfAdultHouseholdMembersReferredForServiceWithCompletedReferralsByDomainAndServiceTypeAndAgeLimit(rpt,AppConstant.HEALTH_DOMAIN,serviceCode,rpt.getStartDate(), rpt.getEndDate(),rpt.getStartAge(),rpt.getEndAge(), femaleSex);
+            int total=maleCount+femaleCount;
+            
+            rt.setMaleTotal(maleCount);
+            rt.setFemaleTotal(femaleCount);
+            rt.setGrandTotal(total);
+            if(indicator !=null)
+            {
+                rt.setIndicatorId(indicator.getIndicatorId());
+                rt.setIndicatorName(indicator.getIndicatorName());
+            }
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        return rt;
+    }
+    public List getListOfAdultHouseholdMembersReferredForHivRelatedTesting_HTSPMTCT(ReportParameterTemplate rpt,String sex,int enrollmentStatus)
+    {
+        List mainList=new ArrayList();
+        HouseholdReferralDao dao=util.getHouseholdReferralDaoInstance();
+        
+        try
+        {
+            //this method resets the age for adults
+            rpt=getAdultReportTemplate(rpt);
+            String serviceCode=OvcServiceAttributesManager.getReferralForHivRelatedTesting_HTSPMTCT().getServiceCode();
+            List list=dao.getListOfAdultHouseholdMembersReferredForServiceWithCompletedReferralsByDomainAndServiceTypeAndAgeLimit(rpt,AppConstant.HEALTH_DOMAIN,serviceCode,rpt.getStartDate(), rpt.getEndDate(),rpt.getStartAge(),rpt.getEndAge(), sex);
+            if(list !=null)
+            mainList.addAll(list);
+            
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        return mainList;
+    }
+    public ReportTemplate getNumberOfMalnourishedChildrenProvidedNutritionalServices(Indicator indicator,ReportParameterTemplate rpt,int enrollmentStatus)
+    {
+        ReportTemplate rt=new ReportTemplate();
+        ChildServiceDao dao=util.getChildServiceDaoInstance();
+        
+        String maleSex=AppConstant.MALESEX;
+        String femaleSex=AppConstant.FEMALESEX;
+        
+        try
+        {
+            
+            //getNumberOfMalnourishedChildrenProvidedNutritionalServices(ReportParameterTemplate rpt,String startDate, String endDate,int startAge, int endAge,int enrollmentStatus,int currentNutritionStatus,String sex)
+            int maleCount=dao.getNumberOfMalnourishedChildrenProvidedNutritionalServices(rpt,rpt.getStartDate(), rpt.getEndDate(),rpt.getStartAge(),rpt.getEndAge(), enrollmentStatus,AppConstant.NUTRITIONSTATUS_MALNOURISHED_ALL_NUM, maleSex);//Integer.parseInt(maleList.get(0).toString());
+            int femaleCount=dao.getNumberOfMalnourishedChildrenProvidedNutritionalServices(rpt, rpt.getStartDate(), rpt.getEndDate(),rpt.getStartAge(),rpt.getEndAge(), enrollmentStatus,AppConstant.NUTRITIONSTATUS_MALNOURISHED_ALL_NUM, femaleSex);//Integer.parseInt(femaleList.get(0).toString());
+            int total=maleCount+femaleCount;
+            
+            rt.setMaleTotal(maleCount);
+            rt.setFemaleTotal(femaleCount);
+            rt.setGrandTotal(total);
+            if(indicator !=null)
+            {
+                rt.setIndicatorId(indicator.getIndicatorId());
+                rt.setIndicatorName(indicator.getIndicatorName());
+            }
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        return rt;
+    }
+    public List getListOfMalnourishedChildrenProvidedNutritionalServices(ReportParameterTemplate rpt,String sex,int enrollmentStatus)
+    {
+        List mainList=new ArrayList();
+        ChildServiceDao dao=util.getChildServiceDaoInstance();
+        
+        try
+        {
+            //getListOfMalnourishedChildrenProvidedNutritionalServices(ReportParameterTemplate rpt,String startDate, String endDate,int startAge, int endAge,int enrollmentStatus,int currentNutritionStatus,String sex)
+            List list=dao.getListOfMalnourishedChildrenProvidedNutritionalServices(rpt, rpt.getStartDate(), rpt.getEndDate(),rpt.getStartAge(),rpt.getEndAge(), enrollmentStatus,AppConstant.NUTRITIONSTATUS_MALNOURISHED_ALL_NUM, sex);
+            if(list !=null)
+            mainList.addAll(list);
+            
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        return mainList;
+    }
+    public ReportTemplate getNumberOfMalnourishedChildren(Indicator indicator,ReportParameterTemplate rpt,int enrollmentStatus)
+    {
+        ReportTemplate rt=new ReportTemplate();
+        NutritionStatusDao dao=util.getNutritionStatusDaoInstance();
+        
+        String maleSex=AppConstant.MALESEX;
+        String femaleSex=AppConstant.FEMALESEX;
+        
+        try
+        {
+            
+            //getNumberOfOvcAssessedByNutritionStatus(ReportParameterTemplate rpt,int startAge,int endAge,int nutritionStatus,String sex) throws Exception
+            int maleCount=dao.getNumberOfOvcAssessedByNutritionStatus(rpt,rpt.getStartDate(), rpt.getEndDate(),rpt.getStartAge(),rpt.getEndAge(), enrollmentStatus,AppConstant.NUTRITIONSTATUS_MALNOURISHED_ALL_NUM, maleSex);
+            int femaleCount=dao.getNumberOfOvcAssessedByNutritionStatus(rpt, rpt.getStartDate(), rpt.getEndDate(),rpt.getStartAge(),rpt.getEndAge(), enrollmentStatus,AppConstant.NUTRITIONSTATUS_MALNOURISHED_ALL_NUM, femaleSex);
+            int total=maleCount+femaleCount;
+            
+            rt.setMaleTotal(maleCount);
+            rt.setFemaleTotal(femaleCount);
+            rt.setGrandTotal(total);
+            if(indicator !=null)
+            {
+                rt.setIndicatorId(indicator.getIndicatorId());
+                rt.setIndicatorName(indicator.getIndicatorName());
+            }
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        return rt;
+    }
+    public List getListOfMalnourishedChildren(ReportParameterTemplate rpt,String sex,int enrollmentStatus)
+    {
+        List mainList=new ArrayList();
+        NutritionStatusDao dao=util.getNutritionStatusDaoInstance();
+        
+        try
+        {
+            //getListOfMalnourishedChildrenProvidedNutritionalServices(ReportParameterTemplate rpt,String startDate, String endDate,int startAge, int endAge,int enrollmentStatus,int currentNutritionStatus,String sex)
+            List list=dao.getListOfOvcAssessedByNutritionStatus(rpt,rpt.getStartDate(), rpt.getEndDate(),rpt.getStartAge(),rpt.getEndAge(), enrollmentStatus,AppConstant.NUTRITIONSTATUS_MALNOURISHED_ALL_NUM, sex);
+            if(list !=null)
+            mainList.addAll(list);
+            
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        return mainList;
+    }
+    public ReportTemplate getNumberOfOvcAssessedForEducationalPerformance(Indicator indicator,ReportParameterTemplate rpt,int enrollmentStatus)
+    {
+        ReportTemplate rt=new ReportTemplate();
+        ChildEducationPerformanceAssessmentDao dao=util.getChildEducationPerformanceAssessmentDaoInstance();
+        
+        String maleSex=AppConstant.MALESEX;
+        String femaleSex=AppConstant.FEMALESEX;
+        
+        try
+        {
+            
+            //System.err.println("malesql is "+malesql);
+            int maleCount=dao.getNumberOfOvcAssessedForEducationalPerformance(rpt,rpt.getStartDate(), rpt.getEndDate(),enrollmentStatus, maleSex);//Integer.parseInt(maleList.get(0).toString());
+            int femaleCount=dao.getNumberOfOvcAssessedForEducationalPerformance(rpt, rpt.getStartDate(), rpt.getEndDate(), enrollmentStatus, femaleSex);//Integer.parseInt(femaleList.get(0).toString());
+            int total=maleCount+femaleCount;
+            
+            rt.setMaleTotal(maleCount);
+            rt.setFemaleTotal(femaleCount);
+            rt.setGrandTotal(total);
+            if(indicator !=null)
+            {
+                rt.setIndicatorId(indicator.getIndicatorId());
+                rt.setIndicatorName(indicator.getIndicatorName());
+            }
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        return rt;
+    }
+    public List getListOfOvcAssessedForEducationalPerformance(ReportParameterTemplate rpt,String sex,int enrollmentStatus)
+    {
+        List mainList=new ArrayList();
+        AdultHouseholdMemberDao dao=util.getAdultHouseholdMemberDaoInstance();
+        
+        try
+        {
+            //System.err.println("malesql is "+malesql);
+            List list=dao.getListOfAdultHouseholdMembersSupportedToAccessARTServicesInReportPeriod(rpt, rpt.getStartDate(), rpt.getEndDate(), enrollmentStatus, sex);
+            if(list !=null)
+            mainList.addAll(list);
+            
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        return mainList;
+    }
+    public ReportTemplate getAdult_ARTSUPPIndicator(Indicator indicator,ReportParameterTemplate rpt,int enrollmentStatus)
+    {
+        ReportTemplate rt=new ReportTemplate();
+        AdultHouseholdMemberDao dao=util.getAdultHouseholdMemberDaoInstance();
+        
+        String maleSex=AppConstant.MALESEX;
+        String femaleSex=AppConstant.FEMALESEX;
+        
+        try
+        {
+            //this method resets the age for adults
+            rpt=getAdultReportTemplate(rpt);
+                        
+            //System.err.println("malesql is "+malesql);
+            int maleCount=dao.getNumberOfAdultHouseholdMembersSupportedToAccessARTServicesInReportPeriod(rpt, rpt.getStartDate(), rpt.getEndDate(), enrollmentStatus, maleSex);//Integer.parseInt(maleList.get(0).toString());
+            int femaleCount=dao.getNumberOfAdultHouseholdMembersSupportedToAccessARTServicesInReportPeriod(rpt, rpt.getStartDate(), rpt.getEndDate(), enrollmentStatus, femaleSex);//Integer.parseInt(femaleList.get(0).toString());
+            int total=maleCount+femaleCount;
+            
+            rt.setMaleTotal(maleCount);
+            rt.setFemaleTotal(femaleCount);
+            rt.setGrandTotal(total);
+            if(indicator !=null)
+            {
+                rt.setIndicatorId(indicator.getIndicatorId());
+                rt.setIndicatorName(indicator.getIndicatorName());
+            }
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        return rt;
+    }
+    public List getListOfAdult_ARTSUPPIndicator(ReportParameterTemplate rpt,String sex,int enrollmentStatus)
+    {
+        List mainList=new ArrayList();
+        AdultHouseholdMemberDao dao=util.getAdultHouseholdMemberDaoInstance();
+        
+        try
+        {
+            //this method resets the age for adults
+            rpt=getAdultReportTemplate(rpt);
+            //System.err.println("malesql is "+malesql);
+            List list=dao.getListOfAdultHouseholdMembersSupportedToAccessARTServicesInReportPeriod(rpt, rpt.getStartDate(), rpt.getEndDate(), enrollmentStatus, sex);
+            if(list !=null)
+            mainList.addAll(list);
+            
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        return mainList;
+    }
+    public ReportTemplate getOvc_ARTSUPPIndicator(Indicator indicator,ReportParameterTemplate rpt,int enrollmentStatus)
+    {
+        ReportTemplate rt=new ReportTemplate();
+        ChildEnrollmentDao dao=new ChildEnrollmentDaoImpl();
+                
+        String maleSex=AppConstant.MALESEX;
+        String femaleSex=AppConstant.FEMALESEX;
+        
+        try
+        {
+            //System.err.println("malesql is "+malesql);
+            int maleCount=dao.getNumberOfOvcSupportedToAccessARTServicesInReportPeriod(rpt, rpt.getStartDate(), rpt.getEndDate(), enrollmentStatus, maleSex);//Integer.parseInt(maleList.get(0).toString());
+            int femaleCount=dao.getNumberOfOvcSupportedToAccessARTServicesInReportPeriod(rpt, rpt.getStartDate(), rpt.getEndDate(), enrollmentStatus, femaleSex);//Integer.parseInt(femaleList.get(0).toString());
+            int total=maleCount+femaleCount;
+            
+            rt.setMaleTotal(maleCount);
+            rt.setFemaleTotal(femaleCount);
+            rt.setGrandTotal(total);
+            if(indicator !=null)
+            {
+                rt.setIndicatorId(indicator.getIndicatorId());
+                rt.setIndicatorName(indicator.getIndicatorName());
+            }
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        return rt;
+    }
+    public List getListOfOvcSupportedToAccessARTServicesInReportPeriod(ReportParameterTemplate rpt,String sex,int enrollmentStatus)
+    {
+        List mainList=new ArrayList();
+        ChildEnrollmentDao dao=new ChildEnrollmentDaoImpl();
+        
+        try
+        {
+            //System.err.println("malesql is "+malesql);
+            List list=dao.getListOfOvcSupportedToAccessARTServicesInReportPeriod(rpt, rpt.getStartDate(), rpt.getEndDate(), enrollmentStatus, sex);
+            if(list !=null)
+            mainList.addAll(list);
+            
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        return mainList;
+    }
+    public ReportTemplate getNoOfOvcTestedAndRecievedResultInReportPeriodByEnrollmentStatusAndHivStatus(Indicator indicator,ReportParameterTemplate rpt,int enrollmentStatus,int hivStatus)
+    {
+        ReportTemplate rt=new ReportTemplate();
+        ChildEnrollmentDao dao=new ChildEnrollmentDaoImpl();
+                
+        String maleSex=AppConstant.MALESEX;
+        String femaleSex=AppConstant.FEMALESEX;
+        
+        try
+        {
+            //System.err.println("malesql is "+malesql);
+            int maleCount=dao.getNumberOfOvcTestedAndRecievedResultInReportPeriodByEnrollmentStatusAndHivStatus(rpt, rpt.getStartDate(), rpt.getEndDate(), 0, enrollmentStatus, hivStatus,maleSex);//Integer.parseInt(maleList.get(0).toString());
+            int femaleCount=dao.getNumberOfOvcTestedAndRecievedResultInReportPeriodByEnrollmentStatusAndHivStatus(rpt, rpt.getStartDate(), rpt.getEndDate(), 0, enrollmentStatus, hivStatus,femaleSex);//Integer.parseInt(femaleList.get(0).toString());
+            int total=maleCount+femaleCount;
+            
+            rt.setMaleTotal(maleCount);
+            rt.setFemaleTotal(femaleCount);
+            rt.setGrandTotal(total);
+            if(indicator !=null)
+            {
+                rt.setIndicatorId(indicator.getIndicatorId());
+                rt.setIndicatorName(indicator.getIndicatorName());
+            }
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        return rt;
+    }
+    public List getListOfOvcTestedAndRecievedResultInReportPeriodByEnrollmentStatusAndHivStatus(ReportParameterTemplate rpt,String sex,int enrollmentStatus,int hivStatus)
+    {
+        List mainList=new ArrayList();
+        ChildEnrollmentDao dao=new ChildEnrollmentDaoImpl();
+        
+        try
+        {
+            //System.err.println("malesql is "+malesql);
+            List list=dao.getListOfOvcTestedAndRecievedResultInReportPeriodByEnrollmentStatusAndHivStatus(rpt, rpt.getStartDate(), rpt.getEndDate(), 0, enrollmentStatus, hivStatus, sex);
+            if(list !=null)
+            mainList.addAll(list);
+            
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        return mainList;
+    }
+    
+    public ReportTemplate getNoOfAdultMembersTestedAndRecievedResultInReportPeriodByEnrollmentStatusAndHivStatus(Indicator indicator,ReportParameterTemplate rpt,int enrollmentStatus,int hivStatus)
+    {
+        ReportTemplate rt=new ReportTemplate();
+        AdultHouseholdMemberDao dao=util.getAdultHouseholdMemberDaoInstance();
+                
+        String maleSex=AppConstant.MALESEX;
+        String femaleSex=AppConstant.FEMALESEX;
+        rpt=getAdultReportTemplate(rpt);
+        try
+        {
+            //getNumberOfAdultHouseholdMembersTestedAndRecievedResultInReportPeriodByEnrollmentStatusAndHivStatus(ReportParameterTemplate rpt,String startDate,String endDate,int enrollmentStatus,int enrolledOnTreatmentValue,int hivStatus,String sex)
+            int maleCount=dao.getNumberOfAdultHouseholdMembersTestedAndRecievedResultInReportPeriodByEnrollmentStatusAndHivStatus(rpt, rpt.getStartDate(), rpt.getEndDate(),enrollmentStatus, AppConstant.ENROLLED_ON_TREATMENT_NOTAPPLICABLE,hivStatus,maleSex);
+            int femaleCount=dao.getNumberOfAdultHouseholdMembersTestedAndRecievedResultInReportPeriodByEnrollmentStatusAndHivStatus(rpt, rpt.getStartDate(), rpt.getEndDate(),enrollmentStatus, AppConstant.ENROLLED_ON_TREATMENT_NOTAPPLICABLE,hivStatus,femaleSex);
+            int total=maleCount+femaleCount;
+            
+            rt.setMaleTotal(maleCount);
+            rt.setFemaleTotal(femaleCount);
+            rt.setGrandTotal(total);
+            if(indicator !=null)
+            {
+                rt.setIndicatorId(indicator.getIndicatorId());
+                rt.setIndicatorName(indicator.getIndicatorName());
+            }
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        return rt;
+    }
+    public List getListOfAdultMembersTestedAndRecievedResultInReportPeriodByEnrollmentStatusAndHivStatus(ReportParameterTemplate rpt,String sex,int enrollmentStatus,int hivStatus)
+    {
+        List mainList=new ArrayList();
+        AdultHouseholdMemberDao dao=util.getAdultHouseholdMemberDaoInstance();
+        
+        try
+        {
+            rpt=getAdultReportTemplate(rpt);
+            //getListOfAdultHouseholdMembersTestedAndRecievedResultInReportPeriodByEnrollmentStatusAndHivStatus(ReportParameterTemplate rpt,String startDate,String endDate,int enrollmentStatus,int enrolledOnTreatmentValue,int hivStatus,String sex) throws Exception;
+            List list=dao.getListOfAdultHouseholdMembersTestedAndRecievedResultInReportPeriodByEnrollmentStatusAndHivStatus(rpt, rpt.getStartDate(), rpt.getEndDate(), enrollmentStatus,AppConstant.ENROLLED_ON_TREATMENT_NOTAPPLICABLE,hivStatus,sex);
+            if(list !=null)
+            mainList.addAll(list);
+            
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        return mainList;
+    }
+    
+    
+    public ReportTemplate getNumberOfOvcEnrolledOnTreatment(ReportParameterTemplate rpt,String startDate,String endDate,int enrolledOnTreatmentValue,int enrollmentStatus)
+    {
+        ReportTemplate rt=new ReportTemplate();
+        String maleSex=AppConstant.MALESEX;
+        String femaleSex=AppConstant.FEMALESEX;
+        try
+        {        
+            //rpt.setEnrollmentStatus(AppConstant.ACTIVE_NUM);
+            rpt.setEnrollmentStatus(AppConstant.EVER_ENROLLED_NUM);
+            int maleCount=util.getChildEnrollmentDaoInstance().getNumberOfOvcEnrolledOnTreatment(rpt, startDate,endDate,enrolledOnTreatmentValue,enrollmentStatus,maleSex);
+            int femaleCount=util.getChildEnrollmentDaoInstance().getNumberOfOvcEnrolledOnTreatment(rpt, startDate,endDate,enrolledOnTreatmentValue,enrollmentStatus,femaleSex);
+            int total=maleCount+femaleCount;
+            
+            rt.setMaleTotal(maleCount);
+            rt.setFemaleTotal(femaleCount);
+            rt.setGrandTotal(total);
+            if(rpt.getIndicator() !=null)
+            {
+                rt.setIndicatorId(rpt.getIndicator().getIndicatorId());
+                rt.setIndicatorName(rpt.getIndicator().getIndicatorName());
+            }
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        
+        return rt;
+    }
+    public List getListOfOvcEnrolledOnTreatment(ReportParameterTemplate rpt,String startDate,String endDate,int enrolledOnTreatmentValue,int enrollmentStatus,String sex)
+    {
+        List mainList=new ArrayList();
+        try
+        {
+            List list=util.getChildEnrollmentDaoInstance().getListOfOvcEnrolledOnTreatment(rpt,startDate,endDate, enrolledOnTreatmentValue,enrollmentStatus, sex);
+            if(list !=null)
+            mainList.addAll(list);   
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+        }
+       return mainList;
+    }
+    public ReportTemplate getNumberOfAdultMembersEnrolledOnTreatment(Indicator indicator,String additionalQueryCriteria,int startAge,int endAge,String startDate,String endDate,int enrollmentStatus,int serviceDomain,String serviceCode)
+    {
+        //(indicator, additionalQueryCriteria, rpt.getStartAge(), rpt.getEndAge(), startDate, endDate, AppConstant.EVER_ENROLLED_NUM, AppConstant.HEALTH_DOMAIN, serviceCode));
+        ReportTemplate rt=new ReportTemplate();
+        
+        String maleSex=AppConstant.MALESEX;
+        String femaleSex=AppConstant.FEMALESEX;
+        try
+        {
+            int maleCount=0;
+            int femaleCount=0;
+            maleCount=util.getHouseholdServiceDaoInstance().getNumberOfHouseholdsServedByServiceDomainAndSubType(additionalQueryCriteria, enrollmentStatus, startDate, endDate, 18, 200, maleSex,serviceDomain,serviceCode);
+            femaleCount=util.getHouseholdServiceDaoInstance().getNumberOfHouseholdsServedByServiceDomainAndSubType(additionalQueryCriteria, enrollmentStatus, startDate, endDate, 18, 200, femaleSex,serviceDomain,serviceCode);
+            
+            int total=maleCount+femaleCount;
+            rt.setMaleTotal(maleCount);
+            rt.setFemaleTotal(femaleCount);
+            rt.setGrandTotal(total);
+            if(indicator !=null)
+            {
+                rt.setIndicatorId(indicator.getIndicatorId());
+                rt.setIndicatorName(indicator.getIndicatorName());
+            }
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        return rt;
+    }
     public ReportTemplate getNumberOfAdultMembersServedByServiceDomainAndSubType(Indicator indicator,String additionalQueryCriteria,int startAge,int endAge,String startDate,String endDate,int enrollmentStatus,int serviceDomain,String serviceCode)
     {
         //(indicator, additionalQueryCriteria, rpt.getStartAge(), rpt.getEndAge(), startDate, endDate, AppConstant.EVER_ENROLLED_NUM, AppConstant.HEALTH_DOMAIN, serviceCode));
@@ -344,7 +1010,7 @@ public class OvcReportManager
         }
        return mainList;
     }*/
-    public ReportTemplate getNoOfOvcByVulnerabilityStatus(ReportParameterTemplate rpt,int startAge,int endAge,String vulnerabilityStatus)
+    public ReportTemplate getNoOfOvcByVulnerabilityStatus(ReportParameterTemplate rpt,int startAge,int endAge,String vulnerabilityStatusId)
     {
         ReportTemplate rt=new ReportTemplate();
         String maleSex=AppConstant.MALESEX;
@@ -355,8 +1021,8 @@ public class OvcReportManager
             rpt.setEndAge(endAge);
             
             rpt.setEnrollmentStatus(AppConstant.EVER_ENROLLED_NUM);
-            int maleCount=util.getChildEnrollmentDaoInstance().getNumberOfOvcEnrollmentByVulnerabilityStatus(rpt, maleSex, vulnerabilityStatus);
-            int femaleCount=util.getChildEnrollmentDaoInstance().getNumberOfOvcEnrollmentByVulnerabilityStatus(rpt, femaleSex, vulnerabilityStatus);
+            int maleCount=util.getChildEnrollmentDaoInstance().getNumberOfOvcEnrollmentByVulnerabilityStatus(rpt, maleSex, vulnerabilityStatusId);
+            int femaleCount=util.getChildEnrollmentDaoInstance().getNumberOfOvcEnrollmentByVulnerabilityStatus(rpt, femaleSex, vulnerabilityStatusId);
             int total=maleCount+femaleCount;
             
             rt.setMaleTotal(maleCount);
@@ -443,7 +1109,7 @@ public class OvcReportManager
         }
        return mainList;
     }
-    public List getListOfOvcWithBirthCertificate(ReportParameterTemplate rpt,int startAge,int endAge,String sex)
+    public List getListOfOvcWithBirthCertificate(ReportParameterTemplate rpt,int startAge,int endAge,int enrollmentStatus,String sex)
     {
         List mainList=new ArrayList();
         try
@@ -452,7 +1118,7 @@ public class OvcReportManager
             rpt.setEndAge(endAge);
             rpt.setBirthCertificateValue(1);
             rpt.setEnrollmentStatus(AppConstant.ACTIVE_NUM);
-            List list=util.getChildEnrollmentDaoInstance().getOvcBirthCertificateList(rpt, sex);
+            List list=util.getChildEnrollmentDaoInstance().getOvcBirthCertificateList(rpt, enrollmentStatus,sex);
             if(list !=null)
             mainList.addAll(list);   
         }
@@ -462,7 +1128,7 @@ public class OvcReportManager
         }
        return mainList;
     }
-    public ReportTemplate getNoOfOvcWithBirthCertificate(ReportParameterTemplate rpt,int startAge,int endAge)
+    public ReportTemplate getNoOfOvcWithBirthCertificate(ReportParameterTemplate rpt,int startAge,int endAge,int enrollmentStatus)
     {
         ReportTemplate rt=new ReportTemplate();
         String maleSex=AppConstant.MALESEX;
@@ -472,9 +1138,9 @@ public class OvcReportManager
             rpt.setStartAge(startAge);
             rpt.setEndAge(endAge);
             rpt.setBirthCertificateValue(1);
-            rpt.setEnrollmentStatus(AppConstant.ACTIVE_NUM);
-            int maleCount=util.getChildEnrollmentDaoInstance().getOvcBirthCertificateData(rpt,maleSex);
-            int femaleCount=util.getChildEnrollmentDaoInstance().getOvcBirthCertificateData(rpt,femaleSex);
+            rpt.setEnrollmentStatus(enrollmentStatus);
+            int maleCount=util.getChildEnrollmentDaoInstance().getOvcBirthCertificateData(rpt,enrollmentStatus,maleSex);
+            int femaleCount=util.getChildEnrollmentDaoInstance().getOvcBirthCertificateData(rpt,enrollmentStatus,femaleSex);
             
             int total=maleCount+femaleCount;
             
@@ -493,7 +1159,7 @@ public class OvcReportManager
         }
         return rt;
     }
-    public ReportTemplate getNoOfOvcWithoutBirthCertificate(ReportParameterTemplate rpt,int startAge,int endAge)
+    public ReportTemplate getNoOfOvcWithoutBirthCertificate(ReportParameterTemplate rpt,int startAge,int endAge,int enrollmentStatus)
     {
         ReportTemplate rt=new ReportTemplate();
         String maleSex=AppConstant.MALESEX;
@@ -504,8 +1170,8 @@ public class OvcReportManager
             rpt.setEndAge(endAge);
             rpt.setBirthCertificateValue(2);
             rpt.setEnrollmentStatus(AppConstant.ACTIVE_NUM);
-            int maleCount=util.getChildEnrollmentDaoInstance().getOvcBirthCertificateData(rpt,maleSex);
-            int femaleCount=util.getChildEnrollmentDaoInstance().getOvcBirthCertificateData(rpt,femaleSex);
+            int maleCount=util.getChildEnrollmentDaoInstance().getOvcBirthCertificateData(rpt,enrollmentStatus,maleSex);
+            int femaleCount=util.getChildEnrollmentDaoInstance().getOvcBirthCertificateData(rpt,enrollmentStatus,femaleSex);
             
             int total=maleCount+femaleCount;
             
@@ -525,7 +1191,7 @@ public class OvcReportManager
         
         return rt;
     }
-    public List getListOfOvcWithoutBirthCertificate(ReportParameterTemplate rpt,int startAge,int endAge,String sex)
+    public List getListOfOvcWithoutBirthCertificate(ReportParameterTemplate rpt,int startAge,int endAge,int enrollmentStatus,String sex)
     {
         List mainList=new ArrayList();
         try
@@ -534,7 +1200,7 @@ public class OvcReportManager
             rpt.setEndAge(endAge);
             rpt.setBirthCertificateValue(2);
             rpt.setEnrollmentStatus(AppConstant.ACTIVE_NUM);
-            List list=util.getChildEnrollmentDaoInstance().getOvcBirthCertificateList(rpt, sex);
+            List list=util.getChildEnrollmentDaoInstance().getOvcBirthCertificateList(rpt, enrollmentStatus,sex);
             if(list !=null)
             mainList.addAll(list);   
         }
@@ -840,7 +1506,6 @@ public class OvcReportManager
         {
             ex.printStackTrace();
         }
-        
         return mainList;
     }
     public ReportTemplate getNumberOfHivUnknownOvcNotAtRiskAndServed(Indicator indicator,String additionalQueryCriteria,int startAge,int endAge,String startDate,String endDate,int enrollmentStatus)
@@ -906,6 +1571,57 @@ public class OvcReportManager
             ex.printStackTrace();
         }
         return rt;
+    }
+    public ReportTemplate getNoOfOvcRiskAssessedByEnrollmentStatusAndHivStatus(Indicator indicator,ReportParameterTemplate rpt,int startAge,int endAge,String startDate,String endDate,int enrollmentStatus,int hivRiskStatus)
+    {
+        ReportTemplate rt=new ReportTemplate();
+        HivRiskAssessmentDao dao=util.getHivRiskAssessmentDaoInstance();
+        String maleSex=AppConstant.MALESEX;
+        String femaleSex=AppConstant.FEMALESEX;
+        
+        try
+        {
+            //System.err.println("malesql is "+malesql);
+            int maleCount=0;
+            int femaleCount=0;
+            if(startAge <18)
+            {
+                maleCount=dao.getNumberOfOvcRiskAssessedByHivStatusAndEnrollmentStatus(rpt, startAge, endAge,startDate,endDate, enrollmentStatus,hivRiskStatus,maleSex);
+                femaleCount=dao.getNumberOfOvcRiskAssessedByHivStatusAndEnrollmentStatus(rpt, startAge, endAge,startDate,endDate,enrollmentStatus,hivRiskStatus,femaleSex);
+            }
+            int total=maleCount+femaleCount;
+            
+            rt.setMaleTotal(maleCount);
+            rt.setFemaleTotal(femaleCount);
+            rt.setGrandTotal(total);
+            if(indicator !=null)
+            {
+                rt.setIndicatorId(indicator.getIndicatorId());
+                rt.setIndicatorName(indicator.getIndicatorName());
+            }
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        return rt;
+    }
+    public List getListOfOvcRiskAssessedByEnrollmentStatusAndHivStatus(ReportParameterTemplate rpt,int startAge,int endAge,String startDate,String endDate,int enrollmentStatus,int hivRiskStatus,String sex)
+    {
+        List mainList=new ArrayList();
+        HivRiskAssessmentDao dao=util.getHivRiskAssessmentDaoInstance();
+        
+        try
+        {
+            List list=dao.getListOfOvcRiskAssessedByHivStatusAndEnrollmentStatus(rpt, startAge, endAge,startDate,endDate, enrollmentStatus,hivRiskStatus,sex);
+            if(list !=null)
+            mainList.addAll(list);    
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        return mainList;
     }
     public ReportTemplate getNoOfOvcServedAndRiskAssessedByEnrollmentStatusAndHivStatus(Indicator indicator,String additionalQueryCriteria,int startAge,int endAge,String startDate,String endDate,int enrollmentStatus,int hivRiskStatus)
     {
@@ -1717,5 +2433,56 @@ public class OvcReportManager
             NomisLogManager.logStackTrace(ex);
         }
         return rt;
+    }
+    public ReportTemplate getNumberOfHouseholdsEnrolled(ReportParameterTemplate rpt,String startDate,String endDate,int enrollmentStatus)
+    {
+        ReportTemplate rt=new ReportTemplate();
+        try
+        {        
+            rpt.setEnrollmentStatus(AppConstant.EVER_ENROLLED_NUM);
+            int maleCount=util.getHouseholdEnrollmentDaoInstance().getNumberOfHouseholdsEnrolled(rpt,startDate,endDate,enrollmentStatus);
+            //int femaleCount=util.getHouseholdEnrollmentDaoInstance().getNumberOfHouseholdsEnrolled(rpt,startDate,endDate,enrollmentStatus);
+            int total=maleCount;//+femaleCount;
+            
+            //rt.setMaleTotal(maleCount);
+            //rt.setFemaleTotal(femaleCount);
+            rt.setGrandTotal(total);
+            if(rpt.getIndicator() !=null)
+            {
+                rt.setIndicatorId(rpt.getIndicator().getIndicatorId());
+                rt.setIndicatorName(rpt.getIndicator().getIndicatorName());
+            }
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        return rt;
+    }
+    public List getListOfHouseholdsEnrolled(ReportParameterTemplate rpt,String startDate,String endDate,int enrollmentStatus)
+    {
+        List mainList=new ArrayList();
+        try
+        {
+            List list=util.getHouseholdEnrollmentDaoInstance().getListOfHouseholdsEnrolled(rpt,startDate,endDate,enrollmentStatus);
+            if(list !=null)
+            mainList.addAll(list);   
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+        }
+       return mainList;
+    }
+    private ReportParameterTemplate getAdultReportTemplate(ReportParameterTemplate rpt)
+    {
+        //An adult age starts from 18, so, reset start age to 18 if less than 18
+        if(rpt.getStartAge()<18)
+        rpt.setStartAge(18);
+        //If the request is from List of Indicators report, adult age is not considered, set end age to maximum 200
+        if(rpt.getEndAge()<18 || rpt.getReportType()==AppConstant.LISTOFINDICATORS_REPORTTYPE)
+        rpt.setEndAge(200);
+        
+        return rpt;
     }
 }

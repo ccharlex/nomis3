@@ -526,6 +526,8 @@ public class DateManager implements Serializable
                 }
             }
         }
+        if(mysqlDate !=null && (mysqlDate.indexOf("-") ==-1))
+        mysqlDate=null;
         return mysqlDate;
     }
     public long monthsBetween(Calendar startDate, Calendar endDate) {

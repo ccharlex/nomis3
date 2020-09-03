@@ -76,11 +76,11 @@ public class HouseholdEnrollmentAction extends org.apache.struts.action.Action {
         }
         if(AccessManager.isUserInDataEntryRole(user))
         {
-            setButtonState(session,"false","true");
+            setButtonState(session,AppConstant.FALSEVALUE,AppConstant.TRUEVALUE);
         }
         else
         {
-            setButtonState(session,"true","true");
+            setButtonState(session,AppConstant.TRUEVALUE,AppConstant.TRUEVALUE);
             request.setAttribute("accessErrorMsg", AppConstant.DEFAULT_ACCESS_MSG);
             return mapping.findForward(SUCCESS);
         }
@@ -98,7 +98,7 @@ public class HouseholdEnrollmentAction extends org.apache.struts.action.Action {
         ouaManager.setOrganizationUnitAttributes(session, level3OuId,userName,hheform.getCboId());
         HivPropertiesManager.setHivStatusList(session, HivPropertiesManager.getThreeMainHivStatus());
         if(requiredAction!=null && !requiredAction.equalsIgnoreCase("level3OuList") && !requiredAction.equalsIgnoreCase("level4OuList"))
-        setButtonState(session,"false","true");
+        setButtonState(session,AppConstant.FALSEVALUE,AppConstant.TRUEVALUE);
         generateSchoolList(session,hheform);
         loadfacility(session,level2OuId,level3OuId);
         
@@ -190,6 +190,10 @@ public class HouseholdEnrollmentAction extends org.apache.struts.action.Action {
                     hheform.setMaritalStatus(ahm.getMaritalStatus());
                     hheform.setSurname(ahm.getSurname());
                     hheform.setBaselineHivStatus(ahm.getBaselineHivStatus());
+                    if(ahm.getBaselineHivStatus()==AppConstant.HIV_POSITIVE_NUM)
+                    setHIVStatusProperties(session,AppConstant.FALSEVALUE);
+                    else
+                    setHIVStatusProperties(session,AppConstant.TRUEVALUE);
                     //hheform.setDateOfBaselineHivStatus(DateManager.convertDateToString(ahm.getDateOfBaselineHivStatus(), DateManager.MM_DD_YYYY_SLASH));
                     hheform.setDateOfBaselineHivStatus(DateManager.getMthDayYearStringDateFormat(ahm.getDateOfBaselineHivStatus(), 0));
                     hheform.setEnrolledOnTreatment(ahm.getEnrolledOnTreatment());
@@ -197,8 +201,8 @@ public class HouseholdEnrollmentAction extends org.apache.struts.action.Action {
                     hheform.setDateEnrolledOnTreatment(DateManager.getMthDayYearStringDateFormat(ahm.getDateEnrolledOnTreatment(),0));
                     hheform.setHivTreatmentFacilityId(ahm.getHivTreatmentFacilityId());
                     hheform.setTreatmentId(ahm.getTreatmentId());
-                    System.err.println("hheform.getCboId() is "+hheform.getCboId());               
-                    setButtonState(session,"true","false");
+                    //System.err.println("hheform.getCboId() is "+hheform.getCboId());               
+                    setButtonState(session,AppConstant.TRUEVALUE,AppConstant.FALSEVALUE);
                 }
             }
             else
@@ -278,6 +282,10 @@ public class HouseholdEnrollmentAction extends org.apache.struts.action.Action {
     {
         UserActivityManager uam=new UserActivityManager();
         uam.saveUserActivity(userName, userAction,description);
+    }
+    private void setHIVStatusProperties(HttpSession session,String disabled)
+    {
+        session.setAttribute("hhHivDisabled", disabled);
     }
     private void loadCommunityWorkers(String level4OuId,HttpSession session) throws Exception
     {

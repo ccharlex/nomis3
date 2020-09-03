@@ -13,7 +13,7 @@
 </logic:present>--%>
 <tr>
 <td align="right">${level2Ouh.name}</td>
-<td colspan="3">
+<td colspan="3">&nbsp; 
     <html:select property="level2OuId" styleId="level2OuId" style="width:570px;" onchange="setActionName('cboList');forms[0].submit()" >
         <html:option value="select">select....</html:option>
         <logic:present name="allLevel2OuList">
@@ -27,7 +27,7 @@
 </tr>
 <tr>
 <td align="right"><jsp:include page="LocalOrganizationName.jsp" /> </td>
-<td colspan="3">
+<td colspan="3">&nbsp;
     <html:select property="cboId" styleId="cboId" style="width:570px;" onchange="setActionName('level3OuList');forms[0].submit()" >
         <html:option value="select">select....</html:option>
         <logic:present name="cboList">
@@ -41,7 +41,7 @@
 </tr>
 <tr>
 <td align="right"><logic:present name="level3Ouh">${level3Ouh.name}</logic:present> </td>
-<td >
+<td > &nbsp;
 <html:select property="level3OuId" styleId="level3OuId" onchange="setActionName('level4OuList');forms[0].submit()" >
         <html:option value="select">select....</html:option>
         <logic:present name="level3OuListForReports">
@@ -65,7 +65,7 @@
 </tr>
 <tr>
 <td align="right">Period </td>
-<td colspan="4"><%--value="${reportStartDate}" value="${reportEndDate}" --%>
+<td colspan="4">&nbsp; <%--value="${reportStartDate}" value="${reportEndDate}" --%>
 <html:text property="startDate" styleId="startDate" readonly="true"/>
     
     <label style="margin-left: 20px; margin-right: 20px;">To </label>

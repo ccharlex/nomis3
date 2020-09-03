@@ -18,7 +18,7 @@ public interface HivRiskAssessmentDao
     public void saveHivRiskAssessment(HivRiskAssessment hra) throws Exception;
     public void updateHivRiskAssessment(HivRiskAssessment hra) throws Exception;
     public void deleteHivRiskAssessment(HivRiskAssessment hra) throws Exception;
-    public void markedForDelete(HivRiskAssessment hra) throws Exception;
+    public void markForDelete(HivRiskAssessment hra) throws Exception;
     public void markRiskAssessmentRecordsForDelete(String ovcId) throws Exception;
     public HivRiskAssessment getHivRiskAssessment(int recordId) throws Exception;
     public List getAllHivRiskAssessments() throws Exception;
@@ -31,4 +31,6 @@ public interface HivRiskAssessmentDao
     public List getHivRiskAssessmentRecordsByLevel4OuId(String level4OuId) throws Exception;
     public void changeOvcIdInHivRiskAssessmentRecords(String oldOvcId, String newOvcId) throws Exception;
     public void processHivRiskAssessmentOutcome(HivRiskAssessment hra) throws Exception;
+    public List getListOfOvcRiskAssessedByHivStatusAndEnrollmentStatus(ReportParameterTemplate rpt,int startAge,int endAge,String startDate,String endDate,int enrollmentStatus,int hivStatus,String sex) throws Exception;
+    public int getNumberOfOvcRiskAssessedByHivStatusAndEnrollmentStatus(ReportParameterTemplate rpt,int startAge,int endAge,String startDate,String endDate,int enrollmentStatus,int hivStatus,String sex) throws Exception;
 }

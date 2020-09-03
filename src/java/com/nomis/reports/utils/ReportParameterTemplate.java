@@ -32,6 +32,7 @@ public class ReportParameterTemplate
     private int enrollmentStatus;
     private int schoolStatus;
     private ReportPeriod financialYear;
+    private int reportType;
     
     public String getCboId() {
         return cboId;
@@ -195,6 +196,14 @@ public class ReportParameterTemplate
 
     public void setSex(String sex) {
         this.sex = sex;
+    }
+
+    public int getReportType() {
+        return reportType;
+    }
+
+    public void setReportType(int reportType) {
+        this.reportType = reportType;
     }
     
 }

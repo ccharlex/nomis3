@@ -338,6 +338,16 @@ public class OvcServiceAttributesManager implements Serializable
         service.setBeneficiaryType(AppConstant.HOUSEHOLD_TYPE_NUM);
         return service;
     }
+    public static Service getReferralForHivRelatedTesting_HTSPMTCT()
+    {
+        Service service=new Service();
+        service.setDomainName("Health");
+        service.setServiceName("HIV-related testing (HTS, PMTCT)");
+        service.setServiceValue("HIV-related testing (HTS, PMTCT)");
+        service.setServiceCode("1r");
+        service.setBeneficiaryType(AppConstant.HOUSEHOLD_TYPE_NUM);
+        return service;
+    }
     public static Service getAgeAppropriateDisclosureServices()
     {
         Service service=new Service();
@@ -1672,18 +1682,21 @@ public class OvcServiceAttributesManager implements Serializable
             service=getWASHServices();
             else if(serviceCodeOrName.equalsIgnoreCase(getReferralForTestingServices().getServiceName()) || serviceCodeOrName.equalsIgnoreCase(getReferralForTestingServices().getServiceName()))
             service=getReferralForTestingServices();
-            
+            else if(serviceCodeOrName.equalsIgnoreCase(getReferralForHivRelatedTesting_HTSPMTCT().getServiceName()) || serviceCodeOrName.equalsIgnoreCase(getReferralForHivRelatedTesting_HTSPMTCT().getServiceName()))
+            service=getReferralForHivRelatedTesting_HTSPMTCT();
             /*else if(serviceCodeOrName.equalsIgnoreCase(getAgeAppropriateDisclosureServices().getServiceName()) || serviceCodeOrName.equalsIgnoreCase(getAgeAppropriateDisclosureServices().getServiceName()))
             service=getAgeAppropriateDisclosureServices();)*/
             
             
             //else if(serviceCodeOrName.equalsIgnoreCase("Advocacy for school enrolment") || serviceCodeOrName.equalsIgnoreCase("1ed"))
             //service=getAdvocacyForSchoolEnrolmentService();
-            else if(serviceCodeOrName.equalsIgnoreCase("Advocacy for waiver of school fees") || serviceCodeOrName.equalsIgnoreCase("2ed"))
+            else if(serviceCodeOrName.equalsIgnoreCase(getSchoolEnrolmentAndReenrollmentService().getServiceName()) || serviceCodeOrName.equalsIgnoreCase(getSchoolEnrolmentAndReenrollmentService().getServiceCode()))
+            service=getSchoolEnrolmentAndReenrollmentService();//
+            else if(serviceCodeOrName.equalsIgnoreCase("Advocacy for waiver of school fees") || serviceCodeOrName.equalsIgnoreCase(getWaiverOfSchoolFeeService().getServiceCode()) || serviceCodeOrName.equalsIgnoreCase("2ed"))
             service=getWaiverOfSchoolFeeService();
-            else if(serviceCodeOrName.equalsIgnoreCase("Provision of school materials") || serviceCodeOrName.equalsIgnoreCase("3ed"))
+            else if(serviceCodeOrName.equalsIgnoreCase("Provision of school materials") || serviceCodeOrName.equalsIgnoreCase(getProvisionOfSchoolMaterialService().getServiceCode()) || serviceCodeOrName.equalsIgnoreCase("3ed"))
             service=getProvisionOfSchoolMaterialService();
-            else if(serviceCodeOrName.equalsIgnoreCase("School performance assessment") || serviceCodeOrName.equalsIgnoreCase("4ed"))
+            else if(serviceCodeOrName.equalsIgnoreCase("School performance assessment") || getSchoolPerformanceAssessmentService().getServiceCode().equalsIgnoreCase(serviceCodeOrName) || serviceCodeOrName.equalsIgnoreCase("4ed"))
             service=getSchoolPerformanceAssessmentService();
             else if(serviceCodeOrName.equalsIgnoreCase("School visit") || serviceCodeOrName.equalsIgnoreCase("5ed"))
             service=getSchoolVisit();
@@ -1717,6 +1730,17 @@ public class OvcServiceAttributesManager implements Serializable
             service=getSessionOnChildProtectionSupportService();
             else if(serviceCodeOrName.equalsIgnoreCase(getPostViolenceTraumaSupportService().getServiceName()) || serviceCodeOrName.equalsIgnoreCase(getPostViolenceTraumaSupportService().getServiceCode()))
             service=getPostViolenceTraumaSupportService();
+            else if(serviceCodeOrName.equalsIgnoreCase(getClothingSupportService().getServiceName()) || serviceCodeOrName.equalsIgnoreCase(getClothingSupportService().getServiceCode()))
+            service=getClothingSupportService();
+            else if(serviceCodeOrName.equalsIgnoreCase(getStructuredSafeSpacesInterventionService().getServiceName()) || serviceCodeOrName.equalsIgnoreCase(getStructuredSafeSpacesInterventionService().getServiceCode()))
+            service=getStructuredSafeSpacesInterventionService();
+            else if(serviceCodeOrName.equalsIgnoreCase(getAwarenessOnGenderIssues().getServiceName()) || serviceCodeOrName.equalsIgnoreCase(getAwarenessOnGenderIssues().getServiceCode()))
+            service=getAwarenessOnGenderIssues();
+            else if(serviceCodeOrName.equalsIgnoreCase(getPostGbvCare().getServiceName()) || serviceCodeOrName.equalsIgnoreCase(getPostGbvCare().getServiceCode()))
+            service=getPostGbvCare();
+            else if(serviceCodeOrName.equalsIgnoreCase(getBirthRegistrationAwarenessService().getServiceName()) || serviceCodeOrName.equalsIgnoreCase(getBirthRegistrationAwarenessService().getServiceCode()))
+            service=getBirthRegistrationAwarenessService();
+            //
             
             else if(serviceCodeOrName.equalsIgnoreCase(getSchoolEducationalAssistance().getServiceName()) || serviceCodeOrName.equalsIgnoreCase(getSchoolEducationalAssistance().getServiceCode()))
             service=getSchoolEducationalAssistance();
@@ -1742,6 +1766,9 @@ public class OvcServiceAttributesManager implements Serializable
             service=getPassportToSuccess();
             else if(serviceCodeOrName.equalsIgnoreCase(getLinkagesToFinancialInstitutionsAndPrivateSector().getServiceName()) || serviceCodeOrName.equalsIgnoreCase(getLinkagesToFinancialInstitutionsAndPrivateSector().getServiceCode()))
             service=getLinkagesToFinancialInstitutionsAndPrivateSector();
+            else if(serviceCodeOrName.equalsIgnoreCase(getProvisionOfAgriculturalInput().getServiceName()) || serviceCodeOrName.equalsIgnoreCase(getProvisionOfAgriculturalInput().getServiceCode()))
+            service=getProvisionOfAgriculturalInput();
+            //
             else if(serviceCodeOrName.equalsIgnoreCase(getInseticideTreatedBedNetServices().getServiceName()) || serviceCodeOrName.equalsIgnoreCase(getInseticideTreatedBedNetServices().getServiceCode()))
             service=getInseticideTreatedBedNetServices();
             else if(serviceCodeOrName.equalsIgnoreCase(getAdolescentHivPreventionServices().getServiceName()) || serviceCodeOrName.equalsIgnoreCase(getAdolescentHivPreventionServices().getServiceCode()))

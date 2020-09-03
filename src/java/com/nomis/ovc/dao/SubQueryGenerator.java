@@ -50,6 +50,7 @@ public class SubQueryGenerator
         }
         return query;
     }
+    
     public static String getBeneficiariesReferralDirectionQuery(int referralDirection)
     {
         String query=" ";
@@ -58,6 +59,53 @@ public class SubQueryGenerator
             query+=" and referral.referralDirection="+referralDirection;
         }
         
+        return query;
+    }
+    public static String getAgeAtHivRiskAssessmentQuery(int startAge,int endAge)
+    {
+        String ageQuery="";
+        if(startAge<=endAge)
+        {
+            if(startAge ==0 && endAge==0)
+            ageQuery=" and (hra.ageAtRiskAssessment="+startAge+" or hra.ageUnitAtRiskAssessment=1)";
+            else if(startAge ==0 && endAge >0)
+            ageQuery=" and hra.ageAtRiskAssessment between "+startAge+" and "+endAge;
+            else if(startAge >0)
+            ageQuery=" and hra.ageAtRiskAssessment between "+startAge+" and "+endAge +" and hra.ageUnitAtRiskAssessment=2";
+            else if(startAge == endAge && startAge>0)
+            ageQuery=" and hra.ageAtRiskAssessment="+startAge+" and hra.ageUnitAtRiskAssessment=2";
+            else
+            ageQuery=" and hra.ageAtRiskAssessment between "+startAge+" and "+endAge;
+         }
+        
+        return ageQuery;
+    }
+    public static String getAgeAtNutritionAssessmentQuery(int startAge,int endAge)
+    {
+        String ageQuery="";
+        if(startAge<=endAge)
+        {
+            if(startAge ==0 && endAge==0)
+            ageQuery=" and (na.ageAtAssessment="+startAge+" or na.ageUnitAtAssessment=1)";
+            else if(startAge ==0 && endAge >0)
+            ageQuery=" and na.ageAtAssessment between "+startAge+" and "+endAge;
+            else if(startAge >0)
+            ageQuery=" and na.ageAtAssessment between "+startAge+" and "+endAge +" and na.ageUnitAtAssessment=2";
+            else if(startAge == endAge && startAge>0)
+            ageQuery=" and na.ageAtAssessment="+startAge+" and na.ageUnitAtAssessment=2";
+            else
+            ageQuery=" and na.ageAtAssessment between "+startAge+" and "+endAge;
+         }
+        
+        return ageQuery;
+    }
+    public static String getHivStatusAtHivRiskAssessmentQuery(int hivStatusAtRiskAssessment)
+    {
+        String query="";
+        if(hivStatusAtRiskAssessment>0)
+        {
+            query=" and hra.hivStatusAtRiskAssessment ="+hivStatusAtRiskAssessment;
+        }
         return query;
     }
     public static String getHivNegativeOvcHivRiskStatusQuery(int hivRiskStatus,String startDate, String endDate)
@@ -280,11 +328,11 @@ public class SubQueryGenerator
     }
     public static String getOvcCurrentBirthCertificateQuery(int birthCertificateStatus)
     {
-        String query=" and ovc.currentBirthRegStatus="+birthCertificateStatus;   
+        String query=" and ovc.currentBirthRegistrationStatus="+birthCertificateStatus;   
         //if ovc.birthCertificate=2, this means those without birth certificate and those that the value was not inidcated i.e 0
         //Data may be from excel, and not properly formatted
         if(birthCertificateStatus==2)
-        query=" and (ovc.currentBirthRegStatus=0 or ovc.currentBirthRegStatus=2)";
+        query=" and (ovc.currentBirthRegistrationStatus=0 or ovc.currentBirthRegistrationStatus=2)";
         return query;
     }
     public static String getOvcCurrentSchoolStatusQuery(int currentSchoolStatus)
@@ -311,11 +359,22 @@ public class SubQueryGenerator
     }
     public static String getHouseholdMemberHivPositiveOnTreatmentQuery()
     {
-        return " and (ahm.currentHivStatus="+AppConstant.HIV_POSITIVE_NUM+" and ahm.enrolledOnTreatment="+AppConstant.ON_TREATMENT+")";
+        return " and (ahm.currentHivStatus="+AppConstant.HIV_POSITIVE_NUM+" and ahm.enrolledOnTreatment="+AppConstant.ENROLLED_ON_TREATMENT_YES_NUM+")";
     }
     public static String getHouseholdMemberHivPositiveNotOnTreatmentQuery()
     {
         return " and (ahm.currentHivStatus="+AppConstant.HIV_POSITIVE_NUM+" and ahm.enrolledOnTreatment !=1)";
+    }
+    public static String getCurrentNutritionStatusQuery(int status)
+    {
+        String query="";
+        if(status>0)
+        {
+            query=" and ns.currentNutritionalStatus="+status;
+            if(status==AppConstant.NUTRITIONSTATUS_MALNOURISHED_ALL_NUM)
+            query=" and (ns.currentNutritionalStatus="+AppConstant.NUTRITIONSTATUS_MILD_MALNUTRITION_NUM+" or ns.currentNutritionalStatus="+AppConstant.NUTRITIONSTATUS_MODERATE_MALNUTRITION_NUM+" or ns.currentNutritionalStatus="+AppConstant.NUTRITIONSTATUS_SEVERE_MALNUTRITION_NUM+")";
+        }
+        return query;
     }
     public static String getOvcHivStatusQuery(int status)
     {
@@ -363,6 +422,33 @@ public class SubQueryGenerator
             query=" and (ovc.currentEnrollmentStatus="+AppConstant.ACTIVE_NUM+" or ovc.currentEnrollmentStatus ="+AppConstant.REENROLLED_NUM+")";
             else
             query=" and ovc.currentEnrollmentStatus="+status;
+        }
+        return query;
+    }
+    public String getAgeAtReferralQuery(int startAge,int endAge)
+    {
+        String ageQuery="";
+        if(startAge<=endAge)
+        {
+            if(startAge ==0 && endAge==0)
+            ageQuery=" and (referral.ageAtReferral="+startAge+" or referral.ageUnitAtReferral="+AppConstant.AGEUNIT_MONTH_NUM+")";
+            else if(startAge ==0 && endAge >0)
+            ageQuery=" and referral.ageAtReferral between "+startAge+" and "+endAge;
+            else if(startAge >0)
+            ageQuery=" and referral.ageAtReferral between "+startAge+" and "+endAge +" and referral.ageUnitAtReferral="+AppConstant.AGEUNIT_YEAR_NUM+")";
+            else if(startAge == endAge && startAge>0)
+            ageQuery=" and referral.ageAtReferral="+startAge+" and referral.ageUnitAtReferral="+AppConstant.AGEUNIT_YEAR_NUM+")";
+            else
+            ageQuery=" and referral.ageAtReferral between "+startAge+" and "+endAge;
+         }
+        return ageQuery;
+    }
+    public String getReferralCompletedQuery(int referralCompleted)
+    {
+        String query="";
+        if(referralCompleted >0)
+        {
+             query=" and referral.referralCompleted="+referralCompleted;
         }
         return query;
     }
@@ -654,6 +740,17 @@ public class SubQueryGenerator
         }
         return query;
     }
+    public String getOvcEnrolledOnTreatmentQuery(int enrolledOnTreatmentValue)
+    {
+        String query="";
+        if(enrolledOnTreatmentValue==AppConstant.ENROLLED_ON_TREATMENT_YES_NUM)
+        query=" and ovc.currentHivStatus="+AppConstant.HIV_POSITIVE_NUM+" and ovc.enrolledOnTreatment="+enrolledOnTreatmentValue;
+        else if(enrolledOnTreatmentValue==0 || enrolledOnTreatmentValue==AppConstant.ENROLLED_ON_TREATMENT_NO_NUM)
+        {
+            query=" and ovc.currentHivStatus="+AppConstant.HIV_POSITIVE_NUM+" and (ovc.enrolledOnTreatment=0 or ovc.enrolledOnTreatment="+AppConstant.ENROLLED_ON_TREATMENT_NO_NUM+")";
+        }
+        return query;
+    }
     public String getHouseholdHeadQuery()
     {
         String query=" and hhe.hhUniqueId=ahm.beneficiaryId ";
@@ -762,9 +859,19 @@ public class SubQueryGenerator
         
         return orgUnitQuery;
     }
-    public static String getHheNutritionAssessmentOrganizationUnitQuery()
+    public static String getHheOvcNutritionAssessmentOrganizationUnitQuery()
     {
         String orgUnitQuery=" from HouseholdEnrollment hhe,Ovc ovc, NutritionAssessment na, OrganizationUnit ou where hhe.hhUniqueId=ovc.hhUniqueId and ovc.ovcId=na.ovcId and hhe.organizationUnit=ou.uid ";
+        return orgUnitQuery;
+    }
+    public static String getHheOvcNutritionStatusOrganizationUnitQuery()
+    {
+        String orgUnitQuery=" from HouseholdEnrollment hhe,Ovc ovc, NutritionStatus ns, OrganizationUnit ou where hhe.hhUniqueId=ovc.hhUniqueId and ovc.ovcId=ns.ovcId and hhe.organizationUnit=ou.uid ";
+        return orgUnitQuery;
+    }
+    public static String getHheOvcNutritionAssessmentNutritionStatusOrganizationUnitQuery()
+    {
+        String orgUnitQuery=" from HouseholdEnrollment hhe,Ovc ovc, NutritionAssessment na,NutritionStatus ns, OrganizationUnit ou where hhe.hhUniqueId=ovc.hhUniqueId and ovc.ovcId=na.ovcId and na.ovcId=ns.ovcId and hhe.organizationUnit=ou.uid ";
         return orgUnitQuery;
     }
     public static String getHheAdultHouseholdMemberCareAndSupportOrganizationUnitQuery()
@@ -775,6 +882,11 @@ public class SubQueryGenerator
     public static String getHheOvcHouseholdCareplanOrganizationUnitQuery()
     {
         String orgUnitQuery=" from HouseholdEnrollment hhe, Ovc ovc, HouseholdCareplan hcp, OrganizationUnit ou where hhe.hhUniqueId=ovc.hhUniqueId and ovc.ovcId=hcp.beneficiaryId and hhe.organizationUnit=ou.uid ";
+        return orgUnitQuery;
+    }
+    public static String getHheOvcHouseholdEducationalAssessmentOrganizationUnitQuery()
+    {
+        String orgUnitQuery=" from HouseholdEnrollment hhe, Ovc ovc, ChildEducationPerformanceAssessment cepa, OrganizationUnit ou where hhe.hhUniqueId=ovc.hhUniqueId and ovc.ovcId=cepa.ovcId and hhe.organizationUnit=ou.uid ";
         return orgUnitQuery;
     }
     public static String getHheAdultHouseholdMemberHouseholdCareplanOrganizationUnitQuery()
@@ -836,6 +948,25 @@ public class SubQueryGenerator
         
         return orgUnitQuery;
     }*/
+    public static String getARTSupportQuery(int transportationSupport)
+    {
+        String orgUnitQuery="";
+        if(transportationSupport>0)
+        {
+            orgUnitQuery=" and csc.receivedTransportationSupport="+transportationSupport;
+        }
+        return orgUnitQuery;
+    }
+    public static String getHheAdultHouseholdMemberOvcOrganizationUnitCareAndSupportQuery()
+    {
+        String orgUnitQuery=" from HouseholdEnrollment hhe,AdultHouseholdMember ahm,Ovc ovc,OrganizationUnit ou, CareAndSupportChecklist csc where hhe.hhUniqueId=ahm.hhUniqueId and ovc.caregiverId=ahm.beneficiaryId and hhe.organizationUnit=ou.uid and ovc.ovcId=csc.beneficiaryId";
+        return orgUnitQuery;
+    }
+    public static String getHheAdultHouseholdMemberOrganizationUnitCareAndSupportQuery()
+    {
+        String orgUnitQuery=" from HouseholdEnrollment hhe,AdultHouseholdMember ahm,OrganizationUnit ou, CareAndSupportChecklist csc where hhe.hhUniqueId=ahm.hhUniqueId and hhe.organizationUnit=ou.uid and ahm.beneficiaryId=csc.beneficiaryId";
+        return orgUnitQuery;
+    }
     public static String getHheOvcOrganizationUnitQuery()
     {
         String orgUnitQuery=" from HouseholdEnrollment hhe,Ovc ovc, OrganizationUnit ou where ovc.hhUniqueId=hhe.hhUniqueId and hhe.organizationUnit=ou.uid ";
@@ -878,6 +1009,22 @@ public class SubQueryGenerator
         }
         return query;
     }
+    public static String getHouseholdEnrollmentStatusQuery(int status)
+    {
+        String query="";
+        if(status>0)
+        {
+            if(status==AppConstant.EXITED_WITHOUT_GRADUATION_NUM)
+            query=" and (hhe.currentEnrollmentStatus=3 or hhe.currentEnrollmentStatus =4 or hhe.currentEnrollmentStatus =5 or hhe.currentEnrollmentStatus =8 or hhe.currentEnrollmentStatus =9 or hhe.currentEnrollmentStatus =10 or hhe.currentEnrollmentStatus =11 or hhe.currentEnrollmentStatus =13)";
+            else if(status==AppConstant.OVC_SERV_NUM)
+            query=" and (hhe.currentEnrollmentStatus="+AppConstant.ACTIVE_NUM+" or hhe.currentEnrollmentStatus ="+AppConstant.GRADUATED_NUM+")";
+            else if(status==AppConstant.CURRENTLY_ENROLLED_NUM)
+            query=" and (hhe.currentEnrollmentStatus="+AppConstant.ACTIVE_NUM+" or hhe.currentEnrollmentStatus ="+AppConstant.REENROLLED_NUM+")";
+            else
+            query=" and hhe.currentEnrollmentStatus="+status;
+        }
+        return query;
+    }
     /*public static String getHheAdultHouseholdMemberOvcOrganizationUnitQuery()
     {
         String orgUnitQuery=" from HouseholdEnrollment hhe,AdultHouseholdMember ahm,Ovc ovc,OrganizationUnit ou where hhe.hhUniqueId=ahm.hhUniqueId and ovc.hhUniqueId=hhe.hhUniqueId and hhe.organizationUnit=ou.uid ";
@@ -908,6 +1055,16 @@ public class SubQueryGenerator
         String orgUnitQuery=" from HouseholdEnrollment hhe,Ovc ovc,OrganizationUnit ou, ChildService service where hhe.hhUniqueId=ovc.hhUniqueId and hhe.organizationUnit=ou.uid and ovc.ovcId=service.ovcId ";
         return orgUnitQuery;
     }
+    public static String getHheOvcOrganizationUnitServiceNutritionAssessmentQuery()
+    {
+        String orgUnitQuery=" from HouseholdEnrollment hhe,Ovc ovc,OrganizationUnit ou, ChildService service,NutritionAssessment na where hhe.hhUniqueId=ovc.hhUniqueId and hhe.organizationUnit=ou.uid and ovc.ovcId=service.ovcId and ovc.ovcId=na.ovcId";
+        return orgUnitQuery;
+    }
+    public static String getHheOvcOrganizationUnitServiceNutritionStatusQuery()
+    {
+        String orgUnitQuery=" from HouseholdEnrollment hhe,Ovc ovc,OrganizationUnit ou, ChildService service,NutritionStatus ns where hhe.hhUniqueId=ovc.hhUniqueId and hhe.organizationUnit=ou.uid and ovc.ovcId=service.ovcId and ovc.ovcId=ns.ovcId";
+        return orgUnitQuery;
+    }
     public static String getHheOvcOrganizationUnitServiceEnrollmentStatusHistoryQuery()
     {
         String orgUnitQuery=" from HouseholdEnrollment hhe,Ovc ovc,OrganizationUnit ou, ChildService service, EnrollmentStatusHistory esh where hhe.hhUniqueId=ovc.hhUniqueId and hhe.organizationUnit=ou.uid and ovc.ovcId=service.ovcId and ovc.ovcId=esh.beneficiaryId";
@@ -917,6 +1074,16 @@ public class SubQueryGenerator
     {
         String orgUnitQuery=" from HouseholdEnrollment hhe,Ovc ovc,OrganizationUnit ou, ChildService service, QuarterlyStatusTracker qst where hhe.hhUniqueId=ovc.hhUniqueId and hhe.organizationUnit=ou.uid and ovc.ovcId=service.ovcId and ovc.ovcId=qst.beneficiaryId";
         return orgUnitQuery;
+    }
+    public String getChildEducationPerformanceAssessmentDateOfAssessmentQuery(String startDate, String endDate)
+    {
+        String ovcDateQuery=" ";
+        if((startDate !=null && !startDate.equalsIgnoreCase("All")) && (endDate !=null && !endDate.equalsIgnoreCase("All")))
+        {
+            if(startDate.trim().length()>0 && endDate.trim().length()>0)
+            ovcDateQuery=" and cepa.dateOfAssessment between '"+startDate+"' and '"+endDate+"'";
+        }
+          return ovcDateQuery;
     }
     public String getChildEducationPerformanceAssessmentLastModifiedDateQuery(String startDate, String endDate)
     {
@@ -958,15 +1125,45 @@ public class SubQueryGenerator
         }
           return ovcDateQuery;
     }
-    public String getHheAssessmentDateQuery(String startDate, String endDate)
+    public static String getHheAssessmentDateQuery(String startDate, String endDate)
     {
-        String ovcDateQuery=" ";
+        String dateQuery=" ";
         if((startDate !=null && !startDate.equalsIgnoreCase("All")) && (endDate !=null && !endDate.equalsIgnoreCase("All")))
         {
             if(startDate.trim().length()>0 && endDate.trim().length()>0)
-            ovcDateQuery=" and hhe.dateOfAssessment between '"+startDate+"' and '"+endDate+"'";
+            dateQuery=" and hhe.dateOfAssessment between '"+startDate+"' and '"+endDate+"'";
         }
-          return ovcDateQuery;
+          return dateQuery;
+    }
+    public static String getOvcDateOfCurrentHivStatusQuery(String startDate, String endDate)
+    {
+        String dateQuery=" ";
+        if((startDate !=null && !startDate.equalsIgnoreCase("All")) && (endDate !=null && !endDate.equalsIgnoreCase("All")))
+        {
+            if(startDate.trim().length()>0 && endDate.trim().length()>0)
+            dateQuery=" and ovc.dateOfCurrentHivStatus between '"+startDate+"' and '"+endDate+"'";
+        }
+          return dateQuery;
+    }
+    public static String getDateOfCareAndSupportAssessmentQuery(String startDate, String endDate)
+    {
+        String dateQuery=" ";
+        if((startDate !=null && !startDate.equalsIgnoreCase("All")) && (endDate !=null && !endDate.equalsIgnoreCase("All")))
+        {
+            if(startDate.trim().length()>0 && endDate.trim().length()>0)
+            dateQuery=" and csc.dateOfAssessment between '"+startDate+"' and '"+endDate+"'";
+        }
+          return dateQuery;
+    }
+    public static String getAdultDateOfCurrentHivStatusQuery(String startDate, String endDate)
+    {
+        String dateQuery=" ";
+        if((startDate !=null && !startDate.equalsIgnoreCase("All")) && (endDate !=null && !endDate.equalsIgnoreCase("All")))
+        {
+            if(startDate.trim().length()>0 && endDate.trim().length()>0)
+            dateQuery=" and ahm.dateOfCurrentHivStatus between '"+startDate+"' and '"+endDate+"'";
+        }
+          return dateQuery;
     }
     public String getHHVAAssessmentDateQuery(String startDate, String endDate)
     {
@@ -1096,6 +1293,16 @@ public class SubQueryGenerator
             ovcDateQuery=" and ovc.dateCasePlanDeveloped between '"+startDate+"' and '"+endDate+"'";
         }
           return ovcDateQuery;
+    }
+    public String getOvcEnrolledOnTreatmentDateQuery(String startDate, String endDate)
+    {
+        String dateQuery=" ";
+        if((startDate !=null && !startDate.equalsIgnoreCase("All")) && (endDate !=null && !endDate.equalsIgnoreCase("All")))
+        {
+            if(startDate.trim().length()>0 && endDate.trim().length()>0)
+            dateQuery=" and ovc.dateEnrolledOnTreatment between '"+startDate+"' and '"+endDate+"'";
+        }
+          return dateQuery;
     }
     public String getChildCasePlanFollowupDateQuery(String startDate, String endDate)
     {
@@ -1355,7 +1562,7 @@ public class SubQueryGenerator
     public String getOvcServiceDateQuery(String startDate, String endDate)
     {
         String ovcDateQuery=" ";
-        if((startDate !=null && !startDate.equalsIgnoreCase("All")) && (endDate !=null && !endDate.equalsIgnoreCase("All")))
+        if((startDate !=null && !startDate.equalsIgnoreCase("All") && startDate.indexOf("-") !=-1) && (endDate !=null && !endDate.equalsIgnoreCase("All") && endDate.indexOf("-") !=-1))
         {
             ovcDateQuery=" and service.serviceDate between '"+startDate+"' and '"+endDate+"'";
         }
@@ -1367,6 +1574,24 @@ public class SubQueryGenerator
         if((startDate !=null && !startDate.equalsIgnoreCase("All")) && (endDate !=null && !endDate.equalsIgnoreCase("All")))
         {
             ovcDateQuery=" and na.lastModifiedDate between '"+startDate+"' and '"+endDate+"'";
+        }
+          return ovcDateQuery;
+    }
+    public String getNutritionStatusLastModifiedDateQuery(String startDate, String endDate)
+    {
+        String ovcDateQuery=" ";
+        if((startDate !=null && !startDate.equalsIgnoreCase("All")) && (endDate !=null && !endDate.equalsIgnoreCase("All")))
+        {
+            ovcDateQuery=" and ns.lastModifiedDate between '"+startDate+"' and '"+endDate+"'";
+        }
+          return ovcDateQuery;
+    }
+    public String getDateOfCurrentNutritionStatusQuery(String startDate, String endDate)
+    {
+        String ovcDateQuery=" ";
+        if((startDate !=null && !startDate.equalsIgnoreCase("All")) && (endDate !=null && !endDate.equalsIgnoreCase("All")))
+        {
+            ovcDateQuery=" and ns.dateOfCurrentNutritionalStatus between '"+startDate+"' and '"+endDate+"'";
         }
           return ovcDateQuery;
     }
@@ -1509,5 +1734,14 @@ public class SubQueryGenerator
         if(userAction !=null && !userAction.equalsIgnoreCase("All"))
         query+=" and uat.userAction='"+userAction+"'";
         return query;
+    }
+    public String getAdditionalOrgUnitQuery(ReportParameterTemplate rpt)
+    {
+        String additionalOrgUnitQuery="";
+        if(rpt !=null && rpt.getLevel2OuId() !=null && rpt.getLevel2OuId().trim().length()>0 && !rpt.getLevel2OuId().equalsIgnoreCase("select") && !rpt.getLevel2OuId().equalsIgnoreCase("All"))
+        {
+            additionalOrgUnitQuery=getOrganizationUnitQuery(rpt);
+        }
+        return additionalOrgUnitQuery;
     }
 }

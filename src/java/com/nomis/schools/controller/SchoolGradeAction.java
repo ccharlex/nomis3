@@ -12,6 +12,7 @@ import com.nomis.ovc.dao.DaoUtility;
 import com.nomis.ovc.util.AppConstant;
 import com.nomis.ovc.util.DateManager;
 import com.nomis.ovc.util.AppManager;
+import com.nomis.ovc.util.AppUtility;
 import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
@@ -158,7 +159,15 @@ public class SchoolGradeAction extends org.apache.struts.action.Action {
     }
     private void setButtonState(HttpSession session,String saveDisabled,String modifyDisabled)
     {
-        session.setAttribute("schoolGradeSaveDisabled", saveDisabled);
-        session.setAttribute("schoolGradeModifyDisabled", modifyDisabled);
+        if(AppUtility.isMetadataAccessEnabled())
+        {
+            session.setAttribute("schoolGradeSaveDisabled", saveDisabled);
+            session.setAttribute("schoolGradeModifyDisabled", modifyDisabled);
+        }
+        else
+        {
+            session.setAttribute("schoolGradeSaveDisabled", "true");
+            session.setAttribute("schoolGradeModifyDisabled", modifyDisabled);
+        }
     }
 }

@@ -21,8 +21,8 @@
             <logic:present name="ovcServiceListForRegister">
                 <tr align="left" style=" background-color: #D7E5F2">
                                 <th >S/No </th>
-                                <th >Province </th>
-                                <th >District </th>
+                                <th >State </th>
+                                <th >LGA </th>
                                 <th >Ward </th>
                                 <th >CBO </th>
                                 

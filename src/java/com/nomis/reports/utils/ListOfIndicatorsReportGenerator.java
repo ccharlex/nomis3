@@ -7,6 +7,7 @@ package com.nomis.reports.utils;
 
 import com.nomis.operationsManagement.VulnerabilityStatusManager;
 import com.nomis.ovc.business.AdultHouseholdMember;
+import com.nomis.ovc.business.HouseholdEnrollment;
 import com.nomis.ovc.business.Ovc;
 import com.nomis.ovc.dao.SubQueryGenerator;
 import com.nomis.ovc.util.AppConstant;
@@ -43,13 +44,17 @@ public class ListOfIndicatorsReportGenerator
             String serviceCode=null;
             for(int i=0; i<selectedIndicators.length; i++)
             {
-                indicatorCode=selectedIndicators[i];// //vcnotserved
-                indicator=indwh.getIndicatorById(indicatorCode);
+                indicatorCode=selectedIndicators[i];
+                indicator=VulnerabilityStatusManager.getVulnerabilityStatusIndicator(indicatorCode);
+                if(indicator==null)
+                {
+                    indicator=indwh.getIndicatorById(indicatorCode);
+                }
                 indicatorName=indwh.getIndicatorById(indicatorCode).getIndicatorName();
                 rpt.setIndicator(indicator);
                 serviceCode=ReferralReportManager.getReferralServiceCode(indicatorCode);
-                //System.err.println("indicatorCode is "+indicatorCode+"; indicatorName is "+indicatorName);
-                System.err.println("indicator.getIndicatorId() is "+indicator.getIndicatorId()+"; indicator.getIndicatorId() is "+indicator.getIndicatorName());
+                //The indicator code determines the method to called to generate the appropriate data.
+                System.err.println("indicator.getIndicatorId() is "+indicator.getIndicatorId()+"; indicator.getIndicatorName() is "+indicator.getIndicatorName());
                 if(indicatorCode.equalsIgnoreCase(ind.getIndicatorForNumberOfActiveOvcServedInReportPeriod().getIndicatorId()))
                 list.add(orm.getNoOfActiveOvcServedByEnrollmentStatus(indicator,additionalQueryCriteria, rpt.getStartAge(),rpt.getEndAge(),rpt.getStartDate(),rpt.getEndDate(),AppConstant.ALL_SERVICE_DOMAIN));
                 else if(indicatorCode.equalsIgnoreCase("cgiverserve"))
@@ -127,15 +132,22 @@ public class ListOfIndicatorsReportGenerator
                 list.add(orm.getNoOfAdultMembersEnrolledByEnrollmentStatusAndReportPeriod(indicator,additionalQueryCriteria,AppConstant.HIV_ALL_STATUS_NUM,rpt.getStartAge(),rpt.getEndAge(),rpt.getStartDate(),rpt.getEndDate(),AppConstant.REENROLLED_NUM,AppConstant.NO_TREATMENT_CRITERIA));
                 
                 else if(indicatorCode.equalsIgnoreCase("vccelt18cer"))
-                list.add(orm.getNoOfOvcWithBirthCertificate(rpt,rpt.getStartAge(), rpt.getEndAge()));
+                list.add(orm.getNoOfOvcWithBirthCertificate(rpt,rpt.getStartAge(), rpt.getEndAge(),AppConstant.ACTIVE_NUM));
                 else if(indicatorCode.equalsIgnoreCase("vcwithnobcc"))
-                list.add(orm.getNoOfOvcWithoutBirthCertificate(rpt,rpt.getStartAge(), rpt.getEndAge()));
+                list.add(orm.getNoOfOvcWithoutBirthCertificate(rpt,rpt.getStartAge(), rpt.getEndAge(),AppConstant.ACTIVE_NUM));
                 
                 else if(indicatorCode.equalsIgnoreCase("vccurrinsch"))
                 list.add(orm.getNoOfOvcBySchoolStatus(rpt,rpt.getStartAge(), rpt.getEndAge(),AppConstant.CHILD_IN_SCHOOL));
                 else if(indicatorCode.equalsIgnoreCase("vcnotschool"))
                 list.add(orm.getNoOfOvcBySchoolStatus(rpt,rpt.getStartAge(), rpt.getEndAge(),AppConstant.CHILD_NOT_IN_SCHOOL));
                 
+                
+                
+                //else if(indicatorCode.equalsIgnoreCase("vckeypopenr"))
+                else if(indicator.getIndicatorSubtype() !=null && indicator.getIndicatorSubtype().equalsIgnoreCase(AppConstant.VULNERABILITYSTATUS_SUBTYPE))
+                list.add(orm.getNoOfOvcByVulnerabilityStatus(rpt,rpt.getStartAge(), rpt.getEndAge(),indicator.getIndicatorId()));
+                /*else if(indicatorCode.equalsIgnoreCase("vcadolscenr"))
+                list.add(orm.getNoOfOvcByVulnerabilityStatus(rpt,0,17,VulnerabilityStatusManager.getChildrenOfUultraPoorHouseholds().getCode()));*/
                 
                 /*else if(indicatorCode.equalsIgnoreCase("vcreferedrp"))
                 list.add(orm.getNoOfOvcReferredByServiceType(rpt,rpt.getStartAge(), rpt.getEndAge(),null));
@@ -214,6 +226,12 @@ public class ListOfIndicatorsReportGenerator
                 list.add(orm.getNumberOfOvcServedByServiceDomainAndSubType(indicator, additionalQueryCriteria, rpt.getStartAge(), rpt.getEndAge(), startDate, endDate, AppConstant.EVER_ENROLLED_NUM, AppConstant.HEALTH_DOMAIN, serviceCode));
                 
                 
+                else if(indicatorCode.equalsIgnoreCase(ind.getIndicatorForNumberOfOvcLessThan18CurrentlyEnrolledWithBirthCertificate().getIndicatorId()))
+                list.add(orm.getNumberOfOvcServedByServiceDomainAndSubType(indicator, additionalQueryCriteria, rpt.getStartAge(), rpt.getEndAge(), startDate, endDate, AppConstant.EVER_ENROLLED_NUM, AppConstant.HEALTH_DOMAIN, serviceCode));
+                else if(indicatorCode.equalsIgnoreCase(ind.getIndicatorForNumberOfOvcWithoutBirthCertificateCurrently().getIndicatorId()))
+                list.add(orm.getNumberOfOvcServedByServiceDomainAndSubType(indicator, additionalQueryCriteria, rpt.getStartAge(), rpt.getEndAge(), startDate, endDate, AppConstant.EVER_ENROLLED_NUM, AppConstant.HEALTH_DOMAIN, serviceCode));
+                //
+                
                 
                 else if(indicatorCode.equalsIgnoreCase("cghivadhsup"))
                 list.add(orm.getNumberOfAdultMembersServedByServiceDomainAndSubType(indicator, additionalQueryCriteria, rpt.getStartAge(), rpt.getEndAge(), startDate, endDate, AppConstant.EVER_ENROLLED_NUM, AppConstant.HEALTH_DOMAIN, serviceCode));
@@ -253,7 +271,62 @@ public class ListOfIndicatorsReportGenerator
                 list.add(orm.getNumberOfAdultMembersServedByServiceDomainAndSubType(indicator, additionalQueryCriteria, rpt.getStartAge(), rpt.getEndAge(), startDate, endDate, AppConstant.EVER_ENROLLED_NUM, AppConstant.SAFETY_DOMAIN, serviceCode));
                 else if(indicatorCode.equalsIgnoreCase("cgsoftskill"))
                 list.add(orm.getNumberOfAdultMembersServedByServiceDomainAndSubType(indicator, additionalQueryCriteria, rpt.getStartAge(), rpt.getEndAge(), startDate, endDate, AppConstant.EVER_ENROLLED_NUM, AppConstant.STABLE_DOMAIN, serviceCode));
-                             
+                
+                else if(indicatorCode.equalsIgnoreCase(ind.getIndicatorForNumberOfHouseholdsNewlyEnrolled().getIndicatorId()))
+                list.add(orm.getNumberOfHouseholdsEnrolled(rpt,startDate, endDate, AppConstant.EVER_ENROLLED_NUM));
+                else if(indicatorCode.equalsIgnoreCase(ind.getIndicatorForNumberOfHouseholdsCurrentlyEnrolled().getIndicatorId()))
+                list.add(orm.getNumberOfHouseholdsEnrolled(rpt,null, null, AppConstant.CURRENTLY_ENROLLED_NUM));
+                else if(indicatorCode.equalsIgnoreCase(ind.getIndicatorForNumberOfHouseholdsEverEnrolled().getIndicatorId()))
+                list.add(orm.getNumberOfHouseholdsEnrolled(rpt,null, null, AppConstant.EVER_ENROLLED_NUM));
+                
+                else if(indicatorCode.equalsIgnoreCase(ind.getIndicatorForNumberOfHivPositiveEnrolledOnTreatmentInReportPeriod().getIndicatorId()))
+                list.add(orm.getNumberOfOvcEnrolledOnTreatment(rpt,rpt.getStartDate(), rpt.getEndDate(), AppConstant.ENROLLED_ON_TREATMENT_YES_NUM,AppConstant.ACTIVE_NUM));
+                else if(indicatorCode.equalsIgnoreCase(ind.getIndicatorForNumberOfHivPositiveOnTreatment().getIndicatorId()))
+                list.add(orm.getNumberOfOvcEnrolledOnTreatment(rpt,null, null, AppConstant.ENROLLED_ON_TREATMENT_YES_NUM,AppConstant.ACTIVE_NUM));
+                else if(indicatorCode.equalsIgnoreCase(ind.getIndicatorForNumberOfHivPositiveOvcEnrolledOnARTWithinTheReportPeriod().getIndicatorId()))
+                list.add(orm.getNumberOfOvcEnrolledOnTreatment(rpt,rpt.getStartDate(), rpt.getEndDate(), AppConstant.ENROLLED_ON_TREATMENT_YES_NUM,AppConstant.EVER_ENROLLED_NUM));
+                else if(indicatorCode.equalsIgnoreCase(ind.getIndicatorForNumberOfHivPositiveNotOnTreatment().getIndicatorId()))
+                list.add(orm.getNumberOfOvcEnrolledOnTreatment(rpt,null, null, AppConstant.ENROLLED_ON_TREATMENT_NO_NUM,AppConstant.ACTIVE_NUM));
+                
+                else if(indicatorCode.equalsIgnoreCase(ind.getIndicatorForNumberOfOvcNewlyTestedPositiveWithinTheReportPeriod().getIndicatorId()))
+                list.add(orm.getNoOfOvcTestedAndRecievedResultInReportPeriodByEnrollmentStatusAndHivStatus(indicator,rpt,AppConstant.EVER_ENROLLED_NUM,AppConstant.HIV_POSITIVE_NUM));
+                else if(indicatorCode.equalsIgnoreCase(ind.getIndicatorForNumberOfCaregiversNewlyTestedPositive().getIndicatorId()))
+                list.add(orm.getNoOfAdultMembersTestedAndRecievedResultInReportPeriodByEnrollmentStatusAndHivStatus(indicator,rpt,AppConstant.EVER_ENROLLED_NUM,AppConstant.HIV_POSITIVE_NUM));
+                //getListOfAdultMembersTestedAndRecievedResultInReportPeriodByEnrollmentStatusAndHivStatus
+                else if(indicatorCode.equalsIgnoreCase(ind.getIndicatorForNumberOfOvcSelfReportingAdherenceToTreatment().getIndicatorId()))
+                list.add(orm.getOvc_ARTSUPPIndicator(indicator,rpt,AppConstant.EVER_ENROLLED_NUM));
+                else if(indicatorCode.equalsIgnoreCase(ind.getIndicatorForNumberOfAdultMembersSelfReportingAdherenceToTreatment().getIndicatorId()))
+                list.add(orm.getAdult_ARTSUPPIndicator(indicator,rpt,AppConstant.EVER_ENROLLED_NUM));
+                else if(indicatorCode.equalsIgnoreCase(ind.getOvc_BIRTHCERTIndicator().getIndicatorId()))
+                list.add(orm.getNoOfOvcWithBirthCertificate(rpt,rpt.getStartAge(),rpt.getEndAge(),AppConstant.ACTIVE_NUM));
+                else if(indicatorCode.equalsIgnoreCase(ind.getIndicatorForNumberOfHivNegativeOvcAssessedonHIVRisk().getIndicatorId()))
+                list.add(orm.getNoOfOvcRiskAssessedByEnrollmentStatusAndHivStatus(indicator,rpt,rpt.getStartAge(),rpt.getEndAge(),rpt.getStartDate(),rpt.getEndDate(),AppConstant.ACTIVE_NUM,AppConstant.HIV_NEGATIVE_NUM));
+                else if(indicatorCode.equalsIgnoreCase(ind.getNoOfHivUnknownOvcAssessedForHIVRiskAndServedWithinReportPeriod().getIndicatorId()))
+                list.add(orm.getNoOfOvcRiskAssessedByEnrollmentStatusAndHivStatus(indicator,rpt,rpt.getStartAge(),rpt.getEndAge(),rpt.getStartDate(),rpt.getEndDate(),AppConstant.ACTIVE_NUM,AppConstant.HIV_UNKNOWN_NUM));
+                //
+                else if(indicatorCode.equalsIgnoreCase(ind.getOvc_EDUIndicator().getIndicatorId()))
+                list.add(orm.getNumberOfOvcAssessedForEducationalPerformance(indicator,rpt,AppConstant.ACTIVE_NUM));
+                
+                else if(indicatorCode.equalsIgnoreCase(ind.getIndicatorForNumberOfSeverelyMalnourishedOvcCurrently().getIndicatorId()))
+                list.add(orm.getNumberOfMalnourishedChildren(indicator,rpt,AppConstant.ACTIVE_NUM));
+                else if(indicatorCode.equalsIgnoreCase(ind.getIndicatorForNumberOfSeverelyMalnourishedOvcServedNutritonalServices().getIndicatorId()))
+                list.add(orm.getNumberOfMalnourishedChildrenProvidedNutritionalServices(indicator,rpt,AppConstant.ACTIVE_NUM));
+                
+                //getNumberOfOvcReferredForHivRelatedTesting_HTSPMTCT(Indicator indicator,ReportParameterTemplate rpt,int enrollmentStatus)
+                else if(indicatorCode.equalsIgnoreCase(ind.getIndicatorForNumberOfOvcProvidedReferralForHIVRelatedTestingService().getIndicatorId()))
+                list.add(orm.getNumberOfOvcReferredForHivRelatedTesting_HTSPMTCT(indicator,rpt,AppConstant.ACTIVE_NUM));
+                else if(indicatorCode.equalsIgnoreCase(ind.getIndicatorForNumberOfAdultMembersProvidedReferralForHIVRelatedTestingService().getIndicatorId()))
+                list.add(orm.getNumberOfAdultHouseholdMembersReferredForHivRelatedTesting_HTSPMTCT(indicator,rpt,AppConstant.ACTIVE_NUM));
+                
+                else if(indicatorCode.equalsIgnoreCase(ind.getIndicatorForNumberOfActiveCaregiversServedWithinDatimReportPeriod().getIndicatorId()))
+                list.add(orm.getNumberOfActiveCaregiversServedWithinDatimReportPeriod(indicator,rpt));
+                else if(indicatorCode.equalsIgnoreCase(ind.getIndicatorForNumberOfCaregiversServedAndGraduatedWithinDatimReportPeriod().getIndicatorId()))
+                list.add(orm.getNumberOfCaregiversServedAndGraduatedWithinDatimReportPeriod(indicator,rpt));
+                else if(indicatorCode.equalsIgnoreCase(ind.getIndicatorForNumberOfCaregiversServedAndTransferedWithinDatimReportPeriod().getIndicatorId()))
+                list.add(orm.getNumberOfCaregiversServedAndTransferedWithinDatimReportPeriod(indicator,rpt));
+                else if(indicatorCode.equalsIgnoreCase(ind.getIndicatorForNumberOfCaregiversServedAndExitedWithinDatimReportPeriod().getIndicatorId()))
+                list.add(orm.getNumberOfCaregiversExitedWithoutGraduationServedWithinDatimReportPeriod(indicator,rpt));
+                //
                 else if(indicatorCode.equalsIgnoreCase("hhcasepland"))
                 {
                     rpt.setStartAge(18);
@@ -292,12 +365,17 @@ public class ListOfIndicatorsReportGenerator
             String additionalQueryCriteria=orgUnitQuery;
             String serviceCode=ReferralReportManager.getReferralServiceCode(indicatorCode);
             //getListOfOvcEnrolledByEnrollmentStatus(String additionalQueryCriteria,String ageQuery,String sex,int enrollmentStatus)
+                indicator=VulnerabilityStatusManager.getVulnerabilityStatusIndicator(indicatorCode);
+                if(indicator==null)
+                {
+                    indicator=indwh.getIndicatorById(indicatorCode);
+                }
                 
-                indicator=indwh.getIndicatorById(indicatorCode);
                 indicatorName=indwh.getIndicatorById(indicatorCode).getIndicatorName();
                 System.err.println("indicatorCode is "+indicatorCode+"; indicatorName is "+indicatorName);
-                //
-                if(indicatorCode.equalsIgnoreCase(ind.getIndicatorForNumberOfActiveOvcServedInReportPeriod().getIndicatorId()))
+                if(indicator.getIndicatorSubtype() !=null && indicator.getIndicatorSubtype().equalsIgnoreCase(AppConstant.VULNERABILITYSTATUS_SUBTYPE))
+                list=orm.getListOfOvcByVulnerabilityStatus(rpt,rpt.getStartAge(), rpt.getEndAge(),sex,indicator.getIndicatorId());
+                else if(indicatorCode.equalsIgnoreCase(ind.getIndicatorForNumberOfActiveOvcServedInReportPeriod().getIndicatorId()))
                 list=orm.getListOfActiveOvcServedByEnrollmentStatus(additionalQueryCriteria, rpt.getStartAge(), rpt.getEndAge(), rpt.getStartDate(), rpt.getEndDate(), AppConstant.ALL_SERVICE_DOMAIN, sex);
                 else if(indicatorCode.equalsIgnoreCase("vcnewlyEnro"))
                 list=orm.getListOfOvcEnrolledByEnrollmentStatusWithinReportPeriod(rpt, ageQuery,sex,AppConstant.EVER_ENROLLED_NUM);
@@ -372,10 +450,10 @@ public class ListOfIndicatorsReportGenerator
                 else if(indicatorCode.equalsIgnoreCase("cgreenrolrp"))
                 list=orm.getListOfAdultMembersEnrolledByEnrollmentStatusAndReportPeriod(indicator,additionalQueryCriteria,sex,AppConstant.HIV_ALL_STATUS_NUM,rpt.getStartAge(),rpt.getEndAge(),rpt.getStartDate(),rpt.getEndDate(),AppConstant.REENROLLED_NUM,AppConstant.NO_TREATMENT_CRITERIA);
                 
-                else if(indicatorCode.equalsIgnoreCase("vccelt18cer"))
-                list=orm.getListOfOvcWithBirthCertificate(rpt,rpt.getStartAge(), rpt.getEndAge(),sex);
-                else if(indicatorCode.equalsIgnoreCase("vcwithnobcc"))
-                list=orm.getListOfOvcWithoutBirthCertificate(rpt,rpt.getStartAge(), rpt.getEndAge(),sex);
+                else if(indicatorCode.equalsIgnoreCase(ind.getIndicatorForNumberOfOvcLessThan18CurrentlyEnrolledWithBirthCertificate().getIndicatorId()))
+                list=orm.getListOfOvcWithBirthCertificate(rpt,rpt.getStartAge(), rpt.getEndAge(),AppConstant.ACTIVE_NUM,sex);
+                else if(indicatorCode.equalsIgnoreCase(ind.getIndicatorForNumberOfOvcWithoutBirthCertificateCurrently().getIndicatorId()))
+                list=orm.getListOfOvcWithoutBirthCertificate(rpt,rpt.getStartAge(), rpt.getEndAge(),AppConstant.ACTIVE_NUM,sex);
                 
                 else if(indicatorCode.equalsIgnoreCase("vccurrinsch"))
                 list=orm.getListOfOvcBySchoolEnrollmentStatus(rpt,rpt.getStartAge(), rpt.getEndAge(),sex,AppConstant.CHILD_IN_SCHOOL);
@@ -470,8 +548,57 @@ public class ListOfIndicatorsReportGenerator
                 list=orm.getListOfOvcServedByServiceDomainAndSubType(additionalQueryCriteria, rpt.getStartAge(), rpt.getEndAge(), rpt.getStartDate(), rpt.getEndDate(), AppConstant.EVER_ENROLLED_NUM, AppConstant.HEALTH_DOMAIN, serviceCode,sex);
                 else if(indicatorCode.equalsIgnoreCase("vchivdiscrp"))
                 list=orm.getListOfOvcServedByServiceDomainAndSubType(additionalQueryCriteria, rpt.getStartAge(), rpt.getEndAge(), rpt.getStartDate(), rpt.getEndDate(), AppConstant.EVER_ENROLLED_NUM, AppConstant.HEALTH_DOMAIN, serviceCode,sex);
+                
+                else if(indicatorCode.equalsIgnoreCase(ind.getIndicatorForNumberOfHouseholdsNewlyEnrolled().getIndicatorId()))
+                list=orm.getListOfHouseholdsEnrolled(rpt,rpt.getStartDate(), rpt.getEndDate(), AppConstant.EVER_ENROLLED_NUM);
+                else if(indicatorCode.equalsIgnoreCase(ind.getIndicatorForNumberOfHouseholdsCurrentlyEnrolled().getIndicatorId()))
+                list=orm.getListOfHouseholdsEnrolled(rpt,null, null, AppConstant.CURRENTLY_ENROLLED_NUM);
+                else if(indicatorCode.equalsIgnoreCase(ind.getIndicatorForNumberOfHouseholdsEverEnrolled().getIndicatorId()))
+                list=orm.getListOfHouseholdsEnrolled(rpt,null, null, AppConstant.EVER_ENROLLED_NUM);
+                
+                else if(indicatorCode.equalsIgnoreCase(ind.getIndicatorForNumberOfHivPositiveOnTreatment().getIndicatorId()))
+                list=orm.getListOfOvcEnrolledOnTreatment(rpt,null, null, AppConstant.ENROLLED_ON_TREATMENT_YES_NUM,AppConstant.ACTIVE_NUM,sex);
+                else if(indicatorCode.equalsIgnoreCase(ind.getIndicatorForNumberOfHivPositiveNotOnTreatment().getIndicatorId()))
+                //startdate and enddate are not required for tracking positives not on treatment, so they are set to null
+                list=orm.getListOfOvcEnrolledOnTreatment(rpt,null, null, AppConstant.ENROLLED_ON_TREATMENT_NO_NUM,AppConstant.ACTIVE_NUM,sex);
+                else if(indicatorCode.equalsIgnoreCase(ind.getIndicatorForNumberOfHivPositiveEnrolledOnTreatmentInReportPeriod().getIndicatorId()))
+                list=orm.getListOfOvcEnrolledOnTreatment(rpt,rpt.getStartDate(), rpt.getEndDate(), AppConstant.ENROLLED_ON_TREATMENT_YES_NUM,AppConstant.ACTIVE_NUM,sex);
+                else if(indicatorCode.equalsIgnoreCase(ind.getIndicatorForNumberOfHivPositiveOvcEnrolledOnARTWithinTheReportPeriod().getIndicatorId()))
+                list=orm.getListOfOvcEnrolledOnTreatment(rpt,rpt.getStartDate(), rpt.getEndDate(), AppConstant.ENROLLED_ON_TREATMENT_YES_NUM,AppConstant.EVER_ENROLLED_NUM,sex);
+                
+                else if(indicatorCode.equalsIgnoreCase(ind.getIndicatorForNumberOfOvcNewlyTestedPositiveWithinTheReportPeriod().getIndicatorId()))
+                list=orm.getListOfOvcTestedAndRecievedResultInReportPeriodByEnrollmentStatusAndHivStatus(rpt,sex,AppConstant.EVER_ENROLLED_NUM,AppConstant.HIV_POSITIVE_NUM);
+                else if(indicatorCode.equalsIgnoreCase(ind.getIndicatorForNumberOfCaregiversNewlyTestedPositive().getIndicatorId()))
+                list=orm.getListOfAdultMembersTestedAndRecievedResultInReportPeriodByEnrollmentStatusAndHivStatus(rpt,sex,AppConstant.EVER_ENROLLED_NUM,AppConstant.HIV_POSITIVE_NUM);
+                else if(indicatorCode.equalsIgnoreCase(ind.getIndicatorForNumberOfOvcSelfReportingAdherenceToTreatment().getIndicatorId()))
+                list=orm.getListOfOvcSupportedToAccessARTServicesInReportPeriod(rpt,sex,AppConstant.EVER_ENROLLED_NUM);
+                else if(indicatorCode.equalsIgnoreCase(ind.getIndicatorForNumberOfAdultMembersSelfReportingAdherenceToTreatment().getIndicatorId()))
+                list=orm.getListOfAdult_ARTSUPPIndicator(rpt,sex,AppConstant.EVER_ENROLLED_NUM);
+                else if(indicatorCode.equalsIgnoreCase(ind.getOvc_BIRTHCERTIndicator().getIndicatorId()))
+                list=orm.getListOfOvcWithBirthCertificate(rpt,rpt.getStartAge(),rpt.getEndAge(),AppConstant.ACTIVE_NUM,sex);
+                else if(indicatorCode.equalsIgnoreCase(ind.getNoOfHivNegativeOvcAssessedForHIVRiskAndServedWithinReportPeriod().getIndicatorId()))
+                list=orm.getListOfOvcRiskAssessedByEnrollmentStatusAndHivStatus(rpt,rpt.getStartAge(),rpt.getEndAge(),rpt.getStartDate(),rpt.getEndDate(),AppConstant.ACTIVE_NUM,AppConstant.HIV_NEGATIVE_NUM,sex);
+                else if(indicatorCode.equalsIgnoreCase(ind.getNoOfHivUnknownOvcAssessedForHIVRiskAndServedWithinReportPeriod().getIndicatorId()))
+                list=orm.getListOfOvcRiskAssessedByEnrollmentStatusAndHivStatus(rpt,rpt.getStartAge(),rpt.getEndAge(),rpt.getStartDate(),rpt.getEndDate(),AppConstant.ACTIVE_NUM,AppConstant.HIV_UNKNOWN_NUM,sex);
+                else if(indicatorCode.equalsIgnoreCase(ind.getOvc_EDUIndicator().getIndicatorId()))
+                list=orm.getListOfOvcAssessedForEducationalPerformance(rpt,sex,AppConstant.ACTIVE_NUM);
+                
+                else if(indicatorCode.equalsIgnoreCase(ind.getIndicatorForNumberOfSeverelyMalnourishedOvcCurrently().getIndicatorId()))
+                list=orm.getListOfMalnourishedChildren(rpt,sex,AppConstant.ACTIVE_NUM);
+                else if(indicatorCode.equalsIgnoreCase(ind.getIndicatorForNumberOfSeverelyMalnourishedOvcServedNutritonalServices().getIndicatorId()))
+                list=orm.getListOfMalnourishedChildrenProvidedNutritionalServices(rpt,sex,AppConstant.ACTIVE_NUM);
+                
+                else if(indicatorCode.equalsIgnoreCase(ind.getIndicatorForNumberOfOvcProvidedReferralForHIVRelatedTestingService().getIndicatorId()))
+                list=orm.getListOfOvcReferredForHivRelatedTesting_HTSPMTCT(rpt,sex,AppConstant.ACTIVE_NUM);
+                else if(indicatorCode.equalsIgnoreCase(ind.getIndicatorForNumberOfAdultMembersProvidedReferralForHIVRelatedTestingService().getIndicatorId()))
+                list=orm.getListOfAdultHouseholdMembersReferredForHivRelatedTesting_HTSPMTCT(rpt,sex,AppConstant.ACTIVE_NUM);
+                //getListOfOvcRiskAssessedByEnrollmentStatusAndHivStatus(ReportParameterTemplate rpt,int startAge,int endAge,String startDate,String endDate,int enrollmentStatus,int hivRiskStatus,String sex)
+                
+                //If this is a household indicator, process as such
+                if(indicator !=null && indicator.getIndicatorType().equalsIgnoreCase(AppConstant.HOUSEHOLD_TYPE))
+                mainList=getHouseholdEnrollmentsWithRowColorAndSerialNo(list);
                 //If this is a caregiver or adult indicator, process as such
-                if(indicator !=null && indicator.getIndicatorType().equalsIgnoreCase(AppConstant.CAREGIVER_TYPE))
+                else if(indicator !=null && indicator.getIndicatorType().equalsIgnoreCase(AppConstant.CAREGIVER_TYPE))
                 mainList=getAdultMembersWithRowColorAndSerialNo(list);
                 else //if this a child indicator, process as such
                 mainList=getOvcWithRowColorAndSerialNo(list);
@@ -506,6 +633,22 @@ public class ListOfIndicatorsReportGenerator
                 if((i%2)==1)
                 ahm.setRowColor("#DDDDDD");
                 mainList.add(ahm);
+            }
+        }
+        return mainList;
+    }
+    public List getHouseholdEnrollmentsWithRowColorAndSerialNo(List list)
+    {
+        List mainList=new ArrayList();
+        if(list !=null)
+        {
+            for(int i=0; i<list.size(); i++)
+            {
+                HouseholdEnrollment hhe=(HouseholdEnrollment)list.get(i);
+                hhe.setSerialNo(i+1);
+                if((i%2)==1)
+                hhe.setRowColor("#DDDDDD");
+                mainList.add(hhe);
             }
         }
         return mainList;

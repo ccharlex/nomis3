@@ -44,6 +44,7 @@ public class HouseholdReferralForm extends org.apache.struts.action.ActionForm {
     private String volunteerName;
     private String referringOrganization;
     private String receivingOrganization;
+    private int referralCompleted;
     
     public HouseholdReferralForm() {
         super();
@@ -256,6 +257,14 @@ public class HouseholdReferralForm extends org.apache.struts.action.ActionForm {
     public void setReferringOrganization(String referringOrganization) {
         this.referringOrganization = referringOrganization;
     }
+
+    public int getReferralCompleted() {
+        return referralCompleted;
+    }
+
+    public void setReferralCompleted(int referralCompleted) {
+        this.referralCompleted = referralCompleted;
+    }
     
 @Override
 public void reset(ActionMapping mapping, HttpServletRequest request)
@@ -272,6 +281,7 @@ public void reset(ActionMapping mapping, HttpServletRequest request)
     volunteerName=null;
     referringOrganization=null;
     receivingOrganization=null;
+    referralCompleted=0;
 }
     /**
      * This is the action called from the Struts framework.
@@ -307,6 +317,8 @@ public void reset(ActionMapping mapping, HttpServletRequest request)
         }
         else if((getHealthServices()==null || getHealthServices().length==0) && (getSafetyServices()==null || getSafetyServices().length==0) && (getSchoolServices()==null || getSchoolServices().length==0) && (getStableServices()==null || getStableServices().length==0))
         errors.add("services", new ActionMessage("errors.services.required"));
+        else if(getReferralCompleted()==0 )
+        errors.add("referralCompleted", new ActionMessage("errors.referralCompleted.required"));
         else if((this.getVolunteerName()==null || this.getVolunteerName().trim().equalsIgnoreCase("select")))
         errors.add("volunteerName", new ActionMessage("errors.volunteerName.required"));
         return errors;

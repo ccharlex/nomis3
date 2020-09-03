@@ -163,9 +163,9 @@ function submitForm(requiredAction,formId)
        return true
 }
 
-function setBtnName(name)
+function confirmAction(name)
 {
-     if(name=="save" || name=="generateForms")
+     if(name=="save")
      {
             setActionName(name)
             return true
@@ -383,8 +383,8 @@ function setActionName(val)
                                         <td align="right">HIV status</td>
                                         <td colspan="3">
                                             <html:select property="hivStatus" styleId="hivStatus" onchange="setEnrolledOnTreatmentStatus(this.value)" disabled="true">
-                                                <logic:present name="mainHivStatus">
-                                                    <logic:iterate name="mainHivStatus" id="hivStatus">
+                                                <logic:present name="allHivStatus">
+                                                    <logic:iterate name="allHivStatus" id="hivStatus">
                                                         <html:option value="${hivStatus.code}">${hivStatus.name}</html:option>
                                                     </logic:iterate>
                                                 </logic:present>

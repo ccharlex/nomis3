@@ -217,11 +217,11 @@ function activateEnrolledOnTreatment(value)
 }
 function activateReferralList(value) 
 {
+    //if HIV status is positive
     if(value == "1") 
     {
        document.getElementById("hivTreatmentFacilityId").disabled = false;
-       document.getElementById("treatmentId").value = "";
-       document.getElementById("treatmentId").disabled = true;
+       document.getElementById("treatmentId").disabled = false;
        document.getElementById("dateEnrolledOnTreatment").disabled = false;
     }
     else 
@@ -229,6 +229,7 @@ function activateReferralList(value)
         document.getElementById("hivTreatmentFacilityId").value="select"
         document.getElementById("hivTreatmentFacilityId").disabled = true;
         document.getElementById("dateEnrolledOnTreatment").disabled = false;
+        document.getElementById("treatmentId").value = "";
         document.getElementById("treatmentId").disabled = true;
     }
 }
@@ -598,7 +599,7 @@ function setActionName(val)
                      <td align="right">Child on treatment?</td>
                             <td>
                                 <html:select property="enrolledOnTreatment" styleId="enrolledOnTreatment" style="width:150px;" onchange="activateReferralList(this.value)" disabled="${enrhivDisabled}">
-                                  <html:option value="0">select...</html:option>
+                                  <html:option value="0">N/A</html:option>
                                     <html:option value="2">No</html:option>
                                   <html:option value="1">Yes</html:option>
                                 </html:select>

@@ -5,6 +5,7 @@
 package com.nomis.beneficiarystatusupdate.controller;
 
 import com.nomis.operationsManagement.AccessManager;
+import com.nomis.operationsManagement.CommunityWorkerRecordsManager;
 import com.nomis.operationsManagement.OrganizationUnitAttributesManager;
 import com.nomis.operationsManagement.UserActivityManager;
 import com.nomis.ovc.business.Beneficiary;
@@ -73,6 +74,7 @@ public class BeneficiaryStatusUpdateAction extends org.apache.struts.action.Acti
         String userName=appManager.getCurrentUserName(session);
         String level2OuId=hsmform.getLevel2OuId();
         String level3OuId=hsmform.getLevel3OuId();
+        int hhSerialNo=hsmform.getHhSerialNo();
         String hhUniqueId=hsmform.getHhUniqueId();
         String beneficiaryId=hsmform.getBeneficiaryId();
         String caregiverId=hsmform.getCaregiverId();
@@ -97,7 +99,8 @@ public class BeneficiaryStatusUpdateAction extends org.apache.struts.action.Acti
         setEnrolledOnTreatmentControlStatus(session,AppConstant.ENROLLED_ON_TREATMENT_NO_NUM);
         generateSchoolList(session,hsmform);
         generateSchoolGradeList(session);
-        loadfacility(session,level2OuId,level3OuId);
+        loadfacility(session,level2OuId,null);
+        CommunityWorkerRecordsManager.setEnumeratorsRegistrationList(session);
         System.err.println("requiredAction is "+requiredAction);
         
         if(requiredAction==null)
@@ -119,15 +122,15 @@ public class BeneficiaryStatusUpdateAction extends org.apache.struts.action.Acti
         else if(requiredAction.equalsIgnoreCase("beneficiaryList"))
         {
             String hhName=hsmform.getHhName();
-            int hhSerialNo=hsmform.getHhSerialNo();
-            hhUniqueId=hsmform.getHhUniqueId();
             loadCaregiversPerHousehold(session, hhUniqueId);
             loadChildrenPerHousehold(session, hhUniqueId);
+            
+            hsmform.reset(mapping, request);
             //setBeneficiaryList(session,hhUniqueId);
             //setBeneficiaryListPerHousehold(session, hhUniqueId);
             request.setAttribute("hhName", hhName);
-            hsmform.setHhUniqueId(hhUniqueId);
             hsmform.setHhSerialNo(hhSerialNo);
+            hsmform.setHhUniqueId(hhUniqueId);
             hsmform.setHhName(hhName);
             hsmform=setOrganizationUnitProperties(session, hhUniqueId,hsmform,userName);
             return mapping.findForward(SUCCESS);
@@ -135,7 +138,9 @@ public class BeneficiaryStatusUpdateAction extends org.apache.struts.action.Acti
         else if(requiredAction.equalsIgnoreCase("childDetails"))
         {
             //String beneficiaryId=hsmform.getBeneficiaryId();
-            //hsmform.reset(mapping, request);
+            hsmform.reset(mapping, request);
+            hsmform.setHhSerialNo(hhSerialNo);
+            hsmform.setHhUniqueId(hhUniqueId);
             hsmform.setBeneficiaryId(beneficiaryId);
             setChildDetails(session,hsmform);
             setAdultMemberDetails(session,hsmform);
@@ -242,48 +247,54 @@ public class BeneficiaryStatusUpdateAction extends org.apache.struts.action.Acti
         {
             System.err.println("hsmform.getBeneficiaryId() is "+hsmform.getBeneficiaryId());
             DaoUtility util=new DaoUtility();
-            Ovc beneficiary=util.getChildEnrollmentDaoInstance().getOvc(hsmform.getBeneficiaryId());
-            if(beneficiary !=null)
+            if(hsmform.getBeneficiaryId() !=null && !hsmform.getBeneficiaryId().trim().equalsIgnoreCase("select"))
             {
-                hsmform.setDateOfEnrollment(DateManager.convertDateToString(beneficiary.getDateOfEnrollment(),DateManager.MM_DD_YYYY_SLASH));
-                hsmform.setLastHivStatus(beneficiary.getCurrentHivStatus());
-                
-                hsmform.setSex(beneficiary.getSex());
-                
-                hsmform.setChildNewHivStatus(beneficiary.getCurrentHivStatus());
-                hsmform.setDateOfNewHivStatus(DateManager.getMthDayYearStringDateFormat(beneficiary.getDateOfCurrentHivStatus(), 0));
-                //if(hsmform.getNewHivStatus()==AppConstant.HIV_UNKNOWN_NUM || dateOfNewStatus==null || dateOfNewStatus.equalsIgnoreCase(DateManager.DEFAULT_DATE))
-                //hsmform.setDateOfNewHivStatus(null);
-                hsmform.setEnrolledOnTreatment(beneficiary.getEnrolledOnTreatment());
-                hsmform.setDateEnrolledOnTreatment(DateManager.getMthDayYearStringDateFormat(beneficiary.getDateEnrolledOnTreatment(), 0));
-                //if(hsmform.getEnrolledOnTreatment()==AppConstant.ENROLLED_ON_TREATMENT_NO_NUM || dateOfEnrolledOnTreatment==null || dateOfEnrolledOnTreatment.equalsIgnoreCase(DateManager.DEFAULT_DATE))
-                //hsmform.setDateEnrolledOnTreatment(null);
-                hsmform.setHivTreatmentFacilityId(beneficiary.getHivTreatmentFacilityId());
-                hsmform.setChildTreatmentId(beneficiary.getTreatmentId());
-                hsmform.setBirthCertificate(beneficiary.getCurrentBirthRegistrationStatus());
-                hsmform.setSchoolStatus(beneficiary.getCurrentSchoolStatus());
-                hsmform.setSchoolName(beneficiary.getSchoolName());
-                hsmform.setGrade(beneficiary.getSchoolGrade());
-                hsmform.setEnrolledInVocationalTraining(0);
-                hsmform.setNameOfVocationalTraining(null);
-                //hsmform.setBeneficiaryName(beneficiary.getFirstName()+" "+beneficiary.getSurname());
-                if(beneficiary.getCurrentHivStatus()==AppConstant.HIV_POSITIVE_NUM)
+                Ovc beneficiary=util.getChildEnrollmentDaoInstance().getOvc(hsmform.getBeneficiaryId());
+                if(beneficiary !=null)
                 {
-                    System.err.println("beneficiary.getCurrentHivStatus() is positive "+beneficiary.getCurrentHivStatus());
-                    setHIVStatusProperties(session,"false");
-                    setEnrolledOnTreatmentControlStatus(session,beneficiary.getEnrolledOnTreatment());
+                    hsmform.setDateOfEnrollment(DateManager.convertDateToString(beneficiary.getDateOfEnrollment(),DateManager.MM_DD_YYYY_SLASH));
+                    hsmform.setLastHivStatus(beneficiary.getCurrentHivStatus());
+
+                    hsmform.setSex(beneficiary.getSex());
+
+                    hsmform.setChildNewHivStatus(beneficiary.getCurrentHivStatus());
+                    hsmform.setDateOfNewHivStatus(DateManager.getMthDayYearStringDateFormat(beneficiary.getDateOfCurrentHivStatus(), 0));
+                    //if(hsmform.getNewHivStatus()==AppConstant.HIV_UNKNOWN_NUM || dateOfNewStatus==null || dateOfNewStatus.equalsIgnoreCase(DateManager.DEFAULT_DATE))
+                    //hsmform.setDateOfNewHivStatus(null);
+                    hsmform.setEnrolledOnTreatment(beneficiary.getEnrolledOnTreatment());
+                    hsmform.setDateEnrolledOnTreatment(DateManager.getMthDayYearStringDateFormat(beneficiary.getDateEnrolledOnTreatment(), 0));
+                    //if(hsmform.getEnrolledOnTreatment()==AppConstant.ENROLLED_ON_TREATMENT_NO_NUM || dateOfEnrolledOnTreatment==null || dateOfEnrolledOnTreatment.equalsIgnoreCase(DateManager.DEFAULT_DATE))
+                    //hsmform.setDateEnrolledOnTreatment(null);
+
+                    hsmform.setBirthCertificate(beneficiary.getCurrentBirthRegistrationStatus());
+                    hsmform.setSchoolStatus(beneficiary.getCurrentSchoolStatus());
+                    hsmform.setSchoolName(beneficiary.getSchoolName());
+                    hsmform.setGrade(beneficiary.getSchoolGrade());
+                    hsmform.setEnrolledInVocationalTraining(0);
+                    hsmform.setNameOfVocationalTraining(null);
+                    //hsmform.setBeneficiaryName(beneficiary.getFirstName()+" "+beneficiary.getSurname());
+                    if(beneficiary.getCurrentHivStatus()==AppConstant.HIV_POSITIVE_NUM)
+                    {
+                        System.err.println("beneficiary.getCurrentHivStatus() is positive "+beneficiary.getCurrentHivStatus());
+                        hsmform.setHivTreatmentFacilityId(beneficiary.getHivTreatmentFacilityId());
+                        hsmform.setChildTreatmentId(beneficiary.getTreatmentId());
+                        setHIVStatusProperties(session,"false");
+                        setEnrolledOnTreatmentControlStatus(session,beneficiary.getEnrolledOnTreatment());
+                    }
+                    else
+                    {
+                        System.err.println("beneficiary.getCurrentHivStatus() is not positive "+beneficiary.getCurrentHivStatus());
+                        setHIVStatusProperties(session,"true");
+                    }
+                    //hsmform.setPhoneNumber(beneficiary.getPhoneNumber());
                 }
                 else
                 {
-                    System.err.println("beneficiary.getCurrentHivStatus() is not positive "+beneficiary.getCurrentHivStatus());
-                    setHIVStatusProperties(session,"true");
+                    hsmform=resetChildInfo(hsmform);
                 }
-                //hsmform.setPhoneNumber(beneficiary.getPhoneNumber());
             }
             else
-            {
-                hsmform=resetChildInfo(hsmform);
-            }
+            hsmform=resetChildInfo(hsmform);
         }
         catch(Exception ex)
         {
@@ -297,42 +308,45 @@ public class BeneficiaryStatusUpdateAction extends org.apache.struts.action.Acti
             System.err.println("hsmform.getCaregiverId() is "+hsmform.getCaregiverId());
             DaoUtility util=new DaoUtility();
             Beneficiary beneficiary=util.getAdultHouseholdMemberDaoInstance().getAdultHouseholdMember(hsmform.getCaregiverId());
-                        
-            if(beneficiary !=null)
-            {
-                hsmform.setDateOfEnrollment(DateManager.convertDateToString(beneficiary.getDateOfEnrollment(),DateManager.MM_DD_YYYY_SLASH));
-                hsmform.setLastHivStatus(beneficiary.getCurrentHivStatus());
-                hsmform.setCaregiverAge(beneficiary.getCurrentAge());
-                hsmform.setCaregiverSex(beneficiary.getSex());
-                hsmform.setCaregiverPhone(beneficiary.getPhoneNumber());
-                hsmform.setCaregiverLastHivStatus(beneficiary.getCurrentHivStatus());
-                hsmform.setDateOfCaregiverLastHivStatus(DateManager.getMthDayYearStringDateFormat(beneficiary.getDateOfCurrentHivStatus(), 0));
-                hsmform.setCaregiverHivStatus(beneficiary.getCurrentHivStatus());
-                hsmform.setDateOfCaregiverHivStatus(DateManager.getMthDayYearStringDateFormat(beneficiary.getDateOfCurrentHivStatus(), 0));
-                
-                hsmform.setCaregiverEnrolledOnTreatment(beneficiary.getEnrolledOnTreatment());
-                hsmform.setDateCaregiverEnrolledOnTreatment(DateManager.getMthDayYearStringDateFormat(beneficiary.getDateEnrolledOnTreatment(), 0));
-                
-                hsmform.setFacilityCaregiverEnrolled(beneficiary.getHivTreatmentFacilityId());
-                hsmform.setCaregiverTreatmentId(beneficiary.getTreatmentId());
-                //hsmform.setBeneficiaryName(beneficiary.getFirstName()+" "+beneficiary.getSurname());
-                if(beneficiary.getCurrentHivStatus()==AppConstant.HIV_POSITIVE_NUM)
+            if(hsmform.getBeneficiaryId() !=null && !hsmform.getBeneficiaryId().trim().equalsIgnoreCase("select"))
+            {            
+                if(beneficiary !=null)
                 {
-                    System.err.println("beneficiary.getCurrentHivStatus() is positive "+beneficiary.getCurrentHivStatus());
-                    setHIVStatusProperties(session,"false");
-                    setEnrolledOnTreatmentControlStatus(session,beneficiary.getEnrolledOnTreatment());
+                    hsmform.setDateOfEnrollment(DateManager.convertDateToString(beneficiary.getDateOfEnrollment(),DateManager.MM_DD_YYYY_SLASH));
+                    hsmform.setLastHivStatus(beneficiary.getCurrentHivStatus());
+                    hsmform.setCaregiverAge(beneficiary.getCurrentAge());
+                    hsmform.setCaregiverSex(beneficiary.getSex());
+                    hsmform.setCaregiverPhone(beneficiary.getPhoneNumber());
+                    hsmform.setCaregiverLastHivStatus(beneficiary.getCurrentHivStatus());
+                    hsmform.setDateOfCaregiverLastHivStatus(DateManager.getMthDayYearStringDateFormat(beneficiary.getDateOfCurrentHivStatus(), 0));
+                    hsmform.setCaregiverHivStatus(beneficiary.getCurrentHivStatus());
+                    hsmform.setDateOfCaregiverHivStatus(DateManager.getMthDayYearStringDateFormat(beneficiary.getDateOfCurrentHivStatus(), 0));
+
+                    //hsmform.setBeneficiaryName(beneficiary.getFirstName()+" "+beneficiary.getSurname());
+                    if(beneficiary.getCurrentHivStatus()==AppConstant.HIV_POSITIVE_NUM)
+                    {
+                        hsmform.setCaregiverEnrolledOnTreatment(beneficiary.getEnrolledOnTreatment());
+                        hsmform.setDateCaregiverEnrolledOnTreatment(DateManager.getMthDayYearStringDateFormat(beneficiary.getDateEnrolledOnTreatment(), 0));
+                        hsmform.setFacilityCaregiverEnrolled(beneficiary.getHivTreatmentFacilityId());
+                        hsmform.setCaregiverTreatmentId(beneficiary.getTreatmentId());
+                        System.err.println("beneficiary.getCurrentHivStatus() is positive "+beneficiary.getCurrentHivStatus());
+                        setHIVStatusProperties(session,"false");
+                        setEnrolledOnTreatmentControlStatus(session,beneficiary.getEnrolledOnTreatment());
+                    }
+                    else
+                    {
+                        System.err.println("beneficiary.getCurrentHivStatus() is not positive "+beneficiary.getCurrentHivStatus());
+                        setHIVStatusProperties(session,"true");
+                    }
+                    //hsmform.setPhoneNumber(beneficiary.getPhoneNumber());
                 }
                 else
                 {
-                    System.err.println("beneficiary.getCurrentHivStatus() is not positive "+beneficiary.getCurrentHivStatus());
-                    setHIVStatusProperties(session,"true");
+                    hsmform=resetCaregiverInfo(hsmform);
                 }
-                //hsmform.setPhoneNumber(beneficiary.getPhoneNumber());
             }
             else
-            {
-                hsmform=resetCaregiverInfo(hsmform);
-            }
+            hsmform=resetCaregiverInfo(hsmform);
         }
         catch(Exception ex)
         {
@@ -397,15 +411,37 @@ public class BeneficiaryStatusUpdateAction extends org.apache.struts.action.Acti
        hsm.setSchoolStatus(hsmform.getSchoolStatus());
        hsm.setSchoolName(hsmform.getSchoolName());
        hsm.setEnrolledInVocationalTraining(hsmform.getEnrolledInVocationalTraining());
-       hsm.setCaregiverId(hsmform.getCaregiverId());
+       hsm.setNameOfVocationalTraining(hsmform.getNameOfVocationalTraining());
        hsm.setChildTreatmentId(hsmform.getChildTreatmentId());
-       hsm.setCaregiverEnrolledOnTreatment(hsmform.getCaregiverEnrolledOnTreatment());
+       hsm.setUpdateChildHivStatus(hsmform.getUpdateChildHivStatus());
+       hsm.setUpdateChildBirthRegStatus(hsmform.getUpdateChildBirthRegAndSchoolStatus());
+       
+       hsm.setCaregiverId(hsmform.getCaregiverId());
        hsm.setCaregiverHivStatus(hsmform.getCaregiverHivStatus());
+       hsm.setCaregiverEnrolledOnTreatment(hsmform.getCaregiverEnrolledOnTreatment());
        hsm.setFacilityCaregiverEnrolled(hsmform.getFacilityCaregiverEnrolled());
        hsm.setCaregiverTreatmentId(hsmform.getCaregiverTreatmentId());
        hsm.setUpdateCaregiverHivStatus(hsmform.getUpdateCaregiverHivStatus());
-       hsm.setUpdateChildBirthRegStatus(hsmform.getUpdateChildBirthRegAndSchoolStatus());
-       hsm.setUpdateChildHivStatus(hsmform.getUpdateChildHivStatus());
+       hsm.setDateCaregiverEnrolledOnTreatment(DateManager.getDefaultStartDateInstance());
+       //if caregiver is HIV positive, set treatment related information
+       if(hsm.getCaregiverHivStatus()==AppConstant.HIV_POSITIVE_NUM)
+       {
+           hsm.setCaregiverEnrolledOnTreatment(hsmform.getCaregiverEnrolledOnTreatment());
+           if(hsm.getCaregiverEnrolledOnTreatment()==AppConstant.ENROLLED_ON_TREATMENT_YES_NUM)
+           {
+               hsm.setDateCaregiverEnrolledOnTreatment(DateManager.getDateInstance(DateManager.processMthDayYearToMysqlFormat(hsmform.getDateCaregiverEnrolledOnTreatment())));
+               hsm.setCaregiverTreatmentId(hsmform.getCaregiverTreatmentId());
+               hsm.setFacilityCaregiverEnrolled(hsmform.getFacilityCaregiverEnrolled());
+           }
+       }
+       else
+       {
+           //Caregiver is not HIV positive, set treatment related parameters to default values
+           hsm.setCaregiverEnrolledOnTreatment(0);
+           hsm.setCaregiverTreatmentId(null);
+           hsm.setFacilityCaregiverEnrolled(null);
+       }
+       
        hsm.setRecordedBy(userName);
        System.err.println("hsm.getBeneficiaryId in BeneficiaryStatusUpdate is "+hsm.getBeneficiaryId());
        return hsm;

@@ -24,7 +24,7 @@ public class HouseholdReferral implements Serializable
     private String safetyServices;
     private String schooledServices;
     private String gbvServices;
-    private int referralComplete;
+    private int referralCompleted;
     private String recordedBy;
     private String communityWorker;
     private int numberOfServices;
@@ -249,12 +249,12 @@ public class HouseholdReferral implements Serializable
         this.beneficiaryType = beneficiaryType;
     }
 
-    public int getReferralComplete() {
-        return referralComplete;
+    public int getReferralCompleted() {
+        return referralCompleted;
     }
 
-    public void setReferralComplete(int referralComplete) {
-        this.referralComplete = referralComplete;
+    public void setReferralCompleted(int referralCompleted) {
+        this.referralCompleted = referralCompleted;
     }
     
     

@@ -177,7 +177,7 @@ public class HouseholdServiceDaoImpl implements HouseholdServiceDao
             }
             session = HibernateUtil.getSession();//"+sqg.getHouseholdServiceDateQuery(startDate, endDate)ageQuery+
             tx = session.beginTransaction();
-            String query="select count(distinct ahm.beneficiaryId) "+SubQueryGenerator.getHheAdultHouseholdMemberOrganizationUnitQuery()+additionalQuery+currentEnrollmentStatusQuery+sexQuery+" and ahm.beneficiaryId not in (select distinct hhs.beneficiaryId from HouseholdService hhs where hhs.beneficiaryId is not null"+sqg.getHouseholdServiceDateQuery(startDate, endDate)+markedForDeleteQuery+")";
+            String query="select count(distinct ahm.beneficiaryId) "+SubQueryGenerator.getHheAdultHouseholdMemberOrganizationUnitQuery()+additionalQuery+currentEnrollmentStatusQuery+sexQuery+ahmMarkedForDeleteQuery+" and ahm.beneficiaryId not in (select distinct hhs.beneficiaryId from HouseholdService hhs where hhs.beneficiaryId is not null"+sqg.getHouseholdServiceDateQuery(startDate, endDate)+markedForDeleteQuery+")";
             System.err.println("query is "+query);
             List list = session.createQuery(query).list();
             tx.commit();
@@ -208,7 +208,7 @@ public class HouseholdServiceDaoImpl implements HouseholdServiceDao
             }
             session = HibernateUtil.getSession();//+ageQuery
             tx = session.beginTransaction();
-            String query=SubQueryGenerator.getHheAdultHouseholdMemberOrganizationUnitQuery()+additionalQuery+currentEnrollmentStatusQuery+sexQuery+" and ahm.beneficiaryId not in (select distinct hhs.beneficiaryId from HouseholdService hhs where hhs.beneficiaryId is not null "+sqg.getHouseholdServiceDateQuery(startDate, endDate)+markedForDeleteQuery+")"+" order by hhe.organizationUnit, ahm.currentAge";
+            String query=SubQueryGenerator.getHheAdultHouseholdMemberOrganizationUnitQuery()+additionalQuery+currentEnrollmentStatusQuery+sexQuery+ahmMarkedForDeleteQuery+" and ahm.beneficiaryId not in (select distinct hhs.beneficiaryId from HouseholdService hhs where hhs.beneficiaryId is not null "+sqg.getHouseholdServiceDateQuery(startDate, endDate)+markedForDeleteQuery+")"+" order by hhe.organizationUnit, ahm.currentAge";
             System.err.println("query is "+query);
             List list = session.createQuery(query).list();
             tx.commit();

@@ -14,6 +14,7 @@ import com.nomis.ovc.metadata.OrganizationUnit;
 import com.nomis.ovc.util.AppConstant;
 import com.nomis.ovc.util.DateManager;
 import com.nomis.ovc.util.AppManager;
+import com.nomis.ovc.util.AppUtility;
 import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
@@ -159,8 +160,16 @@ public class OrganizationUnitAction extends org.apache.struts.action.Action {
     }
     public void setButtonState(HttpSession session,String saveDisabled,String modifyDisabled)
     {
-        session.setAttribute("ouSaveDisabled", saveDisabled);
-        session.setAttribute("ouModifyDisabled", modifyDisabled);
+        if(AppUtility.isMetadataAccessEnabled())
+        {
+            session.setAttribute("ouSaveDisabled", saveDisabled);
+            session.setAttribute("ouModifyDisabled", modifyDisabled);
+        }
+        else
+        {
+           session.setAttribute("ouSaveDisabled", "true");
+           session.setAttribute("ouModifyDisabled", "true");
+        }
     }
     private void generateParentList(HttpSession session,int oulevel)
     {
@@ -169,7 +178,7 @@ public class OrganizationUnitAction extends org.apache.struts.action.Action {
             DaoUtility util=new DaoUtility();
             if(oulevel>0)
             --oulevel;
-            List parentList=util.getOrganizationUnitDaoInstance().getOrganizationUnit(oulevel);
+            List parentList=util.getOrganizationUnitDaoInstance().getOrganizationUnitsByOuLevel(oulevel);
             if(parentList ==null)
             parentList=new ArrayList();
             session.setAttribute("ouparentList", parentList);  

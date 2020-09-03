@@ -25,6 +25,76 @@ public class ChildEducationPerformanceAssessmentDaoImpl implements ChildEducatio
     SessionFactory sessions;
     SubQueryGenerator sqg=new SubQueryGenerator();
     String markedForDeleteQuery=" and cepa.markedForDelete=0";
+    public int getNumberOfOvcAssessedForEducationalPerformance(ReportParameterTemplate rpt,String startDate,String endDate,int currentEnrollmentStatus,String sex) throws Exception
+    {
+        int count=0;
+        try
+        {
+            SubQueryGenerator sqg=new SubQueryGenerator();
+            String ageQuery=sqg.getOvcCurrentAgeQuery(rpt.getStartAge(), rpt.getEndAge());
+            String sexQuery=SubQueryGenerator.getOvcSexQuery(sex);
+            String enrollmentStatusQuery=SubQueryGenerator.getOvcCurrentEnrollmentStatusQuery(currentEnrollmentStatus);
+            String additionalOrgUnitQuery="";
+            if(rpt !=null && rpt.getLevel2OuId() !=null && rpt.getLevel2OuId().trim().length()>0 && !rpt.getLevel2OuId().equalsIgnoreCase("select") && !rpt.getLevel2OuId().equalsIgnoreCase("All"))
+            {
+                additionalOrgUnitQuery=sqg.getOrganizationUnitQuery(rpt);
+            }
+            String query="select count (distinct ovc.ovcId) "+SubQueryGenerator.getHheChildEducationPerformanceAssessmentOrganizationUnitQuery()+additionalOrgUnitQuery+sexQuery+ageQuery+enrollmentStatusQuery+sqg.getChildEducationPerformanceAssessmentDateOfAssessmentQuery(startDate,endDate)+markedForDeleteQuery;
+            System.err.println(query);
+            session = HibernateUtil.getSession();
+            tx = session.beginTransaction();
+            List list = session.createQuery(query).list();
+            tx.commit();
+            closeSession(session);
+            if(list !=null && !list.isEmpty())
+            {
+                count=Integer.parseInt(list.get(0).toString());
+            }
+        }
+         catch (Exception ex)
+         {
+             closeSession(session);
+            throw new Exception(ex);
+         }
+        return count;
+    }
+    public List getListOfOvcAssessedForEducationalPerformance(ReportParameterTemplate rpt,String startDate,String endDate,int currentEnrollmentStatus,String sex) throws Exception
+    {
+        List mainList=new ArrayList();
+        try
+        {
+            SubQueryGenerator sqg=new SubQueryGenerator();
+            String ageQuery=sqg.getOvcCurrentAgeQuery(rpt.getStartAge(), rpt.getEndAge());
+            String sexQuery=SubQueryGenerator.getOvcSexQuery(sex);
+            String enrollmentStatusQuery=SubQueryGenerator.getOvcCurrentEnrollmentStatusQuery(currentEnrollmentStatus);
+            String additionalOrgUnitQuery="";
+            if(rpt !=null && rpt.getLevel2OuId() !=null && rpt.getLevel2OuId().trim().length()>0 && !rpt.getLevel2OuId().equalsIgnoreCase("select") && !rpt.getLevel2OuId().equalsIgnoreCase("All"))
+            {
+                additionalOrgUnitQuery=sqg.getOrganizationUnitQuery(rpt);
+            }
+            String query=SubQueryGenerator.getHheChildEducationPerformanceAssessmentOrganizationUnitQuery()+additionalOrgUnitQuery+sexQuery+ageQuery+enrollmentStatusQuery+sqg.getChildEducationPerformanceAssessmentDateOfAssessmentQuery(startDate,endDate)+markedForDeleteQuery;
+            System.err.println(query);
+            session = HibernateUtil.getSession();
+            tx = session.beginTransaction();
+            List list = session.createQuery(query).list();
+            tx.commit();
+            closeSession(session);
+            if(list !=null)
+            {
+                for(Object obj:list)
+                {
+                    Object[] objArray=(Object[])obj;
+                    mainList.add(objArray[2]);
+                }
+            }
+        }
+         catch (Exception ex)
+         {
+             closeSession(session);
+            throw new Exception(ex);
+         }
+        return mainList;
+    }
     public List getChildEducationPerformanceAssessmentRecordsForExport(ReportParameterTemplate rpt) throws Exception
     {
         List mainList=new ArrayList();

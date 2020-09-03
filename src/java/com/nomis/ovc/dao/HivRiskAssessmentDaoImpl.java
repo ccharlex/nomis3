@@ -29,6 +29,84 @@ public class HivRiskAssessmentDaoImpl implements HivRiskAssessmentDao
     Transaction tx;
     SessionFactory sessions;
     String markedForDeleteQuery=" and hra.markedForDelete=0";
+    public int getNumberOfOvcRiskAssessedByHivStatusAndEnrollmentStatus(ReportParameterTemplate rpt,int startAge,int endAge,String startDate,String endDate,int enrollmentStatus,int hivStatus,String sex) throws Exception
+    {
+        int count=0;
+        try
+        {
+            SubQueryGenerator sqg=new SubQueryGenerator();
+            String additionalOrgUnitQuery="";
+            String ageQuery=sqg.getAgeAtHivRiskAssessmentQuery(startAge, endAge);
+            String sexQuery=SubQueryGenerator.getOvcSexQuery(sex);
+            String hivStatusAtRiskAssessment=SubQueryGenerator.getHivStatusAtHivRiskAssessmentQuery(hivStatus);
+            if(rpt !=null && rpt.getLevel2OuId() !=null && rpt.getLevel2OuId().trim().length()>0 && !rpt.getLevel2OuId().equalsIgnoreCase("select") && !rpt.getLevel2OuId().equalsIgnoreCase("All"))
+            {
+                additionalOrgUnitQuery=sqg.getOrganizationUnitQuery(rpt);
+            }
+            String query="select count(distinct hra.ovcId) "+SubQueryGenerator.getHheOvcOrganizationUnitHivRiskAssessmentQuery()+additionalOrgUnitQuery+ageQuery+sexQuery+hivStatusAtRiskAssessment+SubQueryGenerator.getHivRiskAssessmentDateQuery(startDate,endDate)+markedForDeleteQuery;
+            System.err.println(query);
+            session = HibernateUtil.getSession();
+            tx = session.beginTransaction();
+            List list = session.createQuery(query).list();
+            tx.commit();
+            closeSession(session);
+            if(list !=null && !list.isEmpty())
+            {
+                count=Integer.parseInt(list.get(0).toString());
+            }
+            
+        }
+         catch (Exception ex)
+         {
+             closeSession(session);
+            throw new Exception(ex);
+         }
+        return count;
+    }
+    public List getListOfOvcRiskAssessedByHivStatusAndEnrollmentStatus(ReportParameterTemplate rpt,int startAge,int endAge,String startDate,String endDate,int enrollmentStatus,int hivStatus,String sex) throws Exception
+    {
+        List mainList=new ArrayList();
+        try
+        {
+            SubQueryGenerator sqg=new SubQueryGenerator();
+            String additionalOrgUnitQuery="";
+            String ageQuery=sqg.getAgeAtHivRiskAssessmentQuery(startAge, endAge);
+            String sexQuery=SubQueryGenerator.getOvcSexQuery(sex);
+            String hivStatusAtRiskAssessment=SubQueryGenerator.getHivStatusAtHivRiskAssessmentQuery(hivStatus);
+            if(rpt !=null && rpt.getLevel2OuId() !=null && rpt.getLevel2OuId().trim().length()>0 && !rpt.getLevel2OuId().equalsIgnoreCase("select") && !rpt.getLevel2OuId().equalsIgnoreCase("All"))
+            {
+                additionalOrgUnitQuery=sqg.getOrganizationUnitQuery(rpt);
+            }
+            String query=SubQueryGenerator.getHheOvcOrganizationUnitHivRiskAssessmentQuery()+additionalOrgUnitQuery+ageQuery+sexQuery+hivStatusAtRiskAssessment+SubQueryGenerator.getHivRiskAssessmentDateQuery(startDate,endDate)+markedForDeleteQuery;
+            System.err.println(query);
+            session = HibernateUtil.getSession();
+            tx = session.beginTransaction();
+            List list = session.createQuery(query).list();
+            tx.commit();
+            closeSession(session);
+            if(list !=null)
+            {
+                List uniqueIdList=new ArrayList();
+                Ovc ovc=null;
+                for(Object obj:list)
+                {
+                    Object[] objArray=(Object[])obj;
+                    ovc=(Ovc)objArray[1];
+                    if(!uniqueIdList.contains(ovc.getOvcId()))
+                    {
+                        uniqueIdList.add(ovc.getOvcId());
+                        mainList.add(objArray[1]);
+                    }
+                }
+            }
+        }
+         catch (Exception ex)
+         {
+             closeSession(session);
+            throw new Exception(ex);
+         }
+        return mainList;
+    }
     public List getHivRiskAssessmentRecordsByLevel4OuId(String level4OuId) throws Exception
     {
         List mainList=new ArrayList();
@@ -114,9 +192,8 @@ public class HivRiskAssessmentDaoImpl implements HivRiskAssessmentDao
                     session.save(hra);
                     tx.commit();
                     closeSession(session);
-                    //System.err.println("hra.getChildAtRiskQuestion() after save in saveHivRiskAssessment(HivRiskAssessment hra) is "+hra.getChildAtRiskQuestion());
-                    //updateOvcHivStatusWithTestNotIndicated(hra);
-                    processHivRiskAssessmentOutcome(hra);
+                    
+                    //processHivRiskAssessmentOutcome(hra);
                     System.err.println("hra.getOvcId() "+hra.getOvcId()+" saved");
                 }
                 
@@ -147,10 +224,9 @@ public class HivRiskAssessmentDaoImpl implements HivRiskAssessmentDao
                     session.update(hra);
                     tx.commit();
                     closeSession(session);
-                    //System.err.println("hra.getChildAtRiskQuestion() after update in updateHivRiskAssessment(HivRiskAssessment hra) is "+hra.getChildAtRiskQuestion());
-                    //updateOvcHivStatusWithTestNotIndicated(hra);
-                    processHivRiskAssessmentOutcome(hra);
-                    System.err.println("hra.getOvcId() "+hra.getOvcId()+" updated");
+                    
+                    //processHivRiskAssessmentOutcome(hra);
+                    //System.err.println("hra.getOvcId() "+hra.getOvcId()+" updated");
                 }
             }
         }
@@ -192,7 +268,7 @@ public class HivRiskAssessmentDaoImpl implements HivRiskAssessmentDao
             for(Object obj:list)
             {
                 HivRiskAssessment hra=(HivRiskAssessment)obj;
-                this.markedForDelete(hra);
+                markForDelete(hra);
             }
         }
     }
@@ -208,7 +284,7 @@ public class HivRiskAssessmentDaoImpl implements HivRiskAssessmentDao
             }
         }
     }
-    public void markedForDelete(HivRiskAssessment hra) throws Exception
+    public void markForDelete(HivRiskAssessment hra) throws Exception
     {
         try
         {
@@ -221,7 +297,7 @@ public class HivRiskAssessmentDaoImpl implements HivRiskAssessmentDao
                     hra2.setMarkedForDelete(1);
                     session = HibernateUtil.getSession();
                     tx = session.beginTransaction();
-                    session.delete(hra2);
+                    session.update(hra2);
                     tx.commit();
                     closeSession(session);
                 }
@@ -302,7 +378,7 @@ public class HivRiskAssessmentDaoImpl implements HivRiskAssessmentDao
     {
         HivStatusManager hsm=new HivStatusManager();
         //Process only for assessments done after 30/09/2018
-        if(hra !=null && hra.getDateOfAssessment().after(DateManager.getDateInstance("2018-09-30")))
+        /*if(hra !=null && hra.getDateOfAssessment().after(DateManager.getDateInstance("2018-09-30")))
         {
             HivStatusManagerDao hsmdao=new HivStatusManagerDaoImpl();
             hsm.setBeneficiaryId(hra.getOvcId());
@@ -332,7 +408,7 @@ public class HivRiskAssessmentDaoImpl implements HivRiskAssessmentDao
                 hsm.setNewHivStatus(AppConstant.HIV_TEST_REQUIRED_NUM);
             }
             hsmdao.saveHivStatusManager(hsm, true);
-        }
+        }*/
     }
     public List getHivRiskAssessmentRecords(ReportParameterTemplate rpt) throws Exception
     {

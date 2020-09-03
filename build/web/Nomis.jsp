@@ -9,6 +9,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<script type="text/javascript" src="js/jquery-1.4.2.min.js"></script>
+<script type="text/javascript" src="js/jquery-ui-1.8.custom.min.js"></script>     
+<script type="text/javascript" src="js/odm.js"></script>
 <title>NOMIS - National OVC Management Information System </title>
 <style type="text/css">
 <!--
@@ -73,55 +76,56 @@ a:active {
 <script language="javascript">
 function loadStartupProcesses()
 {
-    getContextPath();
+    //alert("Inside load startup process")
+    //getContextPath();
     updateExistingRecords();
-    processUploadedFiles();
-    checkProcessedImportFiles();
-    checkDataImportStatus();
-    updateHivTrackingDate()
+    //processUploadedFiles();
+    //checkProcessedImportFiles();
+    //checkDataImportStatus();
+    //updateHivTrackingDate()
 }
 function updateExistingRecords()
 {
-   req="hsuTrackingDate;"+"updateExistingRecords"
-   getValuesFromDb('addcbo.do',req,'updateExistingRecords')
+   req="updateExistingRecords;"+"updateExistingRecords"
+   getValuesByAjaxApi('ajaxaction.do',req,'updateExistingRecords')
 }
 function updateHivTrackingDate()
 {
    req="hsuTrackingDate;"+"hsuTrackingDate"
-   getValuesFromDb('addcbo.do',req,'hsuTrackingDate')
+   getValuesFromDb('ajaxaction.do',req,'hsuTrackingDate')
 }
 function getContextPath()
 {
    req="contextPath;"+"contextPath"
-   getValuesFromDb('addcbo.do',req,'contextPath')
+   getValuesFromDb('ajaxaction.do',req,'contextPath')
 }
 function checkDataImportStatus()
 {
    req="checkImportStatus;"+"checkImportStatus"
-   getValuesFromDb('addcbo.do',req,'checkImportStatus')
+   getValuesFromDb('ajaxaction.do',req,'checkImportStatus')
 }
 function processUploadedFiles()
 {
    req="processImportFiles;"+"processImportFiles"
-   getValuesFromDb('addcbo.do',req,'processImportFiles')
+   getValuesFromDb('ajaxaction.do',req,'processImportFiles')
 }
 function checkProcessedImportFiles()
 {
    req="checkProcessedImportFiles;"+"checkProcessedImportFiles"
-   getValuesFromDb('addcbo.do',req,'checkProcessedImportFiles')
+   getValuesFromDb('ajaxaction.do',req,'checkProcessedImportFiles')
    
 }
 function setWithdrawalStatus()
 {
    req="withdrawalStatus;"+"withdrawalStatus"
-   getValuesFromDb('addcbo.do',req,'withdrawalStatus')
+   getValuesFromDb('ajaxaction.do',req,'withdrawalStatus')
 }
 function stateChanged()
 {
 	if (xmlhttp.readyState==4)
 	{
 		var value=xmlhttp.responseText;
-                //alert(value)
+                //alert(callerId)
                 if(value==" " || value=="" || value==";" || value==null)
                 return false;
             

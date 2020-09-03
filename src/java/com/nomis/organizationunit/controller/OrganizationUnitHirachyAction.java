@@ -4,9 +4,11 @@
  */
 package com.nomis.organizationunit.controller;
 
+import com.nomis.operationsManagement.OrganizationUnitHierarchyManager;
 import com.nomis.ovc.dao.OrganizationUnitHierarchyDao;
 import com.nomis.ovc.dao.OrganizationUnitHierarchyDaoImpl;
 import com.nomis.ovc.metadata.OrganizationUnitHierarchy;
+import com.nomis.ovc.util.AppUtility;
 import com.nomis.ovc.util.DateManager;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +50,7 @@ public class OrganizationUnitHirachyAction extends org.apache.struts.action.Acti
         requiredAction=reqParam;
         setButtonState(session,"false","true");
         setOuHierarchyRecords(session);
+        OrganizationUnitHierarchyManager.setOrganizationUnitHierachyAttributes(session);
         if(requiredAction==null)
         {
             ouhform.reset(mapping, request);
@@ -82,7 +85,7 @@ public class OrganizationUnitHirachyAction extends org.apache.struts.action.Acti
         {
             ouhdao.deleteOrganizationUnitHierarchy(getFilledOrganizationUnitHierarchy(ouhform));
         }
-        
+        OrganizationUnitHierarchyManager.setOrganizationUnitHierachyAttributes(session);
         ouhform.reset(mapping, request);
         ouhform=getOuForm(ouhform);
         setOuHierarchyRecords(session);
@@ -118,7 +121,15 @@ public class OrganizationUnitHirachyAction extends org.apache.struts.action.Acti
     }
     private void setButtonState(HttpSession session,String saveDisabled,String modifyDisabled)
     {
-        session.setAttribute("ouhBtnSaveDisabled", saveDisabled);
-        session.setAttribute("ouhBtnModifiedDisabled", modifyDisabled);
+        if(AppUtility.isMetadataAccessEnabled())
+        {
+            session.setAttribute("ouhBtnSaveDisabled", saveDisabled);
+            session.setAttribute("ouhBtnModifiedDisabled", modifyDisabled);
+        }
+        else
+        {
+            session.setAttribute("ouhBtnSaveDisabled", "true");
+            session.setAttribute("ouhBtnModifiedDisabled", "true");
+        }
     }
 }

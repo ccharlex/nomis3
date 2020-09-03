@@ -5,6 +5,7 @@
 package com.nomis.ovc.dao;
 
 import com.nomis.ovc.business.NutritionAssessment;
+import com.nomis.ovc.business.NutritionStatus;
 import com.nomis.ovc.business.Ovc;
 import com.nomis.ovc.util.AppConstant;
 import com.nomis.ovc.util.AppUtility;
@@ -38,7 +39,7 @@ public class NutritionAssessmentDaoImpl implements NutritionAssessmentDao
             {
                 additionalOrgUnitQuery=sqg.getOrganizationUnitQuery(rpt);
             }
-            String query=SubQueryGenerator.getHheNutritionAssessmentOrganizationUnitQuery()+additionalOrgUnitQuery+sqg.getNutritionAssessmentLastModifiedDateQuery(rpt.getStartDate(),rpt.getEndDate());
+            String query=SubQueryGenerator.getHheOvcNutritionAssessmentOrganizationUnitQuery()+additionalOrgUnitQuery+sqg.getNutritionAssessmentLastModifiedDateQuery(rpt.getStartDate(),rpt.getEndDate());
             System.err.println(query);
             session = HibernateUtil.getSession();
             tx = session.beginTransaction();
@@ -564,6 +565,7 @@ public class NutritionAssessmentDaoImpl implements NutritionAssessmentDao
                 session.close();
                 assignAssessmentNumber(na);
                 setNutritionAssessmentsWithDateOfLastWeight(na);
+                saveOrUpdateNutritionStatus(na);
             }
         }
         catch (HibernateException he)
@@ -596,6 +598,7 @@ public class NutritionAssessmentDaoImpl implements NutritionAssessmentDao
                     session.update(na);
                     tx.commit();
                     session.close();
+                    saveOrUpdateNutritionStatus(na);
                }
             }
         }
@@ -608,6 +611,20 @@ public class NutritionAssessmentDaoImpl implements NutritionAssessmentDao
         {
             closeSession();
             ex.printStackTrace();
+        }
+    }
+    private void saveOrUpdateNutritionStatus(NutritionAssessment na) throws Exception
+    {
+        if(na !=null)
+        {
+            NutritionStatusDao nsdao=new NutritionStatusDaoImpl();
+            NutritionStatus ns=new NutritionStatus();
+            ns.setCurrentNutritionalStatus(na.getNutritionalStatus());
+            ns.setDateOfCurrentNutritionalStatus(na.getDateOfAssessment());
+            ns.setLastModifiedDate(na.getLastModifiedDate());
+            ns.setMarkedForDelete(na.getMarkedForDelete());
+            ns.setOvcId(na.getOvcId());
+            nsdao.saveOrUpdateNutritionStatus(ns);
         }
     }
     public void markedForDelete(NutritionAssessment na) throws Exception

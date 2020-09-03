@@ -4,6 +4,10 @@
  */
 package com.nomis.ovc.business;
 
+import com.nomis.operationsManagement.BeneficiaryManager;
+import com.nomis.ovc.util.BeneficiaryAttributeManager;
+import com.nomis.ovc.util.ReferralFacilityManager;
+import com.nomis.ovc.util.SingleOptionManager;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -40,6 +44,39 @@ public class CareAndSupportChecklist implements Serializable
     private int markedForDelete;
     private String volunteerName;
     private String recordedBy;
+    
+    private String coughSymptomOptionName;
+    private String childLossinWeightOptionName;
+    private String childHasFeverOptionName;
+    private String childHasNightSweatOptionName;
+    private String childHasSwellingOptionName;
+    private String enrolledOnTreatmentOptionName;
+    private String facilityName;
+    private String pickedUpMedicationOptionName;
+    private String missedARVsRecentlyOptionName;
+    private String reasonsPeopleSkipARVOptionName;
+    private String viralLoadTestDoneOptionName;
+    private String viralLoadResultKnownOptionName;
+    private String viralLoadResultOptionName;
+    private String reasonViralLoadNotDoneOptionName;
+    private String receivedTransportationSupportOptionName;
+    private String monthsOfTransportationSupportOptionName;
+    private String soresRashPainExperienceOptionName;
+        
+    private int serialNo=0;
+    String rowColor="#FFFFFF";
+    private Beneficiary beneficiary;
+
+    public Beneficiary getBeneficiary() 
+    {
+        if(beneficiary==null)
+        beneficiary=BeneficiaryManager.getBeneficiary(beneficiaryId);
+        return beneficiary;
+    }
+
+    public void setBeneficiary(Beneficiary beneficiary) {
+        this.beneficiary = beneficiary;
+    }
 
     public int getChildHasFever() {
         return childHasFever;
@@ -256,5 +293,90 @@ public class CareAndSupportChecklist implements Serializable
     public void setVolunteerName(String volunteerName) {
         this.volunteerName = volunteerName;
     }
+
+    public String getRowColor() {
+        return rowColor;
+    }
+
+    public void setRowColor(String rowColor) {
+        this.rowColor = rowColor;
+    }
+
+    public int getSerialNo() {
+        return serialNo;
+    }
+
+    public void setSerialNo(int serialNo) {
+        this.serialNo = serialNo;
+    }
+
+    public String getChildHasFeverOptionName() {
+        return childHasFeverOptionName=SingleOptionManager.getSingleChoiceOption(childHasFever).getName();
+    }
+
+    public String getChildHasNightSweatOptionName() {
+        return childHasNightSweatOptionName=SingleOptionManager.getSingleChoiceOption(childHasNightSweat).getName();
+    }
+
+    public String getChildHasSwellingOptionName() {
+        return childHasSwellingOptionName=SingleOptionManager.getSingleChoiceOption(childHasSwelling).getName();
+    }
+
+    public String getChildLossinWeightOptionName() {
+        return childLossinWeightOptionName=SingleOptionManager.getSingleChoiceOption(childLossinWeight).getName();
+    }
+
+    public String getCoughSymptomOptionName() {
+        return coughSymptomOptionName=SingleOptionManager.getSingleChoiceOption(coughSymptom).getName();
+    }
+
+    public String getEnrolledOnTreatmentOptionName() {
+        return enrolledOnTreatmentOptionName=SingleOptionManager.getSingleChoiceOption(enrolledOnTreatment).getName();
+    }
+
+    public String getFacilityName() {
+        return facilityName=ReferralFacilityManager.getReferralFacilityById(facilityId).getFacilityName();
+    }
+
+    public String getMissedARVsRecentlyOptionName() {
+        return missedARVsRecentlyOptionName=SingleOptionManager.getSingleChoiceOption(missedARVsRecently).getName();
+    }
+
+    public String getMonthsOfTransportationSupportOptionName() {
+        return monthsOfTransportationSupportOptionName=SingleOptionManager.getSingleChoiceOption(monthsOfTransportationSupport).getName();
+    }
+
+    public String getPickedUpMedicationOptionName() {
+        return pickedUpMedicationOptionName=SingleOptionManager.getSingleChoiceOption(pickedUpMedication).getName();
+    }
+
+    public String getReasonViralLoadNotDoneOptionName() {
+        return reasonViralLoadNotDoneOptionName;
+    }
+
+    public String getReasonsPeopleSkipARVOptionName() {
+        return reasonsPeopleSkipARVOptionName;
+    }
+
+    public String getReceivedTransportationSupportOptionName() {
+        return receivedTransportationSupportOptionName=SingleOptionManager.getSingleChoiceOption(receivedTransportationSupport).getName();
+    }
+
+    public String getSoresRashPainExperienceOptionName() {
+        return soresRashPainExperienceOptionName=SingleOptionManager.getSingleChoiceOption(soresRashPainExperience).getName();
+    }
+
+    public String getViralLoadResultKnownOptionName() {
+        return viralLoadResultKnownOptionName=SingleOptionManager.getSingleChoiceOption(viralLoadResultKnown).getName();
+    }
+
+    public String getViralLoadResultOptionName() {
+        return viralLoadResultOptionName=SingleOptionManager.getSingleChoiceOption(viralLoadResult).getName();
+    }
+
+    public String getViralLoadTestDoneOptionName() {
+        return viralLoadTestDoneOptionName=SingleOptionManager.getSingleChoiceOption(viralLoadTestDone).getName();
+    }
+
     
 }

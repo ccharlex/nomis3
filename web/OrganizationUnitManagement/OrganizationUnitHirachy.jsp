@@ -247,6 +247,7 @@ function setActionName(val)
             <html:text property="description" styleId="description" styleClass="textField" style="width:418px;"/>
                 
         </td></tr>
+    <%----%>
     <tr><td colspan="4" align="center"><html:submit value="Save" onclick="setBtnName('save')" disabled="${ouhBtnSaveDisabled}"/> 
             <html:submit value="Update" onclick="setBtnName('update')" disabled="${ouhBtnModifiedDisabled}"/>
             <html:submit value="Delete" onclick="setBtnName('delete')" disabled="${ouhBtnModifiedDisabled}"/>

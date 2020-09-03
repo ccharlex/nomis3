@@ -443,7 +443,7 @@ public int exportAdultHouseholdMemberRecordsInXml(String parentFolderPath,Report
 
             if(list==null)
             list=new ArrayList();
-            String[] columnNames={"hhUniqueId","enrollmentId","beneficiaryId","dateOfEnrollment","firstName","surname","sex","phoneNumber","occupation","baselineHivStatus","dateOfBaselineHivStatus","enrolledOnTreatment","dateEnrolledOnTreatment","treatmentId","hivTreatmentFacility","educationLevel","isCaregiver","maritalStatus","currentEnrollmentStatus","dateOfCurrentEnrollmentStatus","currentHivStatus","dateOfCurrentHivStatus","ageAtBaseline","ageUnitAtBaseline","currentAge","currentAgeUnit","dateCreated","lastModifiedDate","recordedBy","markedForDelete"};
+            String[] columnNames={"hhUniqueId","enrollmentId","beneficiaryId","dateOfEnrollment","firstName","surname","sex","phoneNumber","occupation","baselineHivStatus","dateOfBaselineHivStatus","enrolledOnTreatment","dateEnrolledOnTreatment","treatmentId","hivTreatmentFacility","educationLevel","isCaregiver","beneficiaryType","maritalStatus","currentEnrollmentStatus","dateOfCurrentEnrollmentStatus","currentHivStatus","dateOfCurrentHivStatus","ageAtBaseline","ageUnitAtBaseline","currentAge","currentAgeUnit","dateCreated","lastModifiedDate","recordedBy","markedForDelete"};
 
             atts.clear();
 
@@ -470,6 +470,7 @@ public int exportAdultHouseholdMemberRecordsInXml(String parentFolderPath,Report
                   String hivTreatmentFacility=getPropertyValue(ahm.getHivTreatmentFacilityId());
                   String educationLevel=getIntegerPropertyValue(ahm.getEducationLevel()+"");
                   String isCaregiver=getIntegerPropertyValue(ahm.getIsCaregiver()+"");
+                  String beneficiaryType=getIntegerPropertyValue(ahm.getBeneficiaryType()+"");
                   String maritalStatus=getIntegerPropertyValue(ahm.getMaritalStatus()+"");
                   //String comfortableToDiscloseMemberHivStatus=getIntegerPropertyValue(ahm.getComfortableToDiscloseMemberHivStatus()+"");
                   String currentEnrollmentStatus=getIntegerPropertyValue(ahm.getCurrentEnrollmentStatus()+"");
@@ -492,7 +493,7 @@ public int exportAdultHouseholdMemberRecordsInXml(String parentFolderPath,Report
                   String currentAgeUnit=getIntegerPropertyValue(ahm.getCurrentAgeUnit()+"");
                   //String disabled=getIntegerPropertyValue(ahm.getDisabled()+"");
 
-                  String[] fieldValues={hhUniqueId,enrollmentId,beneficiaryId,dateOfEnrollment,firstName,surname,sex,phoneNumber,occupation,baselineHivStatus,dateOfBaselineHivStatus,enrolledOnTreatment,dateEnrolledOnTreatment,treatmentId,hivTreatmentFacility,educationLevel,isCaregiver,maritalStatus,currentEnrollmentStatus,dateOfCurrentEnrollmentStatus,currentHivStatus,dateOfCurrentHivStatus,ageAtBaseline,ageUnitAtBaseline,currentAge,currentAgeUnit,dateCreated,lastModifiedDate,recordedBy,markedForDelete};
+                  String[] fieldValues={hhUniqueId,enrollmentId,beneficiaryId,dateOfEnrollment,firstName,surname,sex,phoneNumber,occupation,baselineHivStatus,dateOfBaselineHivStatus,enrolledOnTreatment,dateEnrolledOnTreatment,treatmentId,hivTreatmentFacility,educationLevel,isCaregiver,beneficiaryType,maritalStatus,currentEnrollmentStatus,dateOfCurrentEnrollmentStatus,currentHivStatus,dateOfCurrentHivStatus,ageAtBaseline,ageUnitAtBaseline,currentAge,currentAgeUnit,dateCreated,lastModifiedDate,recordedBy,markedForDelete};
                   hd.startElement("","","AdultHouseholdMember",atts);
                     for (int i=0;i<columnNames.length;i++)
                     {
@@ -1129,7 +1130,7 @@ public int exportReferralRecordsInXml(String parentFolderPath,ReportParameterTem
             AttributesImpl atts = new AttributesImpl();
             if(list==null)
             list=new ArrayList();
-            String[] columnNames={"id","beneficiaryId","beneficiaryType","dateOfReferral","stableServices","healthServices","safetyServices","schooledServices","referringOrganization","receivingOrganization","referralComplete","numberOfServices","dateCreated","lastModifiedDate","recordedBy","communityWorker","markedForDelete","ageAtReferral","ageUnitAtReferral"};
+            String[] columnNames={"id","beneficiaryId","beneficiaryType","dateOfReferral","stableServices","healthServices","safetyServices","schooledServices","referringOrganization","receivingOrganization","referralCompleted","numberOfServices","dateCreated","lastModifiedDate","recordedBy","communityWorker","markedForDelete","ageAtReferral","ageUnitAtReferral"};
 
             atts.clear();
 
@@ -1163,7 +1164,7 @@ public int exportReferralRecordsInXml(String parentFolderPath,ReportParameterTem
                   String markedForDelete=getIntegerPropertyValue(referral.getMarkedForDelete()+"");
                   String ageAtReferral=getIntegerPropertyValue(referral.getAgeAtReferral()+"");
                   String ageUnitAtReferral=getIntegerPropertyValue(referral.getAgeUnitAtReferral()+"");
-                  String referralComplete=getIntegerPropertyValue(referral.getReferralComplete()+"");
+                  String referralComplete=getIntegerPropertyValue(referral.getReferralCompleted()+"");
 
                   String[] fieldValues={id,beneficiaryId,beneficiaryType,dateOfReferral,stableServices,healthServices,safetyServices,schooledServices,referringOrganization,receivingOrganization,referralComplete,numberOfServices,dateCreated,lastModifiedDate,recordedBy,communityWorker,markedForDelete,ageAtReferral,ageUnitAtReferral};
                   hd.startElement("","","ReferralService",atts);

@@ -22,7 +22,49 @@ public class IndicatorWarehouse implements Serializable
         if(indicatorId !=null)
         {
             IndicatorDictionary ind=new IndicatorDictionary();
-            if(indicatorId.equalsIgnoreCase(ind.getIndicatorForNumberOfBeneficiariesServedWithinTheReportPeriod().getIndicatorId()))
+            //
+            if(indicatorId.equalsIgnoreCase(ind.getIndicatorForNumberOfHivUnknownOrNegativeOvcServedWithinTheReportPeriod().getIndicatorId()))
+            indicator=ind.getIndicatorForNumberOfHivUnknownOrNegativeOvcServedWithinTheReportPeriod();
+            else if(indicatorId.equalsIgnoreCase(ind.getIndicatorForNumberOfOvcProvidedReferralForHIVRelatedTestingService().getIndicatorId()))
+            indicator=ind.getIndicatorForNumberOfOvcProvidedReferralForHIVRelatedTestingService();
+            else if(indicatorId.equalsIgnoreCase(ind.getIndicatorForNumberOfAdultMembersProvidedReferralForHIVRelatedTestingService().getIndicatorId()))
+            indicator=ind.getIndicatorForNumberOfAdultMembersProvidedReferralForHIVRelatedTestingService();
+            else if(indicatorId.equalsIgnoreCase(ind.getIndicatorForNumberOfHivNegativeOvcAssessedonHIVRisk().getIndicatorId()))
+            indicator=ind.getIndicatorForNumberOfHivNegativeOvcAssessedonHIVRisk();
+            else if(indicatorId.equalsIgnoreCase(ind.getIndicatorForNumberOfHivUnknownOvcAssessedonHIVRisk().getIndicatorId()))
+            indicator=ind.getIndicatorForNumberOfHivUnknownOvcAssessedonHIVRisk();
+            else if(indicatorId.equalsIgnoreCase(ind.getOvc_NUTRITIONIndicator().getIndicatorId()))
+            indicator=ind.getOvc_NUTRITIONIndicator();
+            else if(indicatorId.equalsIgnoreCase(ind.getOvc_EDUIndicator().getIndicatorId()))
+            indicator=ind.getOvc_EDUIndicator();
+            else if(indicatorId.equalsIgnoreCase(ind.getOvc_HIVRISKASSIndicator().getIndicatorId()))
+            indicator=ind.getOvc_HIVRISKASSIndicator();
+            else if(indicatorId.equalsIgnoreCase(ind.getOvc_BIRTHCERTIndicator().getIndicatorId()))
+            indicator=ind.getOvc_BIRTHCERTIndicator();
+            else if(indicatorId.equalsIgnoreCase(ind.getIndicatorForNumberOfAdultMembersSelfReportingAdherenceToTreatment().getIndicatorId()))
+            indicator=ind.getIndicatorForNumberOfAdultMembersSelfReportingAdherenceToTreatment();
+            else if(indicatorId.equalsIgnoreCase(ind.getOvc_ARTSUPPIndicator().getIndicatorId()))
+            indicator=ind.getOvc_ARTSUPPIndicator();
+            else if(indicatorId.equalsIgnoreCase(ind.getIndicatorForNumberOfHivPositiveOvcEnrolledOnARTWithinTheReportPeriod().getIndicatorId()))
+            indicator=ind.getIndicatorForNumberOfHivPositiveOvcEnrolledOnARTWithinTheReportPeriod();
+            else if(indicatorId.equalsIgnoreCase(ind.getIndicatorForNumberOfOvcNewlyTestedPositiveWithinTheReportPeriod().getIndicatorId()))
+            indicator=ind.getIndicatorForNumberOfOvcNewlyTestedPositiveWithinTheReportPeriod();
+            else if(indicatorId.equalsIgnoreCase(ind.getIndicatorForNumberOfCaregiversNewlyTestedPositive().getIndicatorId()))
+            indicator=ind.getIndicatorForNumberOfCaregiversNewlyTestedPositive();
+            else if(indicatorId.equalsIgnoreCase(ind.getIndicatorForNumberOfHIVPositiveCaregiversNewlyEnrolledOnARTWithinTheReportPeriod().getIndicatorId()))
+            indicator=ind.getIndicatorForNumberOfHIVPositiveCaregiversNewlyEnrolledOnARTWithinTheReportPeriod();
+            //
+            else if(indicatorId.equalsIgnoreCase(ind.getIndicatorForNumberOfHivPositiveEnrolledOnTreatmentInReportPeriod().getIndicatorId()))
+            indicator=ind.getIndicatorForNumberOfHivPositiveEnrolledOnTreatmentInReportPeriod();
+            else if(indicatorId.equalsIgnoreCase(ind.getIndicatorForNumberOfChildrenOrphanedByAIDSEnrolled().getIndicatorId()))
+            indicator=ind.getIndicatorForNumberOfChildrenOrphanedByAIDSEnrolled();
+            else if(indicatorId.equalsIgnoreCase(ind.getIndicatorForNumberOfAdolescentFemalesAtRiskOfTransactionalSexEnrolled().getIndicatorId()))
+            indicator=ind.getIndicatorForNumberOfAdolescentFemalesAtRiskOfTransactionalSexEnrolled();
+            else if(indicatorId.equalsIgnoreCase(ind.getIndicatorForNumberOfChildrenAtRiskOfOrHaveExperiencedSexualViolenceEnrolled().getIndicatorId()))
+            indicator=ind.getIndicatorForNumberOfChildrenAtRiskOfOrHaveExperiencedSexualViolenceEnrolled();
+            else if(indicatorId.equalsIgnoreCase(ind.getIndicatorForNumberOfChildrenAtHeightenedRiskOfHIVInfectionEnrolled().getIndicatorId()))
+            indicator=ind.getIndicatorForNumberOfChildrenAtHeightenedRiskOfHIVInfectionEnrolled();
+            else if(indicatorId.equalsIgnoreCase(ind.getIndicatorForNumberOfBeneficiariesServedWithinTheReportPeriod().getIndicatorId()))
             indicator=ind.getIndicatorForNumberOfBeneficiariesServedWithinTheReportPeriod();
             else if(indicatorId.equalsIgnoreCase(ind.getIndicatorForNumberOfHIVUnknownBeneficiariesCurrentlyEnrolled().getIndicatorId()))
             indicator=ind.getIndicatorForNumberOfHIVUnknownBeneficiariesCurrentlyEnrolled();

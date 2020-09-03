@@ -10,10 +10,10 @@ import com.nomis.ovc.business.Partner;
 import com.nomis.ovc.business.User;
 import com.nomis.ovc.dao.DaoUtility;
 import com.nomis.ovc.dao.PartnerDao;
-import com.nomis.ovc.dao.PartnerDaoImpl;
 import com.nomis.ovc.util.AppConstant;
 import com.nomis.ovc.util.DateManager;
 import com.nomis.ovc.util.AppManager;
+import com.nomis.ovc.util.AppUtility;
 import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
@@ -132,8 +132,16 @@ public class PartnerAction extends org.apache.struts.action.Action {
     }
     public void setButtonState(HttpSession session,String saveDisabled,String modifyDisabled)
     {
-        session.setAttribute("partnerSaveDisabled", saveDisabled);
-        session.setAttribute("partnerModifyDisabled", modifyDisabled);
+        if(AppUtility.isMetadataAccessEnabled())
+        {
+            session.setAttribute("partnerSaveDisabled", saveDisabled);
+            session.setAttribute("partnerModifyDisabled", modifyDisabled);
+        }
+        else
+        {
+            session.setAttribute("partnerSaveDisabled", "true");
+            session.setAttribute("partnerModifyDisabled", "true");
+        }
     }
     private List getAllPartners(HttpSession session)
     {

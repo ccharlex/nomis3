@@ -208,4 +208,8 @@ public class DaoUtility
     {
         return new DatimReportDaoImpl();
     }
+    public NutritionStatusDao getNutritionStatusDaoInstance()
+    {
+        return new NutritionStatusDaoImpl();
+    }
 }

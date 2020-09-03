@@ -13,6 +13,7 @@ import com.nomis.ovc.dao.CustomIndicatorsReportDao;
 import com.nomis.ovc.dao.CustomIndicatorsReportDaoImpl;
 import com.nomis.ovc.dao.DaoUtility;
 import com.nomis.ovc.metadata.OrganizationUnit;
+import com.nomis.ovc.util.AppConstant;
 import com.nomis.ovc.util.AppManager;
 import com.nomis.ovc.util.AppUtility;
 import com.nomis.ovc.util.DateManager;
@@ -85,10 +86,11 @@ public class CustomIndicatorsDataGenerationAction extends org.apache.struts.acti
         rpt.setStartDate(dm.getStartDate(startMth, startYear));
         rpt.setEndDate(dm.getEndDate(endMth, endYear));
         rpt.setPartnerCode(selectedPartner);
+        rpt.setReportType(AppConstant.CUSTOMINDICATORS_REPORTTYPE);
         //String[] dateParams={startMth+"",startYear+"",endMth+"",endYear+""};
         //String startDate=util.getStartDate(dateParams);
         //String endDate=util.getEndDate(dateParams);
-        String[] selectedStates=cidgform.getLevel2OuCodes();
+        String[] selectedLevel2Ous=cidgform.getLevel2OuCodes();
         String[] selectedIndicators=cidgform.getIndicators();
         
         String requiredAction=cidgform.getActionName();
@@ -125,9 +127,9 @@ public class CustomIndicatorsDataGenerationAction extends org.apache.struts.acti
             int count=0;
             String level2OuName=null;
             CustomIndicatorsReportDao cirbdao=new CustomIndicatorsReportDaoImpl();
-            for(int j=0; j<selectedStates.length; j++)
+            for(int j=0; j<selectedLevel2Ous.length; j++)
             {
-               level2OuId=selectedStates[j];
+               level2OuId=selectedLevel2Ous[j];
                level2OuName=ouaManager.getOrganizationUnitName(level2OuId);
                count+=cirbdao.deleteAllCustomIndicatorsReports(level2OuName);
             }
@@ -145,8 +147,10 @@ public class CustomIndicatorsDataGenerationAction extends org.apache.struts.acti
                     String cboId="All";
                     String partnerCode=selectedPartner;
                     rpt.setCboId(cboId);
-                    List listFromArray=getListFromArray(selectedIndicators);
-                    if(selectedStates !=null && selectedStates.length>0)
+                    //The indicators are collected into array from user request, the data is moved into a list for further processing
+                    List listOfSelectedIndicatorsFromArray=getListFromArray(selectedIndicators);
+                    //Check to be sure atleast one level 2 Ou was selected for the report
+                    if(selectedLevel2Ous !=null && selectedLevel2Ous.length>0)
                     {
                         //List paramList=getParamList(level2OuId,level3OuId,cboId,startMth,startYear,endMth,endYear,partnerCode);
                         //OvcQuarterlyReport quarterlyReport=new OvcQuarterlyReport();
@@ -154,9 +158,10 @@ public class CustomIndicatorsDataGenerationAction extends org.apache.struts.acti
                         List level4OuList=null;
                         List partnerCodeList=new ArrayList();
                         List list=null;
-                        if(selectedStates.length==1)
+                        //if only one level 2 Ou was selected for the report, add the name to the file name
+                        if(selectedLevel2Ous.length==1)
                         {
-                            level2OuId=selectedStates[0];
+                            level2OuId=selectedLevel2Ous[0];
                             rpt.setLevel2OuId(level2OuId);
                             //paramList.set(0, level2OuId);
                             String level2OuName=ouaManager.getOrganizationUnitName(level2OuId);
@@ -182,7 +187,7 @@ public class CustomIndicatorsDataGenerationAction extends org.apache.struts.acti
                                       rpt.setLevel3OuId(level3OuId);
                                       //paramList.set(1, level3OuId);
                                       //paramList.set(8, partnerCode);
-                                      cirm.processCustomIndicatorsByLga(rpt,listFromArray,userName);
+                                      cirm.processCustomIndicatorsByLevel2Ou(rpt,listOfSelectedIndicatorsFromArray,userName);
                                       //mainList.add(quarterlyReport.getQuarterlyReport(paramList, level2OuId)); 
                                     }
                                 }
@@ -190,10 +195,12 @@ public class CustomIndicatorsDataGenerationAction extends org.apache.struts.acti
                         }
                         else
                         {
-                            for(int j=0; j<selectedStates.length; j++)
+                            //Here more than one level2 OU is selected for the report, loop and generate the data for the selected OUs
+                            for(int j=0; j<selectedLevel2Ous.length; j++)
                             {
-                               level2OuId=selectedStates[j];
+                               level2OuId=selectedLevel2Ous[j];
                                rpt.setLevel2OuId(level2OuId);
+                               //if no partner was selected by the user, generate data for all the implementing partners
                                if(selectedPartner==null || selectedPartner.equalsIgnoreCase("All"))
                                 partnerCodeList=util.getHouseholdEnrollmentDaoInstance().getDistinctPartnerCodes(rpt);
                                 else
@@ -214,7 +221,7 @@ public class CustomIndicatorsDataGenerationAction extends org.apache.struts.acti
                                           level3OuId=(String)level3OuList.get(i);
                                           rpt.setLevel3OuId(level3OuId);
                                           //paramList.set(1, level3OuId);
-                                          cirm.processCustomIndicatorsByLga(rpt,listFromArray,userName);
+                                          cirm.processCustomIndicatorsByLevel2Ou(rpt,listOfSelectedIndicatorsFromArray,userName);
                                           //mainList.add(quarterlyReport.getQuarterlyReport(paramList, level2OuId)); 
                                         }
                                        System.err.println("Quaterly_Report size is "+mainList.size());

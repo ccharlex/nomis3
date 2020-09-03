@@ -138,7 +138,7 @@ public class OrganizationUnitAttributesManager
         try
         {
             DaoUtility util=new DaoUtility();
-            List list=util.getOrganizationUnitDaoInstance().getOrganizationUnit(ouLevel);
+            List list=util.getOrganizationUnitDaoInstance().getOrganizationUnitsByOuLevel(ouLevel);
             if(list !=null && !list.isEmpty())
             {
                 for(Object obj:list)
@@ -423,7 +423,7 @@ public class OrganizationUnitAttributesManager
         {
             OrganizationUnit ou=new OrganizationUnit();
             DaoUtility daoutil=new DaoUtility();
-            List level2OuList=daoutil.getOrganizationUnitDaoInstance().getOrganizationUnit(2);
+            List level2OuList=daoutil.getOrganizationUnitDaoInstance().getOrganizationUnitsByOuLevel(2);
             if(level2OuList==null)
             level2OuList=new ArrayList();
             session.setAttribute("allLevel2OuList", level2OuList);

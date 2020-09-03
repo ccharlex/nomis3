@@ -4,10 +4,10 @@
  */
 package com.nomis.ovc.util;
 
+import com.nomis.ovc.business.ReferralFacility;
 import com.nomis.ovc.dao.DaoUtility;
+import com.nomis.ovc.dao.ReferralFacilityDao;
 import com.nomis.ovc.metadata.OrganizationUnit;
-import com.nomis.ovc.util.AppUtility;
-import com.nomis.ovc.util.DateManager;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -29,6 +29,100 @@ public class ExcelReader implements Serializable
   public void setInputFile(String inputFile)
   {
     this.inputFile = inputFile;
+  }
+  public int uploadFacilityList(InputStream inputStream,String userName)
+  {
+      int numberOfFacilities=0;
+            
+      List dataList=new ArrayList();
+    Workbook w;
+    //int numberSaved=0;
+    
+    try 
+    {
+        //AppUtility appUtil=new AppUtility();
+      w = Workbook.getWorkbook(inputStream); 
+      int count=w.getNumberOfSheets();
+      DaoUtility util=new DaoUtility();
+      ReferralFacilityDao rfdao=util.getReferralFacilityDaoInstance();
+      ReferralFacility rf=null;
+      for(int a=0; a<count; a++)
+      {
+      Sheet sheet = w.getSheet(a);
+            
+      System.err.println("Sheet name is "+sheet.getName());
+      for (int j = 1; j < sheet.getRows(); j++)
+      {
+        rf=new ReferralFacility();
+        for (int i = 0; i < sheet.getColumns(); i++)
+        {
+          Cell cell = sheet.getCell(i, j);
+          if(i==0)
+          {
+              if(!isEmpty(cell.getContents()))
+              {
+                  rf.setFacilityId(cell.getContents().trim());
+              }
+          }
+          if(i==1)
+          {
+              if(!isEmpty(cell.getContents()))
+              {
+                rf.setFacilityName(cell.getContents().trim());
+              }
+          }
+          else if(i==2)
+          {
+              if(!isEmpty(cell.getContents()))
+              {
+                rf.setOrganizationUnitId(cell.getContents().trim());
+              }  
+          }
+          else if(i==3)
+          {
+             if(!isEmpty(cell.getContents()))
+              {
+                rf.setTypeOfFacility(Integer.parseInt(cell.getContents().trim()));
+              }
+          }
+          else if(i==4)
+          {
+             if(!isEmpty(cell.getContents()))
+              {
+                rf.setAddress(cell.getContents().trim());
+              }
+          }
+        }
+        rf.setDateCreated(DateManager.getCurrentDateInstance());
+      rf.setLastModifiedDate(DateManager.getCurrentDateInstance());
+      rf.setRecordedBy(userName);
+      if(rf.getFacilityId()==null || rf.getFacilityId().trim().length() !=11)
+      {
+          if(rfdao.getReferralFacilitiesByName(rf.getFacilityName())==null)
+          rfdao.saveReferralFacility(rf);
+      }
+      else
+      {
+          if(rfdao.getReferralFacility(rf.getFacilityId())==null)
+          rfdao.saveReferralFacility(rf);
+          else
+          rfdao.updateReferralFacility(rf);
+      }
+        System.err.println("Facility with Id"+rf.getFacilityId()+" rf.getFacilityName() "+rf.getFacilityName());
+        //dataList.add(ou);  
+      }
+      
+      }
+    }     
+    catch (BiffException be) 
+    {
+      be.printStackTrace();
+    }
+    catch (Exception ex) 
+    {
+      ex.printStackTrace();
+    }
+    return numberOfFacilities;
   }
   public List uploadOrganizationUnitsFromExcel(InputStream inputStream) throws IOException  
   {

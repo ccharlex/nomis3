@@ -59,4 +59,6 @@ public interface ChildServiceDao
     public int resetAgeAtServiceForServiceRecords(String level4OuId) throws Exception;
     public List getDistinctYearOfserviceList() throws Exception;
     public List getAndUpdateWashRecords() throws Exception;
+    public int getNumberOfMalnourishedChildrenProvidedNutritionalServices(ReportParameterTemplate rpt,String startDate, String endDate,int startAge, int endAge,int enrollmentStatus,int currentNutritionStatus,String sex) throws Exception;
+    public List getListOfMalnourishedChildrenProvidedNutritionalServices(ReportParameterTemplate rpt,String startDate, String endDate,int startAge, int endAge,int enrollmentStatus,int currentNutritionStatus,String sex) throws Exception;
 }

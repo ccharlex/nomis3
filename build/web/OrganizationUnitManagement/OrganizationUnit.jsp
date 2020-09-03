@@ -283,7 +283,7 @@ function setActionName(val)
 
                         <td> </td><td> </td>
                     </tr>
-
+                    <%----%>
                     <tr><td colspan="4" align="center"><html:submit value="Save" onclick="setActionName('save')" disabled="${ouSaveDisabled}"/>
                             <html:submit value="Update" onclick="return confirmAction('update')" disabled="${ouModifyDisabled}"/></td></tr>
 

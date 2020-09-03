@@ -543,7 +543,10 @@ public List importAdultHouseholdMembersRecordsFromXML(String destinationDirector
                                 ahm.setDateOfBaselineHivStatus(DateManager.getDateInstance(getNodeValue("dateOfBaselineHivStatus",s,listOfObjects)));
                                 ahm.setEducationLevel(getIntegerNodeValue(getNodeValue("educationLevel",s,listOfObjects)));
                                 ahm.setIsCaregiver(getIntegerNodeValue(getNodeValue("isCaregiver",s,listOfObjects)));
-                                
+                                if(getNodeName("beneficiaryType",s,listOfObjects) !=null)
+                                ahm.setBeneficiaryType(getIntegerNodeValue(getNodeValue("beneficiaryType",s,listOfObjects)));
+                                else
+                                ahm.setBeneficiaryType(AppConstant.CAREGIVER_TYPE_NUM);
                                 ahm.setMaritalStatus(getIntegerNodeValue(getNodeValue("maritalStatus",s,listOfObjects)));
                                 ahm.setCurrentEnrollmentStatus(getIntegerNodeValue(getNodeValue("currentEnrollmentStatus",s,listOfObjects)));
                                 ahm.setDateOfCurrentEnrollmentStatus(DateManager.getDateInstance(getNodeValue("dateOfCurrentEnrollmentStatus",s,listOfObjects)));
@@ -1010,7 +1013,7 @@ public List importHivRiskAssessmentRecordsFromXML(String destinationDirectory,in
     AppUtility appUtil=new AppUtility();
     List list=new ArrayList();
     String fileSeperator=appUtil.getFileSeperator();
-    String exportFileName="HivRiskAssessment";
+    String exportFileName="HivRiskAssessments";
     AppUtility.setCurrentImportRecordName("Hiv Risk assessment records");
     List newRecordsList=new ArrayList();
     List duplicateRecordsList=new ArrayList();
@@ -1047,7 +1050,7 @@ public List importHivRiskAssessmentRecordsFromXML(String destinationDirectory,in
                         doc = docBuilder.parse (file);
                         // normalize text representation
                         doc.getDocumentElement().normalize();
-                        NodeList listOfObjects = doc.getElementsByTagName("elementName");
+                        NodeList listOfObjects = doc.getElementsByTagName("HivRiskAssessment");
 
                         for(int s=0; s<listOfObjects.getLength() ; s++)
                         {
@@ -1190,7 +1193,7 @@ public List importReferralRecordsFromXML(String destinationDirectory)
                                 referral.setAgeUnitAtReferral(getIntegerNodeValue(getNodeValue("ageUnitAtReferral",s,listOfObjects)));
                                 referral.setBeneficiaryType(getIntegerNodeValue(getNodeValue("beneficiaryType",s,listOfObjects)));
                                 referral.setDateOfReferral(DateManager.getDateInstance(getNodeValue("dateOfReferral",s,listOfObjects)));
-                                referral.setReferralComplete(getIntegerNodeValue(getNodeValue("referralComplete",s,listOfObjects)));
+                                referral.setReferralCompleted(getIntegerNodeValue(getNodeValue("referralCompleted",s,listOfObjects)));
                                 referral.setHealthServices(getNodeValue("healthServices",s,listOfObjects));
                                 referral.setSafetyServices(getNodeValue("safetyServices",s,listOfObjects));
                                 referral.setStableServices(getNodeValue("stableServices",s,listOfObjects));

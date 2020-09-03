@@ -18,7 +18,7 @@ import java.util.List;
  */
 public class ReferralFacilityManager implements Serializable 
 {
-    public ReferralFacility getReferralFacilityById(String facilityId)
+    public static ReferralFacility getReferralFacilityById(String facilityId)
     {
         ReferralFacility rf=new ReferralFacility();
         try

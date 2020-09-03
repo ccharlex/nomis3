@@ -85,6 +85,7 @@ public class HivRiskAssessmentAction extends org.apache.struts.action.Action {
         ouaManager.setOrganizationUnitAttributes(session, level3OuId,userName,hracform.getCboId());
         session.setAttribute("hivStatusForRiskAssessment", HivPropertiesManager.getHivStatusWithoutPositive());
         session.setAttribute("riskAssessmentCurrentHivStatus", HivPropertiesManager.getAllHivStatusExceptPositive());
+        session.setAttribute("allHivStatus", HivPropertiesManager.getAllHivStatus());
         setOvcPerHouseholdList(session, hracform.getHhUniqueId());
         setButtonState(session,"false","true");
         setOvcDetails(hracform,session);
@@ -181,8 +182,8 @@ public class HivRiskAssessmentAction extends org.apache.struts.action.Action {
             String hracformDateOfAssessment=hracform.getDateOfAssessment();
             String ovcId=hracform.getOvcId();
             int hhSerialNo=uim.extractHouseholdSerialNumberFromHhUniqueId(hhUniqueId);
-            Date serviceDate=DateManager.getDateInstance(DateManager.processMthDayYearToMysqlFormat(hracformDateOfAssessment));
-            HivRiskAssessment hrac=util.getHivRiskAssessmentDaoInstance().getHivRiskAssessment(ovcId, serviceDate);
+            Date dateOfAssessment=DateManager.getDateInstance(DateManager.processMthDayYearToMysqlFormat(hracformDateOfAssessment));
+            HivRiskAssessment hrac=util.getHivRiskAssessmentDaoInstance().getHivRiskAssessment(ovcId, dateOfAssessment);
             hracform.reset(mapping, request);
             hracform.setHhSerialNo(hhSerialNo);
             hracform.setHhUniqueId(hhUniqueId);
@@ -208,12 +209,31 @@ public class HivRiskAssessmentAction extends org.apache.struts.action.Action {
             {
                 hracform.setOvcId(ovcId);
                 hracform.setHhUniqueId(hhUniqueId);
-                setOvcDetails(hracform,session);
-                hracform.setDateOfAssessment(hracformDateOfAssessment);
-                disableChildTestedControl(session,"false");
-                disableAdolescentControls(session,ovcId);
-                disableFieldset1Controls(session,"false");
-                setButtonState(session,"false","true");
+                Ovc ovc=util.getChildEnrollmentDaoInstance().getOvc(ovcId);
+                if(ovc !=null)
+                {
+                    //if OVC is positive currently, check if this assessment was done before the child became positive
+                    if(ovc.getCurrentHivStatus()==AppConstant.HIV_POSITIVE_NUM)
+                    {
+                        if(ovc.getDateOfCurrentHivStatus().before(dateOfAssessment))
+                        setOvcDetails(hracform,session);
+                        hracform.setDateOfAssessment(hracformDateOfAssessment);
+                        disableChildTestedControl(session,"true");
+                        disableAdolescentControls(session,ovcId);
+                        disableFieldset1Controls(session,"true");
+                        setButtonState(session,"true","true");
+                    }
+                    else
+                    {
+                        setOvcDetails(hracform,session);
+                        hracform.setDateOfAssessment(hracformDateOfAssessment);
+                        disableChildTestedControl(session,"false");
+                        disableAdolescentControls(session,ovcId);
+                        disableFieldset1Controls(session,"false");
+                        setButtonState(session,"false","true");
+                    }
+                }
+                
             }
             return mapping.findForward(SUCCESS);
         }
@@ -241,7 +261,7 @@ public class HivRiskAssessmentAction extends org.apache.struts.action.Action {
         else if(requiredAction.equalsIgnoreCase("markForDelete"))
         {
             HivRiskAssessment hra=getHivRiskAssessment(hracform,userName);
-            util.getHivRiskAssessmentDaoInstance().markedForDelete(getHivRiskAssessment(hracform,userName));
+            util.getHivRiskAssessmentDaoInstance().markForDelete(getHivRiskAssessment(hracform,userName));
             saveUserActivity(userName,moduleName,"Marked Risk assessment record for child with Id "+hra.getOvcId()+" for delete");
             hracform.reset(mapping, request);
             setButtonState(session,"false","true");
@@ -249,7 +269,7 @@ public class HivRiskAssessmentAction extends org.apache.struts.action.Action {
         else if(requiredAction.equalsIgnoreCase("delete"))
         {
             HivRiskAssessment hra=getHivRiskAssessment(hracform,userName);
-            util.getHivRiskAssessmentDaoInstance().markedForDelete(getHivRiskAssessment(hracform,userName));
+            util.getHivRiskAssessmentDaoInstance().markForDelete(getHivRiskAssessment(hracform,userName));
             saveUserActivity(userName,moduleName,"Requested Risk assessment record for child with Id "+hra.getOvcId()+" be deleted");
             hracform.reset(mapping, request);
             setButtonState(session,"false","true");
@@ -283,11 +303,21 @@ public class HivRiskAssessmentAction extends org.apache.struts.action.Action {
     {
         try
         {
+            List ovcListForRiskAssessment=new ArrayList();
+            Ovc ovc=null;
             DaoUtility util=new DaoUtility();
             List list=util.getChildEnrollmentDaoInstance().getOvcPerHousehold(hhUniqueId);
-            if(list==null)
-            list=new ArrayList();
-            session.setAttribute("hracOvcPerHouseholdList", list);
+            if(list !=null)
+            {
+                for(Object obj:list)
+                {
+                    ovc=(Ovc)obj;
+                    if(ovc.getBaselineHivStatus()!=AppConstant.HIV_POSITIVE_NUM)
+                    ovcListForRiskAssessment.add(ovc);
+                }
+            }
+            
+            session.setAttribute("hracOvcPerHouseholdList", ovcListForRiskAssessment);
         }
         catch(Exception ex)
         {
@@ -318,6 +348,8 @@ public class HivRiskAssessmentAction extends org.apache.struts.action.Action {
             Ovc ovc=util.getChildEnrollmentDaoInstance().getOvc(ovcId);
             if(ovc !=null)
             {
+                System.err.println("ovc.getBaselineHivStatus() is "+ovc.getBaselineHivStatus());
+                System.err.println("ovc.getCurrentHivStatus() is "+ovc.getCurrentHivStatus());
                 hracform.setOvcId(ovc.getOvcId());
                 hracform.setDateOfEnrollment(DateManager.convertDateToString(ovc.getDateOfEnrollment(),"MM/dd/yyyy"));
                 hracform.setBaselineHivStatus(ovc.getBaselineHivStatus());

@@ -124,34 +124,37 @@ public class OrganizationUnitDaoImpl implements OrganizationUnitDao
         {
             if(ou !=null && this.getOrganizationUnit(ou.getUid()) !=null)
             {
-                ou.setOuPath(getOuPath(ou));
-                OrganizationUnit ou2=getOrganizationUnitByName(ou.getName());
-                if(ou2 !=null)
+                if(ou.getUid() !=null && ou.getOuPath() !=null && ou.getParentId() !=null && ou.getName() !=null)
                 {
-                    if(ou.getUid() !=null && ou.getUid().equalsIgnoreCase(ou2.getUid()))
+                    ou.setOuPath(getOuPath(ou));
+                    OrganizationUnit ou2=getOrganizationUnitByName(ou.getName());
+                    if(ou2 !=null)
                     {
-                        if(ou.getOulevel()==1 && ou.getParentId()==null)
-                        ou.setParentId(ou.getUid());
-                        session = HibernateUtil.getSession();
-                        tx = session.beginTransaction();
-                        session.update(ou);
-                        tx.commit();
-                        closeSession(session);
-                        updateChildrenPath(ou);
+                        if(ou.getUid() !=null && ou.getUid().equalsIgnoreCase(ou2.getUid()))
+                        {
+                            if(ou.getOulevel()==1 && ou.getParentId()==null)
+                            ou.setParentId(ou.getUid());
+                            session = HibernateUtil.getSession();
+                            tx = session.beginTransaction();
+                            session.update(ou);
+                            tx.commit();
+                            closeSession(session);
+                            updateChildrenPath(ou);
+                        }
                     }
-                }
-                else
-                {
-                    if(getOrganizationUnit(ou.getUid()) !=null)
+                    else
                     {
-                        if(ou.getOulevel()==1 && ou.getParentId()==null)
-                        ou.setParentId(ou.getUid());
-                        session = HibernateUtil.getSession();
-                        tx = session.beginTransaction();
-                        session.update(ou);
-                        tx.commit();
-                        closeSession(session);
-                        updateChildrenPath(ou);
+                        if(getOrganizationUnit(ou.getUid()) !=null)
+                        {
+                            if(ou.getOulevel()==1 && ou.getParentId()==null)
+                            ou.setParentId(ou.getUid());
+                            session = HibernateUtil.getSession();
+                            tx = session.beginTransaction();
+                            session.update(ou);
+                            tx.commit();
+                            closeSession(session);
+                            updateChildrenPath(ou);
+                        }
                     }
                 }
             }
@@ -400,14 +403,14 @@ public class OrganizationUnitDaoImpl implements OrganizationUnitDao
          }
         return list;
     }
-    public List getOrganizationUnit(int oulevel) throws Exception
+    public List getOrganizationUnitsByOuLevel(int oulevel) throws Exception
     {
        List list=null;
         try
         {
             session = HibernateUtil.getSession();
             tx = session.beginTransaction();
-            list = session.createQuery("from OrganizationUnit ou where ou.oulevel=:lv").setInteger("lv", oulevel).list();
+            list = session.createQuery("from OrganizationUnit ou where ou.oulevel=:lv order by ou.name").setInteger("lv", oulevel).list();
             tx.commit();
             closeSession(session);
         }

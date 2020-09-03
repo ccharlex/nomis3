@@ -30,21 +30,173 @@ public class AdultHouseholdMemberDaoImpl implements AdultHouseholdMemberDao
     HivOperationsManager hom=new HivOperationsManager();
     SubQueryGenerator sqg=new SubQueryGenerator();
     String markedForDeleteQuery=" and ahm.markedForDelete=0";
-    public int getNoOfAdultHouseholdMembersByEnrollmentStatusAndHivStatus(String additionalQuery,int currentEnrollmentStatus,int hivStatus,String startDate, String endDate,int startAge,int endAge,String sex,int onTreatment) throws Exception
+    public int getNumberOfAdultHouseholdMembersSupportedToAccessARTServicesInReportPeriod(ReportParameterTemplate rpt,String startDate,String endDate,int enrollmentStatus,String sex) throws Exception
+    {
+        int count=0;
+        try
+        {
+            SubQueryGenerator sqg=new SubQueryGenerator();
+            String additionalOrgUnitQuery="";
+            String ageQuery=sqg.getAdultHouseholdMemberCurrentAgeQuery(rpt.getStartAge(), rpt.getEndAge());
+            String currentEnrollmentQuery=SubQueryGenerator.getAdultHouseholdMemberCurrentEnrollmentStatusQuery(enrollmentStatus);
+            //ART support value is 1 if given transportation support and 2 when not given
+            String artSupportQuery=SubQueryGenerator.getARTSupportQuery(1);
+            String dateOfArtSupportQuery=SubQueryGenerator.getDateOfCareAndSupportAssessmentQuery(startDate,endDate);
+            if(rpt !=null && rpt.getLevel2OuId() !=null && rpt.getLevel2OuId().trim().length()>0 && !rpt.getLevel2OuId().equalsIgnoreCase("select") && !rpt.getLevel2OuId().equalsIgnoreCase("All"))
+            {
+                additionalOrgUnitQuery=sqg.getOrganizationUnitQuery(rpt);
+            }
+            String query="select count(distinct ahm.beneficiaryId) "+SubQueryGenerator.getHheAdultHouseholdMemberOrganizationUnitCareAndSupportQuery()+sqg.getAdultHouseholdMemberGenderQuery(sex)+artSupportQuery+dateOfArtSupportQuery+currentEnrollmentQuery+ageQuery+additionalOrgUnitQuery+markedForDeleteQuery;
+            System.err.println(query);
+            session = HibernateUtil.getSession();
+            tx = session.beginTransaction();
+            List list = session.createQuery(query).list();
+            tx.commit();
+            closeSession(session);
+            if(list !=null && !list.isEmpty())
+            {
+                count=Integer.parseInt(list.get(0).toString());
+            }
+        }
+         catch (Exception ex)
+         {
+             closeSession(session);
+            throw new Exception(ex);
+         }
+        return count;
+    }
+    public List getListOfAdultHouseholdMembersSupportedToAccessARTServicesInReportPeriod(ReportParameterTemplate rpt,String startDate,String endDate,int enrollmentStatus,String sex) throws Exception
+    {
+        List hheList=new ArrayList();
+        try
+        {
+            SubQueryGenerator sqg=new SubQueryGenerator();
+            String ageQuery=sqg.getAdultHouseholdMemberCurrentAgeQuery(rpt.getStartAge(), rpt.getEndAge());
+            String currentEnrollmentQuery=SubQueryGenerator.getAdultHouseholdMemberCurrentEnrollmentStatusQuery(enrollmentStatus);
+            String artSupportQuery=SubQueryGenerator.getARTSupportQuery(1);
+            String dateOfArtSupportQuery=SubQueryGenerator.getDateOfCareAndSupportAssessmentQuery(startDate,endDate);
+            String additionalOrgUnitQuery="";
+            if(rpt !=null && rpt.getLevel2OuId() !=null && rpt.getLevel2OuId().trim().length()>0 && !rpt.getLevel2OuId().equalsIgnoreCase("select") && !rpt.getLevel2OuId().equalsIgnoreCase("All"))
+            {
+                additionalOrgUnitQuery=sqg.getOrganizationUnitQuery(rpt);
+            }
+            String query=SubQueryGenerator.getHheAdultHouseholdMemberOrganizationUnitCareAndSupportQuery()+sqg.getAdultHouseholdMemberGenderQuery(sex)+artSupportQuery+dateOfArtSupportQuery+currentEnrollmentQuery+ageQuery+additionalOrgUnitQuery+markedForDeleteQuery;
+            System.err.println(query);
+            session = HibernateUtil.getSession();
+            tx = session.beginTransaction();
+            List list = session.createQuery(query).list();
+            tx.commit();
+            closeSession(session);
+            if(list !=null)
+            {
+                for(Object obj:list)
+                {
+                    Object[] objArray=(Object[])obj;
+                    hheList.add(objArray[1]);
+                }
+            }
+        }
+         catch (Exception ex)
+         {
+             closeSession(session);
+            throw new Exception(ex);
+         }
+        return hheList;
+    }
+    public int getNumberOfAdultHouseholdMembersTestedAndRecievedResultInReportPeriodByEnrollmentStatusAndHivStatus(ReportParameterTemplate rpt,String startDate,String endDate,int enrollmentStatus,int enrolledOnTreatmentValue,int hivStatus,String sex) throws Exception
+    {
+        int count=0;
+        try
+        {
+            SubQueryGenerator sqg=new SubQueryGenerator();
+            String additionalOrgUnitQuery="";
+            String ageQuery=sqg.getAdultHouseholdMemberCurrentAgeQuery(rpt.getStartAge(), rpt.getEndAge());
+            String sexQuery=sqg.getAdultHouseholdMemberGenderQuery(sex);
+            String currentEnrollmentQuery=SubQueryGenerator.getAdultHouseholdMemberCurrentEnrollmentStatusQuery(enrollmentStatus);
+            String hivStatusQuery=SubQueryGenerator.getAdultHouseholdMemberHivStatusQuery(hivStatus);
+            String dateOfHivStatusQuery=SubQueryGenerator.getAdultDateOfCurrentHivStatusQuery(startDate, endDate);
+            if(rpt !=null && rpt.getLevel2OuId() !=null && rpt.getLevel2OuId().trim().length()>0 && !rpt.getLevel2OuId().equalsIgnoreCase("select") && !rpt.getLevel2OuId().equalsIgnoreCase("All"))
+            {
+                additionalOrgUnitQuery=sqg.getOrganizationUnitQuery(rpt);
+            }
+            String query="select count(distinct ahm.beneficiaryId) "+SubQueryGenerator.getHheAdultHouseholdMemberOrganizationUnitQuery()+sexQuery+hivStatusQuery+dateOfHivStatusQuery+currentEnrollmentQuery+ageQuery+additionalOrgUnitQuery+markedForDeleteQuery;
+            System.err.println(query);
+            session = HibernateUtil.getSession();
+            tx = session.beginTransaction();
+            List list = session.createQuery(query).list();
+            tx.commit();
+            closeSession(session);
+            if(list !=null && !list.isEmpty())
+            {
+                count=Integer.parseInt(list.get(0).toString());
+            }
+        }
+         catch (Exception ex)
+         {
+             closeSession(session);
+            throw new Exception(ex);
+         }
+        return count;
+    }
+    public List getListOfAdultHouseholdMembersTestedAndRecievedResultInReportPeriodByEnrollmentStatusAndHivStatus(ReportParameterTemplate rpt,String startDate,String endDate,int enrollmentStatus,int enrolledOnTreatmentValue,int hivStatus,String sex) throws Exception
+    {
+        List hheList=new ArrayList();
+        try
+        {
+            SubQueryGenerator sqg=new SubQueryGenerator();
+            String ageQuery=sqg.getAdultHouseholdMemberCurrentAgeQuery(rpt.getStartAge(), rpt.getEndAge());
+            String sexQuery=sqg.getAdultHouseholdMemberGenderQuery(sex);
+            String currentEnrollmentQuery=SubQueryGenerator.getAdultHouseholdMemberCurrentEnrollmentStatusQuery(enrollmentStatus);
+            String hivStatusQuery=SubQueryGenerator.getAdultHouseholdMemberHivStatusQuery(hivStatus);
+            String dateOfHivStatusQuery=SubQueryGenerator.getAdultDateOfCurrentHivStatusQuery(startDate, endDate);
+            String additionalOrgUnitQuery="";
+            if(rpt !=null && rpt.getLevel2OuId() !=null && rpt.getLevel2OuId().trim().length()>0 && !rpt.getLevel2OuId().equalsIgnoreCase("select") && !rpt.getLevel2OuId().equalsIgnoreCase("All"))
+            {
+                additionalOrgUnitQuery=sqg.getOrganizationUnitQuery(rpt);
+            }
+            String query=SubQueryGenerator.getHheAdultHouseholdMemberOrganizationUnitQuery()+sexQuery+hivStatusQuery+dateOfHivStatusQuery+currentEnrollmentQuery+ageQuery+additionalOrgUnitQuery+markedForDeleteQuery;
+            System.err.println(query);
+            session = HibernateUtil.getSession();
+            tx = session.beginTransaction();
+            List list = session.createQuery(query).list();
+            tx.commit();
+            closeSession(session);
+            if(list !=null)
+            {
+                for(Object obj:list)
+                {
+                    Object[] objArray=(Object[])obj;
+                    hheList.add(objArray[1]);
+                }
+            }
+        }
+         catch (Exception ex)
+         {
+             closeSession(session);
+            throw new Exception(ex);
+         }
+        return hheList;
+    }
+    public int getNoOfAdultHouseholdMembersByEnrollmentStatusAndHivStatus(ReportParameterTemplate rpt,int currentEnrollmentStatus,int hivStatus,String startDate, String endDate,int startAge,int endAge,String sex,int onTreatment) throws Exception
     {
         int count=0;
         try
         {
             SubQueryGenerator rqg=new SubQueryGenerator();
+            String additionalOrgUnitQuery="";
+            if(rpt !=null && rpt.getLevel2OuId() !=null && rpt.getLevel2OuId().trim().length()>0 && !rpt.getLevel2OuId().equalsIgnoreCase("select") && !rpt.getLevel2OuId().equalsIgnoreCase("All"))
+            {
+                additionalOrgUnitQuery=sqg.getOrganizationUnitQuery(rpt);
+            }
             //String organizationUnitQueryCriteria=rqg.getOrganizationUnitQuery(rpt);
             String ageQuery=rqg.getAdultHouseholdMemberCurrentAgeQuery(startAge,endAge);
             String dateQuery=rqg.getAdultHouseholdMemberEnrollmentDateQuery(startDate, endDate);
-            String queryPart= additionalQuery+ageQuery+sqg.getAdultHouseholdMemberGenderQuery(sex)+dateQuery;
+            String queryPart= additionalOrgUnitQuery+ageQuery+sqg.getAdultHouseholdMemberGenderQuery(sex)+dateQuery;
             
             String hivTreatmentQuery="";
-            if(hivStatus==AppConstant.HIV_POSITIVE_NUM && onTreatment==AppConstant.ON_TREATMENT)
+            if(hivStatus==AppConstant.HIV_POSITIVE_NUM && onTreatment==AppConstant.ENROLLED_ON_TREATMENT_YES_NUM)
             hivTreatmentQuery=SubQueryGenerator.getHouseholdMemberHivPositiveOnTreatmentQuery();
-            else if(hivStatus==AppConstant.HIV_POSITIVE_NUM && onTreatment==AppConstant.NOT_ON_TREATMENT)
+            else if(hivStatus==AppConstant.HIV_POSITIVE_NUM && onTreatment==AppConstant.ENROLLED_ON_TREATMENT_NO_NUM)
             hivTreatmentQuery=SubQueryGenerator.getHouseholdMemberHivPositiveNotOnTreatmentQuery();
             
             String query="select count(distinct ahm.beneficiaryId) "+SubQueryGenerator.getHheAdultHouseholdMemberOrganizationUnitQuery()+queryPart+SubQueryGenerator.getAdultHouseholdMemberCurrentEnrollmentStatusQuery(currentEnrollmentStatus)+SubQueryGenerator.getAdultHouseholdMemberHivStatusQuery(hivStatus)+hivTreatmentQuery+markedForDeleteQuery;
@@ -65,6 +217,51 @@ public class AdultHouseholdMemberDaoImpl implements AdultHouseholdMemberDao
             throw new Exception(ex);
          }
         return count;
+    }
+    public List getListOfAdultHouseholdMembersByEnrollmentStatusAndHivStatus(ReportParameterTemplate rpt,int currentEnrollmentStatus,int hivStatus,String startDate, String endDate,int startAge,int endAge,String sex,int onTreatment) throws Exception
+    {
+        List mainList=new ArrayList();
+        try
+        {
+            SubQueryGenerator rqg=new SubQueryGenerator();
+            String additionalOrgUnitQuery="";
+            if(rpt !=null && rpt.getLevel2OuId() !=null && rpt.getLevel2OuId().trim().length()>0 && !rpt.getLevel2OuId().equalsIgnoreCase("select") && !rpt.getLevel2OuId().equalsIgnoreCase("All"))
+            {
+                additionalOrgUnitQuery=sqg.getOrganizationUnitQuery(rpt);
+            }
+            //String organizationUnitQueryCriteria=rqg.getOrganizationUnitQuery(rpt);
+            String ageQuery=rqg.getAdultHouseholdMemberCurrentAgeQuery(startAge,endAge);
+            String dateQuery=rqg.getAdultHouseholdMemberEnrollmentDateQuery(startDate, endDate);
+            String queryPart= additionalOrgUnitQuery+ageQuery+sqg.getAdultHouseholdMemberGenderQuery(sex)+dateQuery;
+            
+            String hivTreatmentQuery="";
+            if(hivStatus==AppConstant.HIV_POSITIVE_NUM && onTreatment==AppConstant.ENROLLED_ON_TREATMENT_YES_NUM)
+            hivTreatmentQuery=SubQueryGenerator.getHouseholdMemberHivPositiveOnTreatmentQuery();
+            else if(hivStatus==AppConstant.HIV_POSITIVE_NUM && onTreatment==AppConstant.ENROLLED_ON_TREATMENT_NO_NUM)
+            hivTreatmentQuery=SubQueryGenerator.getHouseholdMemberHivPositiveNotOnTreatmentQuery();
+            
+            String query=SubQueryGenerator.getHheAdultHouseholdMemberOrganizationUnitQuery()+queryPart+SubQueryGenerator.getAdultHouseholdMemberCurrentEnrollmentStatusQuery(currentEnrollmentStatus)+SubQueryGenerator.getAdultHouseholdMemberHivStatusQuery(hivStatus)+hivTreatmentQuery+markedForDeleteQuery;
+            System.err.println("query in getListOfAdultHouseholdMembersByEnrollmentStatusAndHivStatus is "+query);
+            session = HibernateUtil.getSession();
+            tx = session.beginTransaction();
+            List list = session.createQuery(query).list();
+            tx.commit();
+            closeSession(session);
+            if(list !=null && !list.isEmpty())
+            {
+                for(Object obj:list)
+                {
+                    Object[] objArray=(Object[])obj;
+                    mainList.add(objArray[1]);
+                }
+            }
+        }
+         catch (Exception ex)
+         {
+             closeSession(session);
+            throw new Exception(ex);
+         }
+        return mainList;
     }
     public int updateAdultHouseholdMemberBaselineAge() throws Exception
     {
@@ -775,8 +972,8 @@ public class AdultHouseholdMemberDaoImpl implements AdultHouseholdMemberDao
         try
         {
             session = HibernateUtil.getSession();
-            tx = session.beginTransaction();
-            list = session.createQuery("from AdultHouseholdMember ahm where ahm.hhUniqueId=:id and ahm.beneficiaryType !=1"+markedForDeleteQuery).setString("id", hhUniqueId).list();
+            tx = session.beginTransaction(); //and ahm.beneficiaryType !=1
+            list = session.createQuery("from AdultHouseholdMember ahm where ahm.hhUniqueId=:id "+markedForDeleteQuery).setString("id", hhUniqueId).list();
             tx.commit();
             closeSession(session);
             
@@ -840,7 +1037,7 @@ public class AdultHouseholdMemberDaoImpl implements AdultHouseholdMemberDao
         AdultHouseholdMember ahm=null;
         try
         {
-            //System.err.println("beneficiaryId: "+beneficiaryId);
+            System.err.println("firstName is "+firstName+" and surname is "+surname);
             if(hhUniqueId !=null)
             hhUniqueId=hhUniqueId.trim();
             if(firstName !=null)
@@ -849,13 +1046,13 @@ public class AdultHouseholdMemberDaoImpl implements AdultHouseholdMemberDao
             surname=surname.trim().toUpperCase();
             session = HibernateUtil.getSession();
             tx = session.beginTransaction();
-            List list = session.createQuery("from AdultHouseholdMember ahm where ahm.hhUniqueId=:id and UPPER(ahm.firstName)=:fn and UPPER(ahm.surname=:sn)").setString("id", hhUniqueId).setString("fn", firstName).setString("sn", surname).list();
+            List list = session.createQuery("from AdultHouseholdMember ahm where ahm.hhUniqueId=:id and ((UPPER(ahm.firstName)=:fn and UPPER(ahm.surname)=:sn) or (UPPER(ahm.firstName)=:sn and UPPER(ahm.surname)=:fn))").setString("id", hhUniqueId).setString("fn", firstName).setString("sn", surname).list();
             tx.commit();
             closeSession(session);
             if(list !=null && !list.isEmpty())
             {
                 ahm=(AdultHouseholdMember)list.get(0);
-                //System.err.println("ahm.getFirstName() is "+ahm.getFirstName());
+                System.err.println("ahm.getFirstName() is "+ahm.getFirstName());
             }
             
         }
@@ -876,13 +1073,33 @@ public class AdultHouseholdMemberDaoImpl implements AdultHouseholdMemberDao
             if(hhUniqueId !=null)
             hhUniqueId=hhUniqueId.trim();
             session = HibernateUtil.getSession();
-            tx = session.beginTransaction();
-            List list = session.createQuery("from AdultHouseholdMember ahm where ahm.hhUniqueId=:id and (ahm.beneficiaryType=1 or ahm.beneficiaryType=4)").setString("id", hhUniqueId).list();
+            tx = session.beginTransaction(); //and (ahm.beneficiaryType=1 or ahm.beneficiaryType=4)
+            List list = session.createQuery("from AdultHouseholdMember ahm where ahm.hhUniqueId=:id").setString("id", hhUniqueId).list();
             tx.commit();
             closeSession(session);
             if(list !=null && !list.isEmpty())
             {
+                //if only one caregiver, assume that is the household head, return as household head
+                if(list.size()==1)
                 ahm=(AdultHouseholdMember)list.get(0);
+                else
+                {
+                    //Here, loop over and check the adult household member designated as household head and return
+                    int count=0;
+                    for(Object obj:list)
+                    {
+                        count++;
+                        ahm=(AdultHouseholdMember)obj;
+                        if(ahm.getBeneficiaryType()==AppConstant.HOUSEHOLD_TYPE_NUM)
+                        break;
+                        else
+                        {
+                            //If none is marked as household head, return the first in the list
+                            if(count==list.size()-1)
+                            ahm=(AdultHouseholdMember)list.get(0);
+                        }
+                    }
+                }
                 //System.err.println("ahm.getFirstName() is "+ahm.getFirstName());
             }
             
@@ -897,7 +1114,7 @@ public class AdultHouseholdMemberDaoImpl implements AdultHouseholdMemberDao
     }
     public AdultHouseholdMember getPreparedAdultHouseholdMember(AdultHouseholdMember ahm)
     {
-        if(ahm !=null && ahm.getDateOfBirth() !=null && ahm.getDateOfEnrollment() !=null)
+        if(ahm !=null && ahm.getDateOfEnrollment() !=null)
         {
             AppUtility appUtil=new AppUtility();
             ahm=getAdultHouseholdMemberWithCalculatedAge(ahm);
@@ -949,15 +1166,15 @@ public class AdultHouseholdMemberDaoImpl implements AdultHouseholdMemberDao
         }
         if(ahm.getDateEnrolledOnTreatment().before(ahm.getDateOfCurrentHivStatus()) || ahm.getDateEnrolledOnTreatment().equals(DateManager.getDateInstance(DateManager.DEFAULT_DATE)))
         {
-            ahm.setEnrolledOnTreatment(AppConstant.ENROLLED_ON_TREATMENT_NO_NUM);
+            ahm.setEnrolledOnTreatment(0);
             ahm.setDateEnrolledOnTreatment(DateManager.getDateInstance(DateManager.DEFAULT_DATE));
         }
         if(ahm.getCurrentEnrollmentStatus()==0)
         ahm.setCurrentEnrollmentStatus(ahm2.getCurrentEnrollmentStatus());
         if(ahm.getCurrentAge()==0)
         ahm.setCurrentAge(ahm2.getCurrentAge());
-        if(ahm.getComfortableToDiscloseMemberHivStatus()==0)
-        ahm.setComfortableToDiscloseMemberHivStatus(ahm2.getComfortableToDiscloseMemberHivStatus());
+        //if(ahm.getComfortableToDiscloseMemberHivStatus()==0)
+        //ahm.setComfortableToDiscloseMemberHivStatus(ahm2.getComfortableToDiscloseMemberHivStatus());
         if(ahm.getAgeAtBaseline()==0)
         ahm.setAgeAtBaseline(ahm2.getAgeAtBaseline());
         //if(ahm.getEnrolledOnTreatment()==0 && ahm.getCurrentHivStatusCode()==1)

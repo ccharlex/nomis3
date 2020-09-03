@@ -94,7 +94,7 @@ public class IndicatorDictionary implements Serializable
     {
         Indicator indicator=Indicator.getInstance();
         indicator.setIndicatorId("vcnonartenr");
-        indicator.setIndicatorName("Number of HIV Positive beneficiaries  currently enrolled and Not on ART");
+        indicator.setIndicatorName("Number of HIV Positive beneficiaries  currently enrolled and Not enrolled on treatment");
         indicator.setDescription("This indicator counts the number of beneficiaries currently enrolled (active or re-enrolled) whose current HIV status is positive but are not enrolled on treatment");
         indicator.setSource("Children and Adult household members register");
         indicator.setOtherInformation("This indicator is NOT dependent on service provision and report period");
@@ -107,8 +107,21 @@ public class IndicatorDictionary implements Serializable
     {
         Indicator indicator=Indicator.getInstance();
         indicator.setIndicatorId("vchivartenr");
-        indicator.setIndicatorName("Number of HIV Positive beneficiaries currently enrolled and on ART");
-        indicator.setDescription("This indicator counts the number of beneficiaries currently enrolled (active or re-enrolled) whose current HIV status is positive and are enrolled on treatment");
+        indicator.setIndicatorName("Number of HIV Positive children currently enrolled and enrolled on treatment");
+        indicator.setDescription("This indicator counts the number of children currently enrolled (active or re-enrolled) whose current HIV status is positive and are enrolled on treatment");
+        indicator.setSource("Children and Adult household members register");
+        indicator.setOtherInformation("This indicator is NOT dependent on service provision and report period");
+        indicator.setIndicatorType(AppConstant.OVC_TYPE);
+        indicator.setDisaggregations("Age, Sex");
+        indicator.setMerCode("OVC_HIVSTAT");
+        return indicator;
+    }
+    public Indicator getIndicatorForNumberOfHivPositiveEnrolledOnTreatmentInReportPeriod()
+    {
+        Indicator indicator=Indicator.getInstance();
+        indicator.setIndicatorId("vchivartrpr");
+        indicator.setIndicatorName("Number of HIV Positive children currently enrolled and enrolled on treatment within the report period");
+        indicator.setDescription("This indicator counts the number of beneficiaries currently enrolled (active or re-enrolled) whose current HIV status is positive and are enrolled on treatment within the report period");
         indicator.setSource("Children and Adult household members register");
         indicator.setOtherInformation("This indicator is NOT dependent on service provision and report period");
         indicator.setIndicatorType(AppConstant.OVC_TYPE);
@@ -511,10 +524,22 @@ public Indicator getIndicatorForNumberOfAdultMembersProvidedEntrepreneurshipandB
     {
         Indicator indicator=Indicator.getInstance();
         indicator.setIndicatorId("vcrefhivtst");
-        indicator.setIndicatorName("Number of children who completed a referral for or was facilitated to obtain HIV related testing");
+        indicator.setMerCode("OVC_HTSLINK");
+        indicator.setIndicatorName("Number of children who completed a referral for or was facilitated to obtain HIV related testing ("+indicator.getMerCode()+")");
         indicator.setIndicatorType(AppConstant.OVC_TYPE);
-        indicator.setDescription("Number of children who completed a referral for or was facilitated to obtain HIV related testing");
-        indicator.setMerCode("HEALTH");
+        indicator.setDescription("Number of children who completed a referral for or was facilitated to obtain HIV related testing ("+indicator.getMerCode()+")");
+        
+        return indicator;
+    }
+    public Indicator getIndicatorForNumberOfAdultMembersProvidedReferralForHIVRelatedTestingService()
+    {
+        Indicator indicator=Indicator.getInstance();
+        indicator.setIndicatorId("cgrefhivtst");
+        indicator.setMerCode("OVC_HTSLINK");
+        indicator.setIndicatorName("Number of caregivers/adults who completed a referral for or was facilitated to obtain HIV related testing ("+indicator.getMerCode()+")");
+        indicator.setIndicatorType(AppConstant.CAREGIVER_TYPE);
+        indicator.setDescription("Number of caregivers/adults who completed a referral for or was facilitated to obtain HIV related testing ("+indicator.getMerCode()+")");
+        
         return indicator;
     }
     public Indicator getIndicatorForNumberOfOvcProvidedReferralForHIVOrOrpotunisticInfectionService()
@@ -1032,6 +1057,49 @@ public Indicator getIndicatorForNumberOfAdultMembersProvidedEntrepreneurshipandB
         indicator.setMerCode("OVC_ENROLLED");
         return indicator;
     }
+    
+    //Vulnerability status
+    public Indicator getIndicatorForNumberOfChildrenOrphanedByAIDSEnrolled()
+    {
+        Indicator indicator=Indicator.getInstance();
+        indicator.setIndicatorId("vcorphnaids");
+        indicator.setIndicatorName("Number of children orphaned by AIDS enrolled in the program");
+        indicator.setIndicatorType(AppConstant.OVC_TYPE);
+        indicator.setDescription("This indicator counts the Number of children orphaned by AIDS enrolled in the program");
+        indicator.setMerCode("OVC_ENROLLED");
+        return indicator;
+    }
+    public Indicator getIndicatorForNumberOfChildrenAtHeightenedRiskOfHIVInfectionEnrolled()
+    {
+        Indicator indicator=Indicator.getInstance();
+        indicator.setIndicatorId("vcatriskhiv");
+        indicator.setIndicatorName("Number of  children at heightened risk of HIV infection enrolled in the program");
+        indicator.setIndicatorType(AppConstant.OVC_TYPE);
+        indicator.setDescription("This indicator counts the number of children at heightened risk of HIV infection enrolled in the program");
+        indicator.setMerCode("OVC_ENROLLED");
+        return indicator;
+    }
+    public Indicator getIndicatorForNumberOfAdolescentFemalesAtRiskOfTransactionalSexEnrolled()
+    {
+        Indicator indicator=Indicator.getInstance();
+        indicator.setIndicatorId("vctranscsex");
+        indicator.setIndicatorName("Number of adolescent females at risk of transactional sex enrolled in the program");
+        indicator.setIndicatorType(AppConstant.OVC_TYPE);
+        indicator.setDescription("This indicator counts the Number of adolescent females at risk of transactional sex enrolled in the program");
+        indicator.setMerCode("OVC_ENROLLED");
+        return indicator;
+    }
+    public Indicator getIndicatorForNumberOfChildrenAtRiskOfOrHaveExperiencedSexualViolenceEnrolled()
+    {
+        Indicator indicator=Indicator.getInstance();
+        indicator.setIndicatorId("vcatrisksex");
+        indicator.setIndicatorName("Number of  children at risk of or have experienced sexual violence enrolled in the program");
+        indicator.setIndicatorType(AppConstant.OVC_TYPE);
+        indicator.setDescription("This indicator counts the Number of  children at risk of or have experienced sexual violence enrolled in the program");
+        indicator.setMerCode("OVC_ENROLLED");
+        return indicator;
+    }
+    
     public Indicator getIndicatorForNumberOfTeenMothersEnrolled()
     {
         Indicator indicator=Indicator.getInstance();
@@ -1196,7 +1264,7 @@ public Indicator getIndicatorForNumberOfAdultMembersProvidedEntrepreneurshipandB
     {
         Indicator indicator=Indicator.getInstance();
         indicator.setIndicatorId("ahmcurenrol");
-        indicator.setIndicatorName("Number of Adult members currently enrolled in the program");
+        indicator.setIndicatorName("Number of Caregivers currently enrolled in the program");
         
         indicator.setIndicatorType(AppConstant.CAREGIVER_TYPE);
         indicator.setDescription("This indicator counts the number of Adult members currently enrolled in the program (excludes those graduated, lost to follow-up, migrated and other losses");
@@ -1207,10 +1275,10 @@ public Indicator getIndicatorForNumberOfAdultMembersProvidedEntrepreneurshipandB
     {
         Indicator indicator=Indicator.getInstance();
         indicator.setIndicatorId("ahmenrollrp");
-        indicator.setIndicatorName("Number of Caregivers enrolled within the report period");
+        indicator.setIndicatorName("Number of new Caregivers enrolled within the report period (OVC_ENROLLED)");
         indicator.setIndicatorType(AppConstant.CAREGIVER_TYPE);
         indicator.setDescription("This indicator counts the number of Adult members enrolled within the report period (includes those graduated, lost to follow-up, migrated and other losses");
-        indicator.setMerCode("OVC_SERV");
+        indicator.setMerCode("OVC_ENROLLED");
         return indicator;
     }
     public Indicator getIndicatorForNumberOfAdultMembersServedWithinTheReportPeriod()
@@ -1228,7 +1296,7 @@ public Indicator getIndicatorForNumberOfAdultMembersProvidedEntrepreneurshipandB
     {
         Indicator indicator=Indicator.getInstance();
         indicator.setIndicatorId("ahmnotserve");
-        indicator.setIndicatorName("Number of Adult members currently enrolled but not served within the report period");
+        indicator.setIndicatorName("Number of Caregivers currently enrolled but not served within the report period");
         indicator.setIndicatorType(AppConstant.CAREGIVER_TYPE);
         return indicator;
     }
@@ -1600,6 +1668,7 @@ public Indicator getIndicatorForNumberOfAdultMembersProvidedEntrepreneurshipandB
         indicator.setMerCode("OVC_HTSLINK");
         return indicator;
     }
+    
     public Indicator getIndicatorForNumberOfOvcThatShowedAtleastOneScoreImprovement()
     {
         Indicator indicator=Indicator.getInstance();
@@ -1937,6 +2006,27 @@ public Indicator getIndicatorForNumberOfAdultMembersProvidedEntrepreneurshipandB
         indicator.setIndicatorType(AppConstant.CAREGIVER_TYPE);
         return indicator;
     }
+    
+    public Indicator getIndicatorForNumberOfCaregiversNewlyTestedPositive()
+    {
+        Indicator indicator=Indicator.getInstance();
+        indicator.setIndicatorId("cgnewhivpos");
+        indicator.setMerCode("OVC_HTSLINK");
+        indicator.setIndicatorName("Number of caregivers Newly tested Positive in Reporting Period ("+indicator.getMerCode()+")");
+        
+        indicator.setIndicatorType(AppConstant.CAREGIVER_TYPE);
+        return indicator;
+    }
+    public Indicator getIndicatorForNumberOfHIVPositiveCaregiversNewlyEnrolledOnARTWithinTheReportPeriod()
+    {
+        Indicator indicator=Indicator.getInstance();
+        indicator.setIndicatorId("cghivposart");
+        indicator.setMerCode("OVC_TXLINK");
+        indicator.setIndicatorName("Number of HIV positive caregivers enrolled on treatment in Reporting Period ("+indicator.getMerCode()+")");
+        indicator.setIndicatorType(AppConstant.CAREGIVER_TYPE);
+        return indicator;
+    }
+    
     public Indicator getIndicatorForNumberOfHIVUnknownCaregiversEverEnrolled()
     {
         Indicator indicator=Indicator.getInstance();
@@ -2046,6 +2136,24 @@ public Indicator getIndicatorForNumberOfAdultMembersProvidedEntrepreneurshipandB
         Indicator indicator=Indicator.getInstance();
         indicator.setIndicatorId("vceenegrass");
         indicator.setIndicatorName("Number of Hiv Negative OVC ever enrolled assessed for HIV risk");
+        indicator.setIndicatorType(AppConstant.OVC_TYPE);
+        indicator.setMerCode("OVC_HIVRISKASS");
+        return indicator;
+    }
+    public Indicator getIndicatorForNumberOfHivUnknownOvcAssessedonHIVRisk()
+    {
+        Indicator indicator=Indicator.getInstance();
+        indicator.setIndicatorId("vcunkrassed");
+        indicator.setIndicatorName("Number of HIV Unknown OVC assessed for HIV risk (OVC_HIVRISKASS_UNKNOWN)");
+        indicator.setIndicatorType(AppConstant.OVC_TYPE);
+        indicator.setMerCode("OVC_HIVRISKASS");
+        return indicator;
+    }
+    public Indicator getIndicatorForNumberOfHivNegativeOvcAssessedonHIVRisk()
+    {
+        Indicator indicator=Indicator.getInstance();
+        indicator.setIndicatorId("vcnegrassed");
+        indicator.setIndicatorName("Number of Hiv Negative OVC assessed for HIV risk (OVC_HIVRISKASS_NEGATIVE)");
         indicator.setIndicatorType(AppConstant.OVC_TYPE);
         indicator.setMerCode("OVC_HIVRISKASS");
         return indicator;
@@ -2428,7 +2536,7 @@ public Indicator getIndicatorForNumberOfAdultMembersProvidedEntrepreneurshipandB
     {
         Indicator indicator=Indicator.getInstance();
         indicator.setIndicatorId("vccelt18cer");
-        indicator.setIndicatorName("Number of Ovc less than 18 years currently enrolled that has birth certificate");
+        indicator.setIndicatorName("Number of OVC less than 18 years currently enrolled that has birth certificate");
         indicator.setMerCode("OVC_BIRTHCERT");
         indicator.setIndicatorType(AppConstant.OVC_TYPE);
         return indicator;
@@ -2463,7 +2571,7 @@ public Indicator getIndicatorForNumberOfAdultMembersProvidedEntrepreneurshipandB
     {
         Indicator indicator=Indicator.getInstance();
         indicator.setIndicatorId("vcwithnobcc");
-        indicator.setIndicatorName("Number of OVC <18 currently enrolled without birth certificate");
+        indicator.setIndicatorName("Number of OVC less than 18 years currently enrolled without birth certificate");
         indicator.setIndicatorType(AppConstant.OVC_TYPE);
         return indicator;
     }
@@ -2498,21 +2606,35 @@ public Indicator getIndicatorForNumberOfAdultMembersProvidedEntrepreneurshipandB
         Indicator indicator=Indicator.getInstance();
         indicator.setIndicatorId("vchivposser");
         //indicator.setIndicatorName("Number of HIV positive OVC identified and served within the report period");
-        indicator.setIndicatorName("Number of OVC Newly tested Positive in Reporting Period");
-        indicator.setAlternateName("OVC Newly tested Positive (<18) in Reporting Period");
+        indicator.setIndicatorName("Number of OVC Newly tested Positive and served in Reporting Period");
+        indicator.setAlternateName("OVC Newly tested Positive (<18) and served in Reporting Period");
         indicator.setIndicatorType(AppConstant.OVC_TYPE);
         indicator.setMerCode("OVC_TXLINK");
         return indicator;
     }
-    public Indicator getIndicatorForNumberOfOvcNewlyTestedPositiveAndEnrolledOnARTWithinTheReportPeriod()
+    public Indicator getIndicatorForNumberOfOvcNewlyTestedPositiveWithinTheReportPeriod()
+    {
+        Indicator indicator=Indicator.getInstance();
+        indicator.setIndicatorId("vcnewhivpos");
+        indicator.setMerCode("OVC_HTSLINK");
+        //indicator.setIndicatorName("Number of HIV positive OVC identified and served within the report period");
+        indicator.setIndicatorName("Number of OVC Newly tested Positive in Reporting Period ("+indicator.getMerCode()+")");
+        indicator.setAlternateName("OVC Newly tested Positive (<18) in Reporting Period");
+        indicator.setIndicatorType(AppConstant.OVC_TYPE);
+        
+        return indicator;
+    }
+    public Indicator getIndicatorForNumberOfHivPositiveOvcEnrolledOnARTWithinTheReportPeriod()
     {
         Indicator indicator=Indicator.getInstance();
         indicator.setIndicatorId("vchivposart");
-        //indicator.setIndicatorName("Number of HIV positive OVC identified and served within the report period");
-        indicator.setIndicatorName("Number of OVC Newly tested Positive and enrolled on treatment in Reporting Period");
-        indicator.setAlternateName("OVC Newly tested Positive (<18) and enrolled on treatment in Reporting Period");
-        indicator.setIndicatorType(AppConstant.OVC_TYPE);
         indicator.setMerCode("OVC_TXLINK");
+        //indicator.setIndicatorName("Number of HIV positive OVC identified and served within the report period");
+        indicator.setIndicatorName("Number of HIV positive OVC enrolled on treatment in Reporting Period ("+indicator.getMerCode()+")");
+        indicator.setAlternateName("OVC HIV Positive OVC (<18) enrolled on treatment in Reporting Period");
+        indicator.setDescription("This indicator counts the number of HIV Positive OVC enrolled on treatment within the reporting Period. An OVC is counted even if the child is exited the program after been enrolled on treatment");
+        indicator.setIndicatorType(AppConstant.OVC_TYPE);
+        
         return indicator;
     }
     public Indicator getIndicatorForNumberOfHivPositiveOvcIdentifiedWithinTheReportPeriod()
@@ -2993,7 +3115,8 @@ public Indicator getIndicatorForNumberOfAdultMembersProvidedEntrepreneurshipandB
     {
         Indicator indicator=Indicator.getInstance();
         indicator.setIndicatorId("vcnewlyEnro");
-        indicator.setIndicatorName("Number of new OVC enrolled");
+        indicator.setIndicatorName("Number of new OVC enrolled (OVC_ENROLLED)");
+        indicator.setMerCode("OVC_ENROLLED");
         indicator.setIndicatorType(AppConstant.OVC_TYPE);
         return indicator;
     }
@@ -3819,6 +3942,42 @@ public Indicator getIndicatorForNumberOfAdultMembersProvidedEntrepreneurshipandB
         indicator.setIndicatorType(AppConstant.CAREGIVER_TYPE);
         return indicator;
     }
+    public Indicator getIndicatorForNumberOfActiveCaregiversServedWithinDatimReportPeriod()
+    {
+        Indicator indicator=Indicator.getInstance();
+        indicator.setIndicatorId("cgactiserdp");
+        indicator.setIndicatorName("Number of active Caregivers served within the report period (DATIM)");
+        indicator.setMerCode("OVC_SERV");
+        indicator.setIndicatorType(AppConstant.CAREGIVER_TYPE);
+        return indicator;
+    }
+    public Indicator getIndicatorForNumberOfCaregiversServedAndGraduatedWithinDatimReportPeriod()
+    {
+        Indicator indicator=Indicator.getInstance();
+        indicator.setIndicatorId("cgsergraddp");
+        indicator.setIndicatorName("Number of Caregivers served but graduated within the report period (DATIM)");
+        indicator.setMerCode("OVC_SERV");
+        indicator.setIndicatorType(AppConstant.CAREGIVER_TYPE);
+        return indicator;
+    }
+    public Indicator getIndicatorForNumberOfCaregiversServedAndTransferedWithinDatimReportPeriod()
+    {
+        Indicator indicator=Indicator.getInstance();
+        indicator.setIndicatorId("cgsertrandp");
+        indicator.setIndicatorName("Number of Caregivers served and transfered within the report period (DATIM)");
+        indicator.setMerCode("OVC_SERV");
+        indicator.setIndicatorType(AppConstant.CAREGIVER_TYPE);
+        return indicator;
+    }
+    public Indicator getIndicatorForNumberOfCaregiversServedAndExitedWithinDatimReportPeriod()
+    {
+        Indicator indicator=Indicator.getInstance();
+        indicator.setIndicatorId("cgserexitdp");
+        indicator.setIndicatorName("Number of Caregivers served and exited within the report period (DATIM)");
+        indicator.setMerCode("OVC_SERV");
+        indicator.setIndicatorType(AppConstant.CAREGIVER_TYPE);
+        return indicator;
+    }
     public Indicator getIndicatorForNumberOfActiveCaregiversServedWithinTheReportPeriod()
     {
         Indicator indicator=Indicator.getInstance();
@@ -4030,16 +4189,16 @@ public Indicator getIndicatorForNumberOfAdultMembersProvidedEntrepreneurshipandB
         indicator.setIndicatorId("movcbircert");
         indicator.setIndicatorName("OVC_BIRTHCERT");
         indicator.setMerCode("OVC_BIRTHCERT");
-        indicator.setIndicatorType(AppConstant.MAIN_INDICATOR_TYPE);
+        indicator.setIndicatorType(AppConstant.OVC_TYPE);
         return indicator;
     }
     public Indicator getOvc_EDUIndicator()
     {
         Indicator indicator=Indicator.getInstance();
         indicator.setIndicatorId("merovceduin");
-        indicator.setIndicatorName("OVC_EDU");
+        indicator.setIndicatorName("Number of OVC assessed for educational performance (OVC_EDU)");
         indicator.setMerCode("OVC_EDU");
-        indicator.setIndicatorType(AppConstant.MAIN_INDICATOR_TYPE);
+        indicator.setIndicatorType(AppConstant.OVC_TYPE);
         return indicator;
     }
     public Indicator getOvc_HIVRISKASSIndicator()
@@ -4064,8 +4223,8 @@ public Indicator getIndicatorForNumberOfAdultMembersProvidedEntrepreneurshipandB
     {
         Indicator indicator=Indicator.getInstance();
         indicator.setIndicatorId("merovctxlink");
-        indicator.setIndicatorName("OVC_HTSLINK");
-        indicator.setMerCode("OVC_HTSLINK");
+        indicator.setIndicatorName("OVC_TXLINK");
+        indicator.setMerCode("OVC_TXLINK");
         indicator.setIndicatorType(AppConstant.MAIN_INDICATOR_TYPE);
         return indicator;
     }
@@ -4075,14 +4234,23 @@ public Indicator getIndicatorForNumberOfAdultMembersProvidedEntrepreneurshipandB
         indicator.setIndicatorId("mrovcartsup");
         indicator.setIndicatorName("OVC_ARTSUPP");
         indicator.setMerCode("OVC_ARTSUPP");
-        indicator.setIndicatorType(AppConstant.MAIN_INDICATOR_TYPE);
+        indicator.setIndicatorType(AppConstant.OVC_TYPE);
+        return indicator;
+    }
+    public Indicator getIndicatorForNumberOfAdultMembersSelfReportingAdherenceToTreatment()
+    {
+        Indicator indicator=Indicator.getInstance();
+        indicator.setIndicatorId("mrcgartsupp");
+        indicator.setIndicatorName("Number of HIV positive Caregivers on treatment self-reporting adherence to treatment within the report period (OVC_ARTSUPP)");
+        indicator.setMerCode("OVC_ARTSUPP");
+        indicator.setIndicatorType(AppConstant.CAREGIVER_TYPE);
         return indicator;
     }
     public Indicator getOvc_NUTRITIONIndicator()
     {
         Indicator indicator=Indicator.getInstance();
         indicator.setIndicatorId("mrovnutritn");
-        indicator.setIndicatorName("OVC_NUTRITION");
+        indicator.setIndicatorName("Number of malnourished children provided nutrition services (OVC_NUTRITION)");
         indicator.setMerCode("OVC_NUTRITION");
         indicator.setIndicatorType(AppConstant.MAIN_INDICATOR_TYPE);
         return indicator;

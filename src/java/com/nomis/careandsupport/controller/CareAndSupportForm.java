@@ -4,7 +4,10 @@
  */
 package com.nomis.careandsupport.controller;
 
+import com.nomis.operationsManagement.BeneficiaryManager;
+import com.nomis.ovc.business.Beneficiary;
 import com.nomis.ovc.util.AppConstant;
+import com.nomis.ovc.util.DateManager;
 import com.nomis.ovc.util.ValidationManager;
 import javax.servlet.http.HttpServletRequest;
 
@@ -437,16 +440,84 @@ public void reset(ActionMapping mapping, HttpServletRequest request)
         ActionErrors errors = new ActionErrors();
         if(this.getActionName()==null || getActionName().equalsIgnoreCase("householdDetails") || getActionName().equalsIgnoreCase("beneficiaryDetails") || getActionName().equalsIgnoreCase("assessmentDetails") || getActionName().equalsIgnoreCase("level3OuList") || getActionName().equalsIgnoreCase("level4OuList") || getActionName().equalsIgnoreCase("delete"))
         return errors;
-        else if(this.getDateOfAssessment()==null || this.getDateOfAssessment().indexOf("/")==-1)
+        Beneficiary beneficiary=BeneficiaryManager.getBeneficiary(beneficiaryId);
+        if(this.getDateOfAssessment()==null || this.getDateOfAssessment().indexOf("/")==-1)
         errors.add("dateOfAssessment", new ActionMessage("errors.dateOfAssessment.required"));
         else if(!ValidationManager.isValidDate(getDateOfAssessment()))
         errors.add("dateOfAssessment", new ActionMessage("errors.dateOfAssessment.required"));
         else if(!ValidationManager.compareDateWithCurrentDate(getDateOfAssessment()))
         errors.add("dateOfAssessment", new ActionMessage("errors.dateOfAssessment.postdated"));
-        else if(!ValidationManager.dateAfterEnrollmentDate(this.getBeneficiaryId(),getDateOfAssessment(),AppConstant.OVC_TYPE_NUM))
-        errors.add("dateOfAssessment", new ActionMessage("errors.dateOfAssessment.beforeEnrollment"));
+        
         else if(this.getBeneficiaryId()==null || this.getBeneficiaryId().equalsIgnoreCase("select"))
         errors.add("beneficiaryId", new ActionMessage("errors.beneficiaryId.required"));
+        //if beneficiary is a child, validate child specific fields
+        else if(beneficiary !=null && beneficiary.getBeneficiaryType()==AppConstant.OVC_TYPE_NUM)
+        {
+            if(!ValidationManager.dateAfterEnrollmentDate(this.getBeneficiaryId(),getDateOfAssessment(),AppConstant.OVC_TYPE_NUM))
+            errors.add("dateOfAssessment", new ActionMessage("errors.dateOfAssessment.beforeEnrollment"));
+            else if(this.getCoughSymptom()==0)
+            errors.add("coughSymptom", new ActionMessage("errors.coughSymptom.required"));
+            else if(this.getChildLossinWeight()==0)
+            errors.add("childLossinWeight", new ActionMessage("errors.childLossinWeight.required"));
+            else if(this.getChildHasFever()==0)
+            errors.add("childHasFever", new ActionMessage("errors.childHasFever.required"));
+            else if(this.getChildHasNightSweat()==0)
+            errors.add("childHasNightSweat", new ActionMessage("errors.childHasNightSweat.required"));
+            else if(this.getChildHasSwelling()==0)
+            errors.add("childHasSwelling", new ActionMessage("errors.childHasSwelling.required"));
+        }
+        else if(beneficiary !=null && beneficiary.getBeneficiaryType()==AppConstant.CAREGIVER_TYPE_NUM)
+        {
+            if(!ValidationManager.dateAfterEnrollmentDate(this.getBeneficiaryId(),getDateOfAssessment(),AppConstant.CAREGIVER_TYPE_NUM))
+            errors.add("dateOfAssessment", new ActionMessage("errors.dateOfAssessment.beforeEnrollment"));
+        }
+        //Check if beneficiary is enrolled on treatment. If yes, validate the treatment related fields
+        else if(this.getEnrolledOnTreatment()==0)
+        errors.add("enrolledOnTreatment", new ActionMessage("errors.enrolledOnTreatment.required"));
+        else if(this.getEnrolledOnTreatment()==AppConstant.ENROLLED_ON_TREATMENT_YES_NUM)
+        {
+            if((this.getFacilityId()==null || this.getFacilityId().trim().equalsIgnoreCase("select")))
+            errors.add("facilityId", new ActionMessage("errors.hivTreatmentFacilityId.required"));
+            else if(this.getPickedUpMedication()==0)
+            errors.add("pickedUpMedication", new ActionMessage("errors.pickedUpMedication.required"));
+            else if(this.getPickedUpMedication()==1)
+            {
+                if(this.getMissedARVsRecently()==0)
+                errors.add("missedARVsRecently", new ActionMessage("errors.missedARVsRecently.required"));
+                if(this.getMissedARVsRecently()==1)
+                {
+                    if(this.getReasonsPeopleSkipARV()==null)
+                    errors.add("reasonsPeopleSkipARV", new ActionMessage("errors.reasonsPeopleSkipARV.required"));
+                }
+            }
+            else if(this.getViralLoadTestDone()==0)
+            errors.add("viralLoadTestDone", new ActionMessage("errors.viralLoadTestDone.required"));
+            else if(this.getViralLoadTestDone()==1)
+            {
+                if(this.getDateOfViralLoadTest()==null || this.getDateOfViralLoadTest().indexOf("/") ==-1)
+                errors.add("dateOfViralLoadTest", new ActionMessage("errors.dateOfViralLoadTest.required"));
+                else if(beneficiary !=null && beneficiary.getDateEnrolledOnTreatment() !=null && beneficiary.getDateEnrolledOnTreatment().equals(DateManager.getDateInstance(DateManager.DEFAULT_DATE)))
+                errors.add("dateOfViralLoadTest", new ActionMessage("errors.dateEnrolledOnTreatment.incorrect"));
+                else if(beneficiary !=null && beneficiary.getDateEnrolledOnTreatment() !=null && beneficiary.getDateEnrolledOnTreatment().after(DateManager.getDateInstance(getDateOfViralLoadTest())))
+                errors.add("dateOfViralLoadTest", new ActionMessage("errors.dateOfViralLoadTest.beforeDateEnrolledOnTreatment"));
+                else if(this.getViralLoadResultKnown()==0)
+                errors.add("viralLoadResultKnown", new ActionMessage("errors.viralLoadResultKnown.required"));
+            }
+            else if(this.getReceivedTransportationSupport()==0)
+            errors.add("receivedTransportationSupport", new ActionMessage("errors.receivedTransportationSupport.required"));
+            else if(this.getReceivedTransportationSupport()==1 && this.getMonthsOfTransportationSupport()==0)
+            errors.add("monthsOfTransportationSupport", new ActionMessage("errors.monthsOfTransportationSupport.required"));
+            
+        }
+        else if(this.getSoresRashPainExperience()==0)
+        errors.add("soresRashPainExperience", new ActionMessage("errors.soresRashPainExperience.required"));
+        else if(this.getDateOfNextAppointment() !=null && this.getDateOfNextAppointment().indexOf("/") !=-1)
+        {
+            //check if date of next appointment is before date of assessment
+            if(DateManager.getDateInstance(DateManager.processMthDayYearToMysqlFormat(this.getDateOfNextAppointment())).before(DateManager.getDateInstance(DateManager.processMthDayYearToMysqlFormat(this.getDateOfAssessment()))))
+             errors.add("dateOfNextAppointment", new ActionMessage("errors.dateOfNextAppointment.beforeDateOfAssessment"));
+        }
+        
         return errors;
         
     }

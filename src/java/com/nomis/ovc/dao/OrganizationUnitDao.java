@@ -19,7 +19,7 @@ public interface OrganizationUnitDao
     public OrganizationUnit getOrganizationUnit(String uid) throws Exception;
     public OrganizationUnit getOrganizationUnitByName(String ouname) throws Exception;
     public List getAllOrganizationUnit() throws Exception;
-    public List getOrganizationUnit(int oulevel) throws Exception;
+    public List getOrganizationUnitsByOuLevel(int oulevel) throws Exception;
     public List getOrganizationUnityByParentId(String pid) throws Exception;
     public OrganizationUnit getOrganizationUnitByNameAndLevel(String ouname,int level) throws Exception;
     public OrganizationUnit createWard(OrganizationUnit parentOu,String wardName) throws Exception;

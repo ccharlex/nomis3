@@ -323,6 +323,10 @@ public void reset(ActionMapping mapping, HttpServletRequest request)
             Beneficiary ahm=ValidationManager.getBeneficiaryByName(getHhUniqueId(),getFirstName(), getSurname(), AppConstant.CAREGIVER_TYPE_NUM);
             if(ahm !=null && getActionName().equalsIgnoreCase("save"))
             errors.add("firstName", new ActionMessage("errors.caregiver.exists"));
+            /*else if(ahm !=null && getActionName().equalsIgnoreCase("modify"))
+            {
+                errors.add("firstName", new ActionMessage("errors.caregiver.exists"));
+            }*/
             else if(this.getAgeAtBaseline()<18)
             errors.add("ageAtBaseline", new ActionMessage("errors.ahm.underAged"));
             else if(getAgeAtBaseline()>200)

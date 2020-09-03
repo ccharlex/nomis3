@@ -269,8 +269,12 @@ public class AdultHouseholdMember implements Serializable,Beneficiary
 
     
     public HouseholdEnrollment getHhe() {
+        if(hhe==null)
         hhe=BeneficiaryManager.getHouseholdEnrollment(hhUniqueId);
         return hhe;
+    }
+    public void setHhe(HouseholdEnrollment hhe) {
+        this.hhe = hhe;
     }
 
     public HivStatus getBaselineHivStatusObject() {

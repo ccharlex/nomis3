@@ -239,7 +239,7 @@ public class NationalHivRiskAssessmentAction extends org.apache.struts.action.Ac
         else if(requiredAction.equalsIgnoreCase("markForDelete"))
         {
             HivRiskAssessment hra=getHivRiskAssessment(hracform,userName);
-            util.getHivRiskAssessmentDaoInstance().markedForDelete(getHivRiskAssessment(hracform,userName));
+            util.getHivRiskAssessmentDaoInstance().markForDelete(getHivRiskAssessment(hracform,userName));
             saveUserActivity(userName,moduleName,"Marked Risk assessment record for child with Id "+hra.getOvcId()+" for delete");
             hracform.reset(mapping, request);
             setButtonState(session,"false","true");
@@ -247,7 +247,7 @@ public class NationalHivRiskAssessmentAction extends org.apache.struts.action.Ac
         else if(requiredAction.equalsIgnoreCase("delete"))
         {
             HivRiskAssessment hra=getHivRiskAssessment(hracform,userName);
-            util.getHivRiskAssessmentDaoInstance().markedForDelete(getHivRiskAssessment(hracform,userName));
+            util.getHivRiskAssessmentDaoInstance().markForDelete(getHivRiskAssessment(hracform,userName));
             saveUserActivity(userName,moduleName,"Requested Risk assessment record for child with Id "+hra.getOvcId()+" be deleted");
             hracform.reset(mapping, request);
             setButtonState(session,"false","true");

@@ -160,6 +160,7 @@ public class ListOfIndicatorsAction extends org.apache.struts.action.Action {
         {
             DateManager dm=new DateManager();
             ReportParameterTemplate rpt=new ReportParameterTemplate();
+            rpt.setReportType(AppConstant.LISTOFINDICATORS_REPORTTYPE);
             //lform.setStartAge(0);
             //lform.setEndAge(17);
             rpt.setCboId(cboId);
@@ -224,8 +225,9 @@ public class ListOfIndicatorsAction extends org.apache.struts.action.Action {
                 if(indicator !=null)
                 {
                     indicatorName=indicator.getIndicatorName();
-                    //request.setAttribute("indicatorName", indicatorName);
                     System.err.println("indicator.getIndicatorType() is "+indicator.getIndicatorType());
+                    if(indicator.getIndicatorType() !=null && indicator.getIndicatorType().equalsIgnoreCase(AppConstant.HOUSEHOLD_TYPE))
+                    target="householdRegister";
                     if(indicator.getIndicatorType() !=null && indicator.getIndicatorType().equalsIgnoreCase(AppConstant.CAREGIVER_TYPE))
                     target="cgiverRegister";
                 }
@@ -249,6 +251,12 @@ public class ListOfIndicatorsAction extends org.apache.struts.action.Action {
             {
                 request.setAttribute("reportType", "Caregiver Register");
                 session.setAttribute("cgiverListForRegister", resultList);
+                request.setAttribute("indicatorName", indicatorName);
+            }
+            else if(target.equalsIgnoreCase("householdRegister"))
+            {
+                request.setAttribute("reportType", "Household Register");
+                session.setAttribute("hheListForRegister", resultList);
                 request.setAttribute("indicatorName", indicatorName);
             }
             return mapping.findForward(target);

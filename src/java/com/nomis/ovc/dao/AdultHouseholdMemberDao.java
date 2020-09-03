@@ -39,8 +39,13 @@ public interface AdultHouseholdMemberDao
     public List getAdultHouseholdMembersWithBaselineAgeLessThan18() throws Exception;
     public int updateAdultHouseholdMemberBaselineAge() throws Exception;
     public List getAllAdultHouseholdMembers(String additionalQuery,int currentEnrollmentStatus,int hivStatus,String startDate, String endDate,int startAge,int endAge,String sex,boolean onTreatment) throws Exception;
-    public int getNoOfAdultHouseholdMembersByEnrollmentStatusAndHivStatus(String additionalQuery,int currentEnrollmentStatus,int hivStatus,String startDate, String endDate,int startAge,int endAge,String sex,int onTreatment) throws Exception;
+    public int getNoOfAdultHouseholdMembersByEnrollmentStatusAndHivStatus(ReportParameterTemplate rpt,int currentEnrollmentStatus,int hivStatus,String startDate, String endDate,int startAge,int endAge,String sex,int onTreatment) throws Exception;
+    public List getListOfAdultHouseholdMembersByEnrollmentStatusAndHivStatus(ReportParameterTemplate rpt,int currentEnrollmentStatus,int hivStatus,String startDate, String endDate,int startAge,int endAge,String sex,int onTreatment) throws Exception;
     public List getCaregiversPerHousehold(String hhUniqueId) throws Exception;
     public AdultHouseholdMember getAdultHouseholdMemberByName(String hhUniqueId,String firstName,String surname) throws Exception;
     public List getAdultHouseholdMemberRecordsMarkedForDelete(ReportParameterTemplate rpt) throws Exception;
+    public int getNumberOfAdultHouseholdMembersTestedAndRecievedResultInReportPeriodByEnrollmentStatusAndHivStatus(ReportParameterTemplate rpt,String startDate,String endDate,int enrollmentStatus,int enrolledOnTreatmentValue,int hivStatus,String sex) throws Exception;
+    public List getListOfAdultHouseholdMembersTestedAndRecievedResultInReportPeriodByEnrollmentStatusAndHivStatus(ReportParameterTemplate rpt,String startDate,String endDate,int enrollmentStatus,int enrolledOnTreatmentValue,int hivStatus,String sex) throws Exception;
+    public int getNumberOfAdultHouseholdMembersSupportedToAccessARTServicesInReportPeriod(ReportParameterTemplate rpt,String startDate,String endDate,int enrollmentStatus,String sex) throws Exception;
+    public List getListOfAdultHouseholdMembersSupportedToAccessARTServicesInReportPeriod(ReportParameterTemplate rpt,String startDate,String endDate,int enrollmentStatus,String sex) throws Exception;
 }

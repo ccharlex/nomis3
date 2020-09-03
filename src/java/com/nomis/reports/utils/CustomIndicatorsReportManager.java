@@ -29,7 +29,7 @@ public class CustomIndicatorsReportManager
     IndicatorDictionary ind=new IndicatorDictionary();
     int[] ovcAgeDisaggregation={0,0,1,4,5,9,10,14,15,17};
     int[] ovcAndCaregiverAgeDisaggregation={0,0,1,4,5,9,10,14,15,17,18,24,25,200};
-    String beneficiariesNewlyEnrolled=ind.getIndicatorForNumberOfBeneficiariesNewlyEnrolledWithinTheReportPeriod().getIndicatorId();
+    String beneficiariesNewlyEnrolled=ind.getIndicatorForNumberOfNewOvcEnrolled().getIndicatorId();
     String ovcActiveAndServeId=ind.getIndicatorForNumberOfOvcCurrentlyEnrolledAndServedInReportPeriod().getIndicatorId();
     String ovcGraduatedAndServeId=ind.getIndicatorForNumberOfOvcGraduatedButServedInReportPeriod().getIndicatorId();
     String ovcServeAndTransferedId=ind.getIndicatorForNumberOfOvcTransferedOutButServedInReportPeriod().getIndicatorId();
@@ -40,7 +40,7 @@ public class CustomIndicatorsReportManager
     String cgServedAndGraduatedId=ind.getIndicatorForNumberOfCaregiversServedAndGraduatedWithinTheReportPeriod().getIndicatorId();
     String cgExitedWithoutGraduationId=ind.getIndicatorForNumberOfCaregiversExitedWithoutGraduation().getIndicatorId();
     String userName="auto";
-    public void processCustomIndicatorsByLga(ReportParameterTemplate rpt,List selectedIndicators,String currentUser)
+    public void processCustomIndicatorsByLevel2Ou(ReportParameterTemplate rpt,List selectedIndicators,String currentUser)
     {
         DateManager dm=new DateManager();
         
@@ -115,7 +115,7 @@ public class CustomIndicatorsReportManager
             }
             else if(indicatorId.equalsIgnoreCase(ind.getOvc_HTSLINKIndicator().getIndicatorId()))
             {//OVC_HTSLINK
-                processsHivUnknownOrNegativeOVCServedInReportPeriod(rpt,partnerCode);
+                //processsHivUnknownOrNegativeOVCServedInReportPeriod(rpt,partnerCode);
                 //processsOVCReferredForTestingOnly(reportParams,partnerCode);
                 processsOVCReferredForTestingAndTestedAndObtainedResult(rpt,partnerCode);
             }
@@ -140,7 +140,7 @@ public class CustomIndicatorsReportManager
             }
             else if(indicatorId.equalsIgnoreCase(ind.getOvc_ECONSIndicator().getIndicatorId()))
             {//OVC_ECONS
-                processsNumberOfHouseholdsThatResolveEmergencyNeeds(rpt,partnerCode);
+                processsNumberOfHouseholdsThatReceivedEmergencyNeeds(rpt,partnerCode);
             }
         }
         /*processsCaregiversCurrentlyEnrolledAndServed(reportParams,partnerCode);
@@ -170,7 +170,7 @@ public class CustomIndicatorsReportManager
     }
     public void processsOVCNewEnrolledAndServed(ReportParameterTemplate rpt,String partnerCode)
     {
-        String indicatorCode=ind.getIndicatorForNumberOfBeneficiariesNewlyEnrolledWithinTheReportPeriod().getIndicatorId();
+        String indicatorCode=ind.getIndicatorForNumberOfNewOvcEnrolled().getIndicatorId();
         processDataByCBO(rpt,indicatorCode,partnerCode);
     }
     
@@ -196,13 +196,13 @@ public class CustomIndicatorsReportManager
     }
     public void processsOVCIdentifiedPositiveAndServed(ReportParameterTemplate rpt,String partnerCode)
     {
-        String indicatorCode=ind.getIndicatorForNumberOfHivPositiveOvcIdentifiedAndServedWithinTheReportPeriod().getIndicatorId();
+        String indicatorCode=ind.getIndicatorForNumberOfOvcNewlyTestedPositiveWithinTheReportPeriod().getIndicatorId();
         processDataByCBO(rpt,indicatorCode,partnerCode);
     }
     
     public void processsOVCNewlyTestedPositiveEnrolledOnTreatmentAndServed(ReportParameterTemplate rpt,String partnerCode)
     {
-        String indicatorCode=ind.getIndicatorForNumberOfOvcNewlyTestedPositiveAndLinkedToTreatment().getIndicatorId();
+        String indicatorCode=ind.getIndicatorForNumberOfHivPositiveOvcEnrolledOnARTWithinTheReportPeriod().getIndicatorId();
         processDataByCBO(rpt,indicatorCode,partnerCode);
     }
     public void processsOVCAdherenceToTreatment(ReportParameterTemplate rpt,String partnerCode)
@@ -222,7 +222,7 @@ public class CustomIndicatorsReportManager
     }
     public void processsOVCWithBirthCertificateServed(ReportParameterTemplate rpt,String partnerCode)
     {
-        String indicatorCode=ind.getNoOfOvcServedWithinTheReportPeriodThatHasBirthCert().getIndicatorId();
+        String indicatorCode=ind.getOvc_BIRTHCERTIndicator().getIndicatorId();
         processDataByCBO(rpt,indicatorCode,partnerCode);
     }
     //
@@ -236,20 +236,22 @@ public class CustomIndicatorsReportManager
         String indicatorCode=ind.getIndicatorForNumberOfOvcLinkedToGovtForPostViolenceServicesWithinReportPeriod().getIndicatorId();
         processDataByCBO(rpt,indicatorCode,partnerCode);
     }
-    public void processsHivUnknownOrNegativeOVCServedInReportPeriod(ReportParameterTemplate rpt,String partnerCode)
+    /*public void processsHivUnknownOrNegativeOVCServedInReportPeriod(ReportParameterTemplate rpt,String partnerCode)
     {
         String indicatorCode=ind.getIndicatorForNumberOfHivUnknownOrNegativeOvcServedWithinTheReportPeriod().getIndicatorId();
         processDataByCBO(rpt,indicatorCode,partnerCode);
-    }
-    public void processsOVCReferredForTestingOnly(ReportParameterTemplate rpt,String partnerCode)
+    }*/
+    /*public void processsOVCReferredForTestingOnly(ReportParameterTemplate rpt,String partnerCode)
     {
         String indicatorCode=ind.getIndicatorForNumberOfOvcTestedForHIV().getIndicatorId();
         processDataByCBO(rpt,indicatorCode,partnerCode);
-    }
+    }*/
     public void processsOVCReferredForTestingAndTestedAndObtainedResult(ReportParameterTemplate rpt,String partnerCode)
     {
-        String indicatorCode=ind.getIndicatorForNumberOfOvcTestedAndReceivedResult().getIndicatorId();
+        String indicatorCode=ind.getIndicatorForNumberOfOvcProvidedReferralForHIVRelatedTestingService().getIndicatorId();
         processDataByCBO(rpt,indicatorCode,partnerCode);
+        String cgindicatorCode=ind.getIndicatorForNumberOfAdultMembersProvidedReferralForHIVRelatedTestingService().getIndicatorId();
+        processDataByCBO(rpt,cgindicatorCode,partnerCode);
     }
     
     public void processsOVCSeverelyMalnourished(ReportParameterTemplate rpt,String partnerCode)
@@ -289,7 +291,7 @@ public class CustomIndicatorsReportManager
         String indicatorCode=ind.getIndicatorNumberOfGraduatedHouseholdsWhoseOvcWereServedWithinReportingPeriod().getIndicatorId();
         processDataByCBO(rpt,indicatorCode,partnerCode);
     }
-    public void processsNumberOfHouseholdsThatResolveEmergencyNeeds(ReportParameterTemplate rpt,String partnerCode)
+    public void processsNumberOfHouseholdsThatReceivedEmergencyNeeds(ReportParameterTemplate rpt,String partnerCode)
     {
         String indicatorCode=ind.getIndicatorNumberOfHouseholdsThatCanSolveEmergencyNeedsWithinReportingPeriod().getIndicatorId();
         processDataByCBO(rpt,indicatorCode,partnerCode);
@@ -298,20 +300,17 @@ public class CustomIndicatorsReportManager
     
     private void processDataByCBO(ReportParameterTemplate rpt,String indicatorCode,String partnerCode)
     {
-        //String[] reportParams
-        //DateManager dm=new DateManager();
+        
         OrganizationUnitAttributesManager ouam=new OrganizationUnitAttributesManager();
-        //DaoUtility util=new DaoUtility();
-        //SummaryStatisticsReportGenerator ssrg=new SummaryStatisticsReportGenerator();
-        //List mainList=new ArrayList();
         ListOfIndicatorsReportGenerator lirg=new ListOfIndicatorsReportGenerator();
         List maleList=new ArrayList();
         List femaleList=new ArrayList();
-        //String lgaCode=reportParams[1];
+        ReportTemplate rt=null;
+        //Get the Organization unit names for use in report
         String level2OuName=ouam.getOrganizationUnitName(rpt.getLevel2OuId());
         String level3OuName=ouam.getOrganizationUnitName(rpt.getLevel3OuId());
         String cboName=" ";
-        int[] ageDisaggregation=ovcAgeDisaggregation;
+        int[] ageDisaggregation=ovcAndCaregiverAgeDisaggregation; //ovcAgeDisaggregation;
         if(indicatorCode.equalsIgnoreCase(beneficiariesNewlyEnrolled))
         ageDisaggregation=ovcAndCaregiverAgeDisaggregation;
         //String period=dm.getMonthAsString(Integer.parseInt(reportParams[7]))+" "+reportParams[8]+"-"+dm.getMonthAsString(Integer.parseInt(reportParams[9]))+" "+reportParams[10];
@@ -319,36 +318,45 @@ public class CustomIndicatorsReportManager
         {
             String[] indicatorArray={indicatorCode};
             List list=null;
-            List valueList=new ArrayList();
+            //List valueList=new ArrayList();
             String cboId="All";
             rpt.setCboId(cboId);
+            //Get the data by age disaggregation
             for(int j=0; j<ageDisaggregation.length; j+=2)
             {
                 System.err.println("About to pull for "+ageDisaggregation[j]+" to "+ageDisaggregation[j+1]);
                 //set the start age and end age
                 rpt.setStartAge(ageDisaggregation[j]);
                 rpt.setEndAge(ageDisaggregation[j+1]);
-                
-                //reportParams[15]=ageDisaggregation[j]+"";
-                //reportParams[16]=ageDisaggregation[j+1]+"";
-                //list=ssrg.getOvcEnrolledSummStatistics("",reportParams,indicatorArray);
-                list=lirg.getOvcEnrolledSummStatistics(rpt, indicatorArray);
+                if(rpt.getStartAge()<18)
+                {
+                    list=lirg.getOvcEnrolledSummStatistics(rpt, indicatorArray);                   
+                }
+                else
+                {
+                    list=processDataFor18AndAboveByCBO(rpt,indicatorCode);
+                    //maleList=(List)mainList.get(0);
+                    //femaleList=(List)mainList.get(1);
+                }
                 if(list !=null && !list.isEmpty())
                 {
-                    valueList.add(list.get(0));
-                    maleList.addAll(getMaleList(valueList));
-                    femaleList.addAll(getFemaleList(valueList));
+                    rt=(ReportTemplate)list.get(0);
+                    maleList.add(rt);
+                    femaleList.add(rt);
+                    //valueList.add(list.get(0));
+                    //maleList.addAll(getMaleList(valueList));
+                    //femaleList.addAll(getFemaleList(valueList));
                     System.err.println("Pulled data for "+ageDisaggregation[j]+" to "+ageDisaggregation[j+1]);
                 }
-            }//
-            if(indicatorCode.equalsIgnoreCase(ovcActiveAndServeId) || indicatorCode.equalsIgnoreCase(ovcGraduatedAndServeId) || indicatorCode.equalsIgnoreCase(ovcServeAndTransferedId) || indicatorCode.equalsIgnoreCase(ovcExitedWithoutGraduationId))
+            }
+            /*if(indicatorCode.equalsIgnoreCase(ovcActiveAndServeId) || indicatorCode.equalsIgnoreCase(ovcGraduatedAndServeId) || indicatorCode.equalsIgnoreCase(ovcServeAndTransferedId) || indicatorCode.equalsIgnoreCase(ovcExitedWithoutGraduationId))
             {
                 List mainList=processDataFor18AndAboveByCBO(rpt,maleList,femaleList,indicatorCode);
                 maleList=(List)mainList.get(0);
                 femaleList=(List)mainList.get(1);
-            }
-           CustomIndicatorsReport rt=getReportTemplate(rpt.getLevel2OuId(),rpt.getLevel3OuId(),rpt.getCboId(),partnerCode,indicatorCode,maleList,femaleList,mainReportPeriod);
-           saveReportTemplate(rt);      
+            }*/
+           CustomIndicatorsReport cirt=getReportTemplate(rpt.getLevel2OuId(),rpt.getLevel3OuId(),rpt.getCboId(),partnerCode,indicatorCode,maleList,femaleList,mainReportPeriod);
+           saveReportTemplate(cirt);      
         }
         catch(Exception ex)
         {
@@ -357,73 +365,67 @@ public class CustomIndicatorsReportManager
         //return mainList;
     }
     
-    private List processDataFor18AndAboveByCBO(ReportParameterTemplate rpt,List maleList,List femaleList,String indicatorCode)
+    private List processDataFor18AndAboveByCBO(ReportParameterTemplate rpt,String indicatorCode)
     {
         //List paramList This is a method arguments
         List mainList=new ArrayList();
-        //ReportParameterManager rpm=new ReportParameterManager();
-        //ReportParameterTemplate rpt=rpm.getPopulatedReportParameterTemplate(paramList);
-        DatimCaregiverReport dcr=new DatimCaregiverReport();
-        
-        //SummaryStatisticsReportGenerator ssrg=new SummaryStatisticsReportGenerator();
-        //int[] caregiverAgeDisaggregation={18,24,25,200};
-        //String cgiverIndicator=indicatorCode; 
-        if(indicatorCode.equalsIgnoreCase(beneficiariesNewlyEnrolled)) 
+        try
         {
-            DatimReportTemplate dform18to24=dcr.getDatimCaregiverNewlyEnrolledReport(rpt,18,24);
-            DatimReportTemplate dform25AndAbove=dcr.getDatimCaregiverNewlyEnrolledReport(rpt,25,200);
-            maleList.add(dform18to24.getOvc_servMale18To24());
-            maleList.add(dform25AndAbove.getOvc_servMale25AndAbove());
-            femaleList.add(dform18to24.getOvc_servFemale18To24());
-            femaleList.add(dform25AndAbove.getOvc_servFemale25AndAbove());
-            //cgiverIndicator=cgActiveAndServeId;
+            ListOfIndicatorsReportGenerator lirg=new ListOfIndicatorsReportGenerator();
+            int executed=1;
+            //ReportParameterManager rpm=new ReportParameterManager();
+            //ReportParameterTemplate rpt=rpm.getPopulatedReportParameterTemplate(paramList);
+            DatimCaregiverReport dcr=new DatimCaregiverReport();
+            ReportTemplate rt=new ReportTemplate();
+            /*ReportTemplate maleRt=new ReportTemplate();
+            ReportTemplate femaleRt=new ReportTemplate();*/
+            String[] indicatorArray={indicatorCode};
+            if(indicatorCode.equalsIgnoreCase(ind.getIndicatorForNumberOfNewOvcEnrolled().getIndicatorId()))
+            indicatorArray[0]=ind.getIndicatorForNumberOfAdultMembersEnrolledWithinTheReportPeriod().getIndicatorId();
+            else if(indicatorCode.equalsIgnoreCase(ind.getIndicatorForNumberOfOvcCurrentlyEnrolledAndServedInReportPeriod().getIndicatorId()))
+            indicatorArray[0]=ind.getIndicatorForNumberOfActiveCaregiversServedWithinDatimReportPeriod().getIndicatorId();
+            else if(indicatorCode.equalsIgnoreCase(ind.getIndicatorForNumberOfOvcGraduatedButServedInReportPeriod().getIndicatorId()))
+            indicatorArray[0]=ind.getIndicatorForNumberOfCaregiversServedAndGraduatedWithinDatimReportPeriod().getIndicatorId();
+            else if(indicatorCode.equalsIgnoreCase(ind.getIndicatorForNumberOfOvcTransferedOutButServedInReportPeriod().getIndicatorId()))
+            indicatorArray[0]=ind.getIndicatorForNumberOfCaregiversServedAndTransferedWithinDatimReportPeriod().getIndicatorId();
+            else if(indicatorCode.equalsIgnoreCase(ind.getIndicatorForNumberOfOvcExitedWithoutGraduation().getIndicatorId()))
+            indicatorArray[0]=ind.getIndicatorForNumberOfCaregiversServedAndExitedWithinDatimReportPeriod().getIndicatorId();
+            
+            else if(indicatorCode.equalsIgnoreCase(ind.getIndicatorForNumberOfOvcProvidedReferralForHIVRelatedTestingService().getIndicatorId()))
+            indicatorArray[0]=ind.getIndicatorForNumberOfAdultMembersProvidedReferralForHIVRelatedTestingService().getIndicatorId();
+            else if(indicatorCode.equalsIgnoreCase(ind.getIndicatorForNumberOfOvcNewlyTestedPositiveWithinTheReportPeriod().getIndicatorId()))
+            indicatorArray[0]=ind.getIndicatorForNumberOfCaregiversNewlyTestedPositive().getIndicatorId();
+            
+            else if(indicatorCode.equalsIgnoreCase(ind.getIndicatorForNumberOfHivPositiveOvcEnrolledOnARTWithinTheReportPeriod().getIndicatorId()))
+            indicatorArray[0]=ind.getIndicatorForNumberOfHIVPositiveCaregiversNewlyEnrolledOnARTWithinTheReportPeriod().getIndicatorId();
+            else if(indicatorCode.equalsIgnoreCase(ind.getIndicatorForNumberOfOvcSelfReportingAdherenceToTreatment().getIndicatorId()))
+            indicatorArray[0]=ind.getIndicatorForNumberOfAdultMembersSelfReportingAdherenceToTreatment().getIndicatorId();
+            else
+            executed=0;
+            if(executed==1)
+            {
+                mainList=lirg.getOvcEnrolledSummStatistics(rpt, indicatorArray);
+                if(mainList==null || mainList.isEmpty())
+                mainList.add(rt);
+            }
+            else
+            {
+                mainList.add(rt);
+                
+            }
+            
         }
-        else if(indicatorCode.equalsIgnoreCase(ovcActiveAndServeId)) 
+        catch(Exception ex)
         {
-            DatimReportTemplate dform18to24Active=dcr.getDatimCaregiverActiveAndServedReportFor18To24(rpt);
-            DatimReportTemplate dform25AndAboveActive=dcr.getDatimCaregiverActiveAndServedReportFor25AndAbove(rpt);
-            maleList.add(dform18to24Active.getOvc_servMale18To24());
-            maleList.add(dform25AndAboveActive.getOvc_servMale25AndAbove());
-            femaleList.add(dform18to24Active.getOvc_servFemale18To24());
-            femaleList.add(dform25AndAboveActive.getOvc_servFemale25AndAbove());
-            //cgiverIndicator=cgActiveAndServeId;
+            ex.printStackTrace();
         }
-        else if(indicatorCode.equalsIgnoreCase(ovcGraduatedAndServeId))
-        {
-            DatimReportTemplate dform18to24Graduated=dcr.getDatimCaregiverGraduatedAndServedReportFor18To24(rpt);
-            DatimReportTemplate dform25AndAboveGraduated=dcr.getDatimCaregiverGraduatedAndServedReportFor25AndAbove(rpt);
-            maleList.add(dform18to24Graduated.getOvc_servMale18To24());
-            maleList.add(dform25AndAboveGraduated.getOvc_servMale25AndAbove());
-            femaleList.add(dform18to24Graduated.getOvc_servFemale18To24());
-            femaleList.add(dform25AndAboveGraduated.getOvc_servFemale25AndAbove());
-            //cgiverIndicator=cgServedAndGraduatedId;
-        }
-        else if(indicatorCode.equalsIgnoreCase(ovcServeAndTransferedId))
-        {
-            DatimReportTemplate dform18to24Transfered=dcr.getDatimCaregiverTransferedAndServedReportFor18To24(rpt);
-            DatimReportTemplate dform25AndAboveTransfered=dcr.getDatimCaregiverTransferedAndServedReportFor25AndAbove(rpt);
-            maleList.add(dform18to24Transfered.getOvc_servMale18To24());
-            maleList.add(dform25AndAboveTransfered.getOvc_servMale25AndAbove());
-            femaleList.add(dform18to24Transfered.getOvc_servFemale18To24());
-            femaleList.add(dform25AndAboveTransfered.getOvc_servFemale25AndAbove());
-        }
-        else if(indicatorCode.equalsIgnoreCase(ovcExitedWithoutGraduationId))
-        {
-            DatimReportTemplate dform18to24ExitedWithoutGraduation=dcr.getDatimCaregiverServedAndExitedWithoutGraduationReportFor18To24(rpt);
-            DatimReportTemplate dform25AndAboveExitedWithoutGraduation=dcr.getDatimCaregiverServedAndExitedWithoutGraduationReportFor25AndAbove(rpt);
-            maleList.add(dform18to24ExitedWithoutGraduation.getOvc_servMale18To24());
-            maleList.add(dform25AndAboveExitedWithoutGraduation.getOvc_servMale25AndAbove());
-            femaleList.add(dform18to24ExitedWithoutGraduation.getOvc_servFemale18To24());
-            femaleList.add(dform25AndAboveExitedWithoutGraduation.getOvc_servFemale25AndAbove());
-        }
-        mainList.add(maleList);
-        mainList.add(femaleList);
-        
         return mainList;
     }
     
     public CustomIndicatorsReport getReportTemplate(String level2OuId,String level3OuId,String cboName,String partnerCode,String indicatorId,List maleList,List femaleList,String period)
     {
+        ReportTemplate maleRt=null;
+        ReportTemplate femaleRt=null;
         IndicatorWarehouse indw=new IndicatorWarehouse();
         Indicator ind=indw.getIndicatorById(indicatorId);
         if(ind.getAlternateName()==null)
@@ -431,96 +433,107 @@ public class CustomIndicatorsReportManager
         //ReportTemplate rt
         //String hhgradOvcServedId=ind.getIndicatorId();
         //String ovcEconsId=ind.getIndicatorId();
-        CustomIndicatorsReport rt=new CustomIndicatorsReport();
-        rt.setLevel2OuId(level2OuId);
-        rt.setLevel3OuId(level3OuId);
-        rt.setCboId(cboName);
-        rt.setIndicator(ind);
-        rt.setIndicatorId(indicatorId);
-        rt.setIndicatorName(indicatorId);
-        rt.setReportPeriod(period);
-        rt.setPartnerCode(partnerCode);
+        CustomIndicatorsReport cirt=new CustomIndicatorsReport();
+        cirt.setLevel2OuId(level2OuId);
+        cirt.setLevel3OuId(level3OuId);
+        cirt.setLevel4OuId("xxxxxxxxxxx");
+        cirt.setCboId(cboName);
+        cirt.setIndicator(ind);
+        cirt.setIndicatorId(indicatorId);
+        cirt.setIndicatorName(indicatorId);
+        cirt.setReportPeriod(period);
+        cirt.setPartnerCode(partnerCode);
         //rt.setp
         
         if(ind !=null)
         {
-            rt.setIndicatorName(ind.getAlternateName());
-            rt.setMerCode(ind.getMerCode());
-            rt.setOtherDisaggregation("other");
-            rt.setUserName(userName);
-            rt.setDateCreated(DateManager.getDateInstance(DateManager.getCurrentDate()));
+            cirt.setIndicatorName(ind.getAlternateName());
+            cirt.setMerCode(ind.getMerCode());
+            cirt.setOtherDisaggregation("other");
+            cirt.setUserName(userName);
+            cirt.setDateCreated(DateManager.getDateInstance(DateManager.getCurrentDate()));
         }        
         
         int maleValue=0;
         int femaleValue=0;
         int maleTotal=0;
         int femaleTotal=0;
-        if(maleList !=null && femaleList !=null)
+        if(maleList !=null && !maleList.isEmpty() && femaleList !=null && !femaleList.isEmpty())
         {
+            maleRt=(ReportTemplate)maleList.get(0);
+            femaleRt=(ReportTemplate)femaleList.get(0);
+            
             if(ind !=null && ind.getIndicatorType().equalsIgnoreCase(AppConstant.HOUSEHOLD_TYPE))
             {
-                maleValue=Integer.parseInt(maleList.get(0).toString());
-                rt.setGrandTotal(maleValue);
+                if(!maleList.isEmpty())
+                maleValue=maleRt.getMaleTotal();//Integer.parseInt(maleList.get(0).toString());
+                cirt.setGrandTotal(maleValue);
             }
             else
             {
                 for(int i=0; i<maleList.size(); i++)
                 {
-                    maleValue=Integer.parseInt(maleList.get(i).toString());
-                    femaleValue=Integer.parseInt(femaleList.get(i).toString());
+                    maleRt=(ReportTemplate)maleList.get(i);
+                    femaleRt=(ReportTemplate)femaleList.get(i);
+                    maleValue=maleRt.getMaleTotal();
+                    femaleValue=femaleRt.getFemaleTotal();
+                    //maleValue=Integer.parseInt(maleList.get(i).toString());
+                    //femaleValue=Integer.parseInt(femaleList.get(i).toString());
                     maleTotal+=maleValue;
                     femaleTotal+=femaleValue;
                     if(i==0)
                     {
-                        rt.setMaleLessThan1(maleValue);
-                        rt.setFemaleLessThan1(femaleValue);
+                        cirt.setMaleLessThan1(maleValue);
+                        cirt.setFemaleLessThan1(femaleValue);
                     }
                     else if(i==1)
                     {
-                        rt.setMale1to4(maleValue);
-                        rt.setFemale1to4(femaleValue);
+                        cirt.setMale1to4(maleValue);
+                        cirt.setFemale1to4(femaleValue);
                     }
                     else if(i==2)
                     {
-                        rt.setMale5to9(maleValue);
-                        rt.setFemale5to9(femaleValue);
+                        cirt.setMale5to9(maleValue);
+                        cirt.setFemale5to9(femaleValue);
                     }
                     else if(i==3)
                     {
-                        rt.setMale10to14(maleValue);
-                        rt.setFemale10to14(femaleValue);
+                        cirt.setMale10to14(maleValue);
+                        cirt.setFemale10to14(femaleValue);
                     }
                     else if(i==4)
                     {
-                        rt.setMale15to17(maleValue);
-                        rt.setFemale15to17(femaleValue);
+                        cirt.setMale15to17(maleValue);
+                        cirt.setFemale15to17(femaleValue);
                     }
                     else if(i==5)
                     {
-                        rt.setMale18to24(maleValue);
-                        rt.setFemale18to24(femaleValue);
+                        cirt.setMale18to24(maleValue);
+                        cirt.setFemale18to24(femaleValue);
                     }
                     else if(i==6)
                     {
-                        rt.setMale25Plus(maleValue);
-                        rt.setFemale25Plus(femaleValue);
+                        cirt.setMale25Plus(maleValue);
+                        cirt.setFemale25Plus(femaleValue);
                     }
                 }
                 int grandTotal=maleTotal+femaleTotal;
-                rt.setMaleTotal(maleTotal);
-                rt.setFemaleTotal(femaleTotal);
-                rt.setGrandTotal(grandTotal);
+                cirt.setMaleTotal(maleTotal);
+                cirt.setFemaleTotal(femaleTotal);
+                cirt.setGrandTotal(grandTotal);
+                //System.err.println("rt.getMaleLessThan1()="+cirt.getMaleLessThan1()+" cirt.getMale1to4()="+cirt.getMale1to4()+" rt.getMale5to9()="+cirt.getMale5to9()+" rt.getMale10to14()"+cirt.getMale10to14()+" rt.getMale15to17()="+cirt.getMale15to17()+" rt.getMale18to24()="+cirt.getMale18to24()+" rt.getMale25Plus()="+cirt.getMale25Plus());
+                //System.err.println("rt.getFemaleLessThan1()="+cirt.getFemaleLessThan1()+" rt.getFemale1to4()="+cirt.getFemale1to4()+" rt.getFemale5to9()="+cirt.getFemale5to9()+" rt.getFemale10to14()"+cirt.getFemale10to14()+" rt.getFemale15to17()="+cirt.getFemale15to17()+" rt.getFemale18to24()="+cirt.getFemale18to24()+" rt.getFemale25Plus()="+cirt.getFemale25Plus());
             }
             
         }
-        return rt;
+        return cirt;
     }
     
-    private List getMaleList(List valueList)
+    /*private List getMaleList(List valueList)
     {
         ReportTemplate rt=null;
         List maleList=new ArrayList();
-        if(valueList==null || valueList.size()<2)
+        if(valueList==null) //|| valueList.size()<2)
         {
             maleList.add(0);
         }
@@ -547,7 +560,7 @@ public class CustomIndicatorsReportManager
             femaleList.add(rt.getFemaleTotal());
         }
         return femaleList;
-    }
+    }*/
     public static void processCustomIndicatorsReport(List list)
     {
         try
@@ -560,7 +573,7 @@ public class CustomIndicatorsReportManager
             {
                 rt = (CustomIndicatorsReport)obj; 
                 saveReportTemplate(rt);
-                cirbdao.saveOrUpdateCustomIndicatorsReport(rt);
+                //cirbdao.saveOrUpdateCustomIndicatorsReport(rt);
             }
         }
         }
@@ -576,7 +589,8 @@ public class CustomIndicatorsReportManager
             if(rt !=null)
             {
                 CustomIndicatorsReportDao cirbdao=new CustomIndicatorsReportDaoImpl();
-                CustomIndicatorsReport dupRt=cirbdao.getCustomIndicatorsReport(rt);//.getReportTemplate(rt.getLga(), rt.getCbo(), rt.getPartnerCode(), rt.getIndicatorName(), rt.getMerCode(), rt.getOtherDisaggregation(), rt.getPeriod());
+                cirbdao.saveOrUpdateCustomIndicatorsReport(rt);
+                /*CustomIndicatorsReport dupRt=cirbdao.getCustomIndicatorsReport(rt);
                 if(dupRt !=null)
                 {
                     rt.setRecordId(dupRt.getRecordId());
@@ -587,7 +601,7 @@ public class CustomIndicatorsReportManager
                 {
                     cirbdao.saveOrUpdateCustomIndicatorsReport(rt);
                     System.err.println("Record with "+rt.getIndicatorName()+" saved");
-                }
+                }*/
             }        
         }
         catch(Exception ex)

@@ -61,11 +61,11 @@ public class AdultHouseholdMemberAction extends org.apache.struts.action.Action 
         User user=appManager.getCurrentUser(session);
         if(AccessManager.isUserInDataEntryRole(user))
         {
-            setButtonState(session,"false","true");
+            setButtonState(session,AppConstant.FALSEVALUE,AppConstant.TRUEVALUE);
         }
         else
         {
-            setButtonState(session,"true","true");
+            setButtonState(session,AppConstant.TRUEVALUE,AppConstant.TRUEVALUE);
             request.setAttribute("accessErrorMsg", AppConstant.DEFAULT_ACCESS_MSG);
             return mapping.findForward(SUCCESS);
         }
@@ -136,6 +136,16 @@ public class AdultHouseholdMemberAction extends org.apache.struts.action.Action 
                 ahmform.setBeneficiaryType(ahm.getBeneficiaryType());
                 ahmform.setDateEnrolledOnTreatment(DateManager.convertDateToString(ahm.getDateEnrolledOnTreatment(),DateManager.MM_DD_YYYY_SLASH));
                 ahmform.setDateOfBaselineHivStatus(DateManager.convertDateToString(ahm.getDateOfBaselineHivStatus(),DateManager.MM_DD_YYYY_SLASH));
+                if(ahm.getBaselineHivStatus()==AppConstant.HIV_POSITIVE_NUM)
+                setHIVStatusProperties(session,AppConstant.FALSEVALUE);
+                else
+                {
+                    if(ahm.getBaselineHivStatus()==AppConstant.HIV_UNKNOWN_NUM)
+                    setUnknownHIVStatusProperties(session,AppConstant.TRUEVALUE);
+                    else
+                    setUnknownHIVStatusProperties(session,AppConstant.FALSEVALUE);
+                    setHIVStatusProperties(session,AppConstant.TRUEVALUE);
+                }
                 if(ahmform.getEnrolledOnTreatment()==0)
                 {
                     ahmform.setDateEnrolledOnTreatment(null);
@@ -146,7 +156,7 @@ public class AdultHouseholdMemberAction extends org.apache.struts.action.Action 
                 }
                 ahmform.setDateOfEnrollment(DateManager.convertDateToString(ahm.getDateOfEnrollment(),DateManager.MM_DD_YYYY_SLASH));
                 request.setAttribute("hhName", hhName);
-                setButtonState(session,"true","false");
+                setButtonState(session,AppConstant.TRUEVALUE,AppConstant.FALSEVALUE);
             }
             return mapping.findForward(SUCCESS);
         }
@@ -183,6 +193,14 @@ public class AdultHouseholdMemberAction extends org.apache.struts.action.Action 
         }
         
         return mapping.findForward(SUCCESS);
+    }
+    private void setHIVStatusProperties(HttpSession session,String disabled)
+    {
+        session.setAttribute("ahmHivDisabled", disabled);
+    }
+    private void setUnknownHIVStatusProperties(HttpSession session,String disabled)
+    {
+        session.setAttribute("ahmUnkHivDisabled", disabled);
     }
     private AdultHouseholdMember getAdultHouseholdMember(AdultHouseholdMemberForm ahmform,String userName)
     {

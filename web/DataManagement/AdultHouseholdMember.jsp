@@ -136,6 +136,62 @@ function stateChanged()
 }
 function activateEnrolledOnTreatment(value)
 {
+    //if beneficiary is hiv positive
+    if(value == "1") 
+    {
+        document.getElementById("enrolledOnTreatment").disabled = false;
+        
+        document.getElementById("dateOfBaselineHivStatus").disabled = false;
+        if(document.getElementById("enrolledOnTreatment").value==1)
+        {
+            document.getElementById("dateEnrolledOnTreatment").disabled = false;
+            document.getElementById("treatmentId").disabled = false;
+        }
+        else
+        {
+            document.getElementById("dateEnrolledOnTreatment").value = "";
+            document.getElementById("dateEnrolledOnTreatment").disabled = true;
+            document.getElementById("treatmentId").value = "";
+            document.getElementById("treatmentId").disabled = true;
+        }
+    }
+    else 
+    {
+       document.getElementById("enrolledOnTreatment").value=2
+       document.getElementById("enrolledOnTreatment").disabled = true;
+       document.getElementById("hivTreatmentFacilityId").value="select"
+       document.getElementById("hivTreatmentFacilityId").disabled = true;
+       document.getElementById("dateEnrolledOnTreatment").value = "";
+       document.getElementById("dateOfBaselineHivStatus").value = "";
+       document.getElementById("dateEnrolledOnTreatment").disabled = true;
+       document.getElementById("treatmentId").value = "";
+       document.getElementById("treatmentId").disabled = true;
+       document.getElementById("dateOfBaselineHivStatus").disabled = false;
+       if(value == "0" || value == "3" || value == "4") 
+       {
+           document.getElementById("dateOfBaselineHivStatus").disabled = true;
+       }
+    }
+}
+function activateReferralList(value) 
+{
+    if(value == "1") 
+    {
+        document.getElementById("hivTreatmentFacilityId").disabled = false;
+        document.getElementById("treatmentId").disabled = false;
+        document.getElementById("dateEnrolledOnTreatment").disabled = false;
+    }
+    else 
+    {
+        document.getElementById("hivTreatmentFacilityId").value="select"
+        document.getElementById("hivTreatmentFacilityId").disabled = true;
+        document.getElementById("dateEnrolledOnTreatment").disabled = true;
+        document.getElementById("treatmentId").value = "";
+        document.getElementById("treatmentId").disabled = true;
+    }
+}
+/*function activateEnrolledOnTreatment(value)
+{
     if(value == "1") 
     {
         document.getElementById("enrolledOnTreatment").disabled = false;
@@ -169,7 +225,7 @@ function activateReferralList(value)
         document.getElementById("hivTreatmentFacilityId").value="select"
         document.getElementById("hivTreatmentFacilityId").disabled = true;
     }
-}
+}*/
 function generateUniqueId(val)
 {
     level2OuId=document.getElementById("level2OuId").value;
@@ -440,7 +496,7 @@ function setActionName(val)
                             </td>
                             <td align="right">Date of HIV status </td>
                             <td>
-                                <html:text property="dateOfBaselineHivStatus" styleId="dateOfBaselineHivStatus" style="width:100px;" />
+                                <html:text property="dateOfBaselineHivStatus" styleId="dateOfBaselineHivStatus" style="width:100px;" disabled="${ahmUnkHivDisabled}"/>
                                   
                             </td>
 
@@ -449,15 +505,15 @@ function setActionName(val)
                  <tr> 
                      <td width="300" align="right">Enrolled on treatment? </td>
                             <td>
-                                <html:select property="enrolledOnTreatment" styleId="enrolledOnTreatment" style="width:148px;" onchange="activateReferralList(this.value)" disabled="${enrhivDisabled}">
-                                  <html:option value="0">select...</html:option>
+                                <html:select property="enrolledOnTreatment" styleId="enrolledOnTreatment" style="width:148px;" onchange="activateReferralList(this.value)" disabled="${ahmHivDisabled}">
+                                  <html:option value="0">N/A</html:option>
                                     <html:option value="2">No</html:option>
                                   <html:option value="1">Yes</html:option>
                                 </html:select>
                             </td>
                              <td align="right">Date enrolled</td>
                             <td>
-                                <html:text property="dateEnrolledOnTreatment" styleId="dateEnrolledOnTreatment"/>
+                                <html:text property="dateEnrolledOnTreatment" styleId="dateEnrolledOnTreatment" disabled="${ahmHivDisabled}"/>
                                     
                             </td>
                             
@@ -466,7 +522,7 @@ function setActionName(val)
                          <tr>
                 <td align="right">Facility enrolled</td>
                 <td colspan="3" > 
-                    <html:select property="hivTreatmentFacilityId" styleId="hivTreatmentFacilityId"  style="width:500px;" disabled="${enrhivDisabled}">
+                    <html:select property="hivTreatmentFacilityId" styleId="hivTreatmentFacilityId"  style="width:500px;" disabled="${ahmHivDisabled}">
                           <html:option value="select">select...</html:option>
                           <html:option value="xxxxxxxxxxx">Default facility</html:option>
                           <logic:present name="ovcfacilityList">
@@ -480,7 +536,7 @@ function setActionName(val)
               <tr>
                 <td align="right">Treatment/ART No.</td>
                 <td colspan="3" > 
-                    <html:text property="treatmentId" styleId="treatmentId"  style="width:150px;" disabled="${enrhivDisabled}"/>
+                    <html:text property="treatmentId" styleId="treatmentId"  style="width:150px;" disabled="${ahmHivDisabled}"/>
                           
                 </td>
               </tr>
@@ -536,7 +592,7 @@ function setActionName(val)
                                      
                                      
                                     <tr><td colspan="4" align="center">
-                                            <%--<html:submit value="Save" onclick="setActionName('save')" disabled="${ahmSaveDisabled}"/>--%>
+                                            <html:submit value="Save" onclick="setActionName('save')" disabled="${ahmSaveDisabled}"/>
                                             <html:submit value="Modify" onclick="return confirmAction('modify')" disabled="${ahmModifyDisabled}"/>
                                         <html:submit value="Delete..." onclick="return confirmAction('delete')" disabled="${ahmModifyDisabled}"/></td></tr>
                                     <tr><td colspan="4" style="height: 200px;">&nbsp;</td></tr>

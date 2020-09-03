@@ -251,6 +251,8 @@ function setActionName(val)
                                       
                                       <html:option value="updateHivStatusHistory">Update HIV status history</html:option>
                                       <html:option value="updateEnrollmentStatusHistory">Update enrollment status history</html:option>
+                                      <html:option value="resetCurrentHivStatusToPositive">Reset current HIV status to positive for Beneficiaries with positive baseline status</html:option>
+                                      <html:option value="resetUnknownDueToRiskAssessment">Reset HIV status unknown due to Risk assessment to baseline status</html:option>
                                       
                                   </html:select>
                               </td>

@@ -7,7 +7,7 @@
 <a href="listofindicators.do" target="_blank">List of indicators </a>
 <a href="datimreport.do" target="_blank">DATIM report </a>
 <a href="analytics.do">Analytics</a>
-<a href="#" target="_blank"> </a>
+<a href="customIndicatorsreport.do" >Custom indicators download </a>
 <a href="#" target="_blank"> </a>
 <a href="#" target="_blank"> </a>
 <a href="#" target="_blank"> </a>

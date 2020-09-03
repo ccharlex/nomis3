@@ -5,6 +5,7 @@
 package com.nomis.ajax.controller;
 
 import com.nomis.exportimport.XMLDataImportManager;
+import com.nomis.maintenance.DataCleanupManager;
 import com.nomis.ovc.business.SiteSetup;
 import com.nomis.ovc.dao.DaoUtility;
 import com.nomis.ovc.util.AppUtility;
@@ -50,7 +51,7 @@ public class StrutsAjaxAction extends org.apache.struts.action.Action {
         String reqParam=request.getParameter("qparam");
         String id=request.getParameter("id");
         //System.err.println("reqParam is "+reqParam);
-        //System.err.println("id is "+id);
+        System.err.println("id is "+id);
         String returnValue=null;
         
         PrintWriter out=response.getWriter();
@@ -96,13 +97,17 @@ public class StrutsAjaxAction extends org.apache.struts.action.Action {
                 else if(id.equalsIgnoreCase("upgrade"))
                 {
                     DatabaseUtilities dbUtils=new DatabaseUtilities();
+                    
                     //dbUtils.runUpgrade();
                     System.err.println("Upgrade run in StrutsAjaxAction");
                 }
                 else if(id.equalsIgnoreCase("updateExistingRecords"))
                 {
+                    DatabaseUtilities dbUtils=new DatabaseUtilities();
+                    dbUtils.revertHivUnknownDueToRiskAssessmentToBaselineHivStatusInChildEnrollment();
+                    String message=""+DataCleanupManager.resetCurrentHivStatusForPositiveBaselineStatus();
                     util.getChildServiceDaoInstance().getAndUpdateWashRecords();
-                    System.err.println("updateExistingRecords run in StrutsAjaxAction");
+                    System.err.println("updateExistingRecords run in StrutsAjaxAction "+message);
                 }//hsuTrackingDate
                 else if(id.equalsIgnoreCase("search"))
                 {

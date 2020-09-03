@@ -297,7 +297,7 @@ function setActionName(val)
                                     <table width="480" border="1" bordercolor="#D7E5F2" class="regsitertable">
                                        <logic:present name="customIndicatorList">
                                           <logic:iterate name="customIndicatorList" id="indicator">
-                                              <tr><td><html:multibox property='indicators' styleId="${indicator.indicatorId}" value="${indicator.indicatorId}" styleClass='smallfieldcellselect'/> </td><td>${indicator.indicatorName} </td> </tr>
+                                              <tr><td><html:multibox property='indicators' styleId="${indicator.indicatorId}" value="${indicator.indicatorId}" styleClass='smallfieldcellselect'/> </td><td>${indicator.merCode} </td> </tr>
                                           </logic:iterate>
                                         </logic:present>
                                       </table>
@@ -341,7 +341,7 @@ function setActionName(val)
                         </logic:present>
                     </html:select> </td>
             </tr> <%--${cirbGenButtonDisabled} ${cirbGenButtonDisabled}--%>
-            <tr><td colspan="3" align="center"><html:submit value="Generate report" onclick="return confirmAction('generateData')" style="width: 150px; margin-left: 50px;" disabled="true" />
+            <tr><td colspan="3" align="center"><html:submit value="Generate report" onclick="return confirmAction('generateData')" style="width: 150px; margin-left: 50px;" />
                 <html:submit value="Delete data" onclick="return confirmAction('deleteData'); " style="width: 100px; margin-left: 10px" disabled="true" /> </td></tr>
         </table>
         </center>

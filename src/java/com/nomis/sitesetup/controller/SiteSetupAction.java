@@ -76,7 +76,7 @@ public class SiteSetupAction extends org.apache.struts.action.Action {
             request.setAttribute("accessErrorMsg", AppConstant.DEFAULT_ACCESS_MSG);
             return mapping.findForward(SUCCESS);
         }
-        List level2orgUnitList=oudao.getOrganizationUnit(2);
+        List level2orgUnitList=oudao.getOrganizationUnitsByOuLevel(2);
         if(level2orgUnitList==null)
         level2orgUnitList=new ArrayList();
         

@@ -4,10 +4,12 @@
  */
 package com.nomis.maintenance.controller;
 
+import com.nomis.maintenance.DataCleanupManager;
 import com.nomis.operationsManagement.AccessManager;
 import com.nomis.operationsManagement.EnrollmentStatusManager;
 import com.nomis.ovc.business.User;
 import com.nomis.ovc.util.AppManager;
+import com.nomis.ovc.util.DatabaseUtilities;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -58,11 +60,25 @@ public class AdhocOperationsAction extends org.apache.struts.action.Action {
         {
             adoform.reset(mapping, request);
         }
+        else if(requiredAction.equalsIgnoreCase("resetUnknownDueToRiskAssessment"))
+        {
+            DatabaseUtilities dbUtils=new DatabaseUtilities();
+            dbUtils.revertHivUnknownDueToRiskAssessmentToBaselineHivStatusInChildEnrollment();
+            String message=" HIV status unknown due to Risk assessment reset to baseline HIV status";
+            request.setAttribute("adhocTaskMsg", message);
+        }
         else if(requiredAction.equalsIgnoreCase("updateEnrollmentStatusHistory"))
         {
             EnrollmentStatusManager esm=new EnrollmentStatusManager();
             //esm.updateLastDateOfCurrentEnrollmentStatus();
             String message=""+esm.updateBeneficiaryEnrollmentStatusHistory(userName)+" Enrollment status records updated to history store";
+            request.setAttribute("adhocTaskMsg", message);
+        }
+        else if(requiredAction.equalsIgnoreCase("resetCurrentHivStatusToPositive"))
+        {
+            EnrollmentStatusManager esm=new EnrollmentStatusManager();
+            //esm.updateLastDateOfCurrentEnrollmentStatus();
+            String message=""+DataCleanupManager.resetCurrentHivStatusForPositiveBaselineStatus();
             request.setAttribute("adhocTaskMsg", message);
         }
         /*else if(requiredAction.equalsIgnoreCase("updateHivStatusHistory"))

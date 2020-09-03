@@ -11,6 +11,7 @@ import com.nomis.ovc.business.User;
 import com.nomis.ovc.dao.DaoUtility;
 import com.nomis.ovc.util.AppConstant;
 import com.nomis.ovc.util.AppManager;
+import com.nomis.ovc.util.AppUtility;
 import com.nomis.ovc.util.DateManager;
 import java.util.ArrayList;
 import java.util.List;
@@ -123,8 +124,16 @@ public class BeneficiaryServiceAction extends org.apache.struts.action.Action {
     }
     private void setButtonState(HttpSession session,String saveDisabled,String modifyDisabled)
     {
-        session.setAttribute("bsfSaveDisabled", saveDisabled);
-        session.setAttribute("bsfModifyDisabled", modifyDisabled);
+        if(AppUtility.isMetadataAccessEnabled())
+        {
+            session.setAttribute("bsfSaveDisabled", saveDisabled);
+            session.setAttribute("bsfModifyDisabled", modifyDisabled);
+        }
+        else
+        {
+           session.setAttribute("bsfSaveDisabled", "true");
+           session.setAttribute("bsfModifyDisabled", "true"); 
+        }
     }
     private void loadService(HttpSession session) throws Exception
     {

@@ -176,6 +176,10 @@ public class HivPropertiesManager
     {
         session.setAttribute("mainHivStatus", mainHivStatusList);
     }
+    public static void setAllHivStatusList(HttpSession session)
+    {
+        session.setAttribute("allHivStatus", getAllHivStatus());
+    }
     /*public static HivStatusManager getHivStatusManager(String beneficiaryId)
     {
         HivStatusManager hsm=null;

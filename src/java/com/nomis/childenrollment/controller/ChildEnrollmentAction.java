@@ -23,6 +23,7 @@ import com.nomis.ovc.util.DateManager;
 import com.nomis.ovc.util.HivPropertiesManager;
 import com.nomis.reports.utils.ReportParameterTemplate;
 import com.nomis.ovc.util.AppManager;
+import com.nomis.ovc.util.DatabaseUtilities;
 import com.nomis.ovc.util.DatabasetManager;
 import com.nomis.ovc.util.ReferralFacilityManager;
 import com.nomis.ovc.util.UniqueIdManager;
@@ -111,6 +112,8 @@ public class ChildEnrollmentAction extends org.apache.struts.action.Action {
         //session.setAttribute("mainHivStatus", HivPropertiesManager.getThreeMainHivStatus());
         if(requiredAction==null)
         {
+            DatabaseUtilities dbUtils=new DatabaseUtilities();
+            dbUtils.revertHivUnknownDueToRiskAssessmentToBaselineHivStatusInChildEnrollment();
             ceform.reset(mapping, request);
             resetBaselineInfo(ceform);
             //reset school status properties
