@@ -23,4 +23,7 @@ public interface CareAndSupportChecklistDao
     public CareAndSupportChecklist getCareAndSupportChecklist(String beneficiaryId,Date dateOfAssessment) throws Exception;
     public List getCareAndSupportChecklist(String beneficiaryId) throws Exception;
     public List getCareAndSupportRecordsForExport(ReportParameterTemplate rpt) throws Exception;
+    public List getOvcCareAndSupportRecords(ReportParameterTemplate rpt) throws Exception;
+    public List getAdultCareAndSupportRecords(ReportParameterTemplate rpt) throws Exception;
+    public List getMostRecentCareAndSupportRecords(ReportParameterTemplate rpt) throws Exception;
 }

@@ -125,6 +125,7 @@ public class DatimDataGenerationAction extends org.apache.struts.action.Action {
         {
             try  
             {
+                rpt.setAdultAgeDisaggregated(false);
                 DatimReportDao drtdao=util.getDatimReportDaoInstance();
                 String level2OuId=null;
                 DatimReportGenerator drg=new DatimReportGenerator();

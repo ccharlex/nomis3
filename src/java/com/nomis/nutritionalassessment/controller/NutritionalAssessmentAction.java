@@ -8,6 +8,7 @@ import com.nomis.operationsManagement.AccessManager;
 import com.nomis.operationsManagement.CommunityWorkerRecordsManager;
 import com.nomis.operationsManagement.OrganizationUnitAttributesManager;
 import com.nomis.operationsManagement.UserActivityManager;
+import com.nomis.ovc.business.Beneficiary;
 import com.nomis.ovc.business.HouseholdEnrollment;
 import com.nomis.ovc.business.NutritionAssessment;
 import com.nomis.ovc.business.Ovc;
@@ -88,6 +89,8 @@ public class NutritionalAssessmentAction extends org.apache.struts.action.Action
         
         if(requiredAction==null)
         {
+            //beneficiaryid is set to null in the setWithdrawalStatusMessage method to reset the session and button to initial values
+            setWithdrawalStatusMessage(session,null,AppConstant.FALSEVALUE,AppConstant.TRUEVALUE);
             naform.reset(mapping, request);
             setButtonState(session,"false","true");
             return mapping.findForward(SUCCESS);
@@ -182,6 +185,39 @@ public class NutritionalAssessmentAction extends org.apache.struts.action.Action
         }
         return form;
     }
+    private void setWithdrawalStatusMessage(HttpSession session,String beneficiaryId,String saveBtnDisabledValue,String modifyBtnDisabledValue) throws Exception
+    {
+        AppUtility appUtil=new AppUtility();
+        String attributeName="naWithdrawnMessage";
+        if(beneficiaryId !=null)
+        {
+            DaoUtility util=new DaoUtility();
+            Beneficiary beneficiary=util.getChildEnrollmentDaoInstance().getOvc(beneficiaryId);
+            if(beneficiary !=null)
+            {
+                if(appUtil.getBeneficiaryWithrawnMessage(beneficiary.getCurrentEnrollmentStatus()) !=null)
+                {
+                    setButtonState(session,AppConstant.TRUEVALUE,AppConstant.TRUEVALUE);
+                    session.setAttribute(attributeName, appUtil.getBeneficiaryWithrawnMessage(beneficiary.getCurrentEnrollmentStatus()));
+                }
+                else
+                {
+                    session.removeAttribute(attributeName);
+                    setButtonState(session,saveBtnDisabledValue,modifyBtnDisabledValue);
+                }
+            }
+            else
+            {
+                session.removeAttribute(attributeName);
+                setButtonState(session,saveBtnDisabledValue,modifyBtnDisabledValue);
+            }
+        }
+        else
+        {
+            session.removeAttribute(attributeName);
+            setButtonState(session,saveBtnDisabledValue,modifyBtnDisabledValue);
+        }
+    }
     private void setOvcPerHouseholdList(HttpSession session, String hhUniqueId)
     {
         try
@@ -227,7 +263,11 @@ public class NutritionalAssessmentAction extends org.apache.struts.action.Action
                 naform.setSex(ovc.getSex());
                 naform.setPhoneNumber(ovc.getPhoneNumber());
                 //disableAdolescentControls(session,ovcId);
-                
+                setWithdrawalStatusMessage(session,naform.getOvcId(),AppConstant.TRUEVALUE,AppConstant.FALSEVALUE);
+            }
+            else
+            {
+                setWithdrawalStatusMessage(session,naform.getOvcId(),AppConstant.FALSEVALUE,AppConstant.TRUEVALUE);
             }
         }
         catch(Exception ex)

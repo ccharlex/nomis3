@@ -31,6 +31,7 @@ public class ChildServiceDaoImpl implements ChildServiceDao
     SubQueryGenerator sqg=new SubQueryGenerator();
     Ovc ovc=null;
     String markedForDeleteQuery=" and service.markedForDelete=0";
+    String ovcMarkedForDeleteQuery=" and ovc.markedForDelete=0";
     public int getNumberOfMalnourishedChildrenProvidedNutritionalServices(ReportParameterTemplate rpt,String startDate, String endDate,int startAge, int endAge,int enrollmentStatus,int currentNutritionStatus,String sex) throws Exception
     {
         int count=0;
@@ -68,7 +69,7 @@ public class ChildServiceDaoImpl implements ChildServiceDao
             String enrollmentStatusQuery=SubQueryGenerator.getOvcCurrentEnrollmentStatusQuery(enrollmentStatus);
             session = HibernateUtil.getSession();
             tx = session.beginTransaction();
-            List list = session.createQuery(SubQueryGenerator.getHheOvcOrganizationUnitServiceNutritionStatusQuery()+sexQuery+ageQuery+enrollmentStatusQuery+SubQueryGenerator.getCurrentNutritionStatusQuery(currentNutritionStatus)+serviceDateQuery+markedForDeleteQuery).list();
+            List list = session.createQuery(SubQueryGenerator.getHheOvcOrganizationUnitServiceNutritionStatusQuery()+ovcMarkedForDeleteQuery+sexQuery+ageQuery+enrollmentStatusQuery+SubQueryGenerator.getCurrentNutritionStatusQuery(currentNutritionStatus)+serviceDateQuery+markedForDeleteQuery).list();
             tx.commit();
             closeSession(session);
             if(list !=null && !list.isEmpty())
@@ -383,7 +384,7 @@ public class ChildServiceDaoImpl implements ChildServiceDao
             }
             session = HibernateUtil.getSession();
             tx = session.beginTransaction();
-            String query="select count(distinct ovc.ovcId) "+SubQueryGenerator.getHheOvcOrganizationUnitQuery()+ageQuery+additionalQuery+currentEnrollmentStatusQuery+sexQuery+sqg.getOvcEnrollmentEndDateQuery(endDate)+" and ovc.ovcId not in (select distinct service.ovcId from ChildService service where service.ovcId is not null "+sqg.getOvcServiceDateQuery(startDate, endDate)+markedForDeleteQuery+")";
+            String query="select count(distinct ovc.ovcId) "+SubQueryGenerator.getHheOvcOrganizationUnitQuery()+ageQuery+additionalQuery+currentEnrollmentStatusQuery+sexQuery+sqg.getOvcEnrollmentEndDateQuery(endDate)+ovcMarkedForDeleteQuery+" and ovc.ovcId not in (select distinct service.ovcId from ChildService service where service.ovcId is not null "+sqg.getOvcServiceDateQuery(startDate, endDate)+markedForDeleteQuery+")";
             System.err.println("query in getNumberOfOvcNotServedInReportPeriod is "+query);
             List list = session.createQuery(query).list();
             tx.commit();
@@ -414,7 +415,7 @@ public class ChildServiceDaoImpl implements ChildServiceDao
             }
             session = HibernateUtil.getSession();
             tx = session.beginTransaction();
-            String query=SubQueryGenerator.getHheOvcOrganizationUnitQuery()+ageQuery+additionalQuery+currentEnrollmentStatusQuery+sexQuery+sqg.getOvcEnrollmentEndDateQuery(endDate)+" and ovc.ovcId not in (select distinct service.ovcId from ChildService service where service.ovcId is not null "+sqg.getOvcServiceDateQuery(startDate, endDate)+markedForDeleteQuery+") order by hhe.organizationUnit, ovc.currentAge";
+            String query=SubQueryGenerator.getHheOvcOrganizationUnitQuery()+ageQuery+additionalQuery+currentEnrollmentStatusQuery+sexQuery+sqg.getOvcEnrollmentEndDateQuery(endDate)+ovcMarkedForDeleteQuery+" and ovc.ovcId not in (select distinct service.ovcId from ChildService service where service.ovcId is not null "+sqg.getOvcServiceDateQuery(startDate, endDate)+markedForDeleteQuery+") order by hhe.organizationUnit, ovc.currentAge";
             //SubQueryGenerator.getHheOvcOrganizationUnitQuery()+ageQuery+additionalQuery+currentEnrollmentStatusQuery+sexQuery+" and ovc.ovcId not in (select distinct service.ovcId from ChildService service where service.ovcId is not null "+sqg.getOvcServiceDateQuery(startDate, endDate)+")"+" order by hhe.organizationUnit, ovc.currentAge";
             System.err.println("query is "+query);
             List list = session.createQuery(query).list();
@@ -459,7 +460,7 @@ public class ChildServiceDaoImpl implements ChildServiceDao
             String hivRiskStatusQuery=SubQueryGenerator.getHivUnknownOvcHivRiskStatusQuery(hivRiskStatus,startDate, endDate);
             session = HibernateUtil.getSession();
             tx = session.beginTransaction();
-            String query="select count(distinct service.ovcId) "+SubQueryGenerator.getHheOvcOrganizationUnitServiceHivRiskAssessmentQuery()+additionalQuery+currentEnrollmentStatusQuery+ageQuery+sexQuery+hivRiskStatusQuery+sqg.getOvcServiceDateQuery(startDate, endDate)+markedForDeleteQuery;
+            String query="select count(distinct service.ovcId) "+SubQueryGenerator.getHheOvcOrganizationUnitServiceHivRiskAssessmentQuery()+ovcMarkedForDeleteQuery+additionalQuery+currentEnrollmentStatusQuery+ageQuery+sexQuery+hivRiskStatusQuery+sqg.getOvcServiceDateQuery(startDate, endDate)+markedForDeleteQuery;
             System.err.println("query is "+query);
             List list = session.createQuery(query).list();
             tx.commit();
@@ -491,7 +492,7 @@ public class ChildServiceDaoImpl implements ChildServiceDao
                 }
                 session = HibernateUtil.getSession();
                 tx = session.beginTransaction();
-                String query="select count(distinct service.ovcId) "+SubQueryGenerator.getHheOvcOrganizationUnitServiceQuery()+additionalQuery+currentEnrollmentStatusQuery+ageQuery+sexQuery+sqg.getOvcServiceQueryByServiceDomainAndSubType(serviceType,serviceCode)+sqg.getOvcServiceDateQuery(startDate, endDate)+markedForDeleteQuery;
+                String query="select count(distinct service.ovcId) "+SubQueryGenerator.getHheOvcOrganizationUnitServiceQuery()+ovcMarkedForDeleteQuery+additionalQuery+currentEnrollmentStatusQuery+ageQuery+sexQuery+sqg.getOvcServiceQueryByServiceDomainAndSubType(serviceType,serviceCode)+sqg.getOvcServiceDateQuery(startDate, endDate)+markedForDeleteQuery;
                 System.err.println("query is "+query);
                 List list = session.createQuery(query).list();
                 tx.commit();
@@ -522,7 +523,7 @@ public class ChildServiceDaoImpl implements ChildServiceDao
                 }
                 session = HibernateUtil.getSession();
                 tx = session.beginTransaction();
-                String query=SubQueryGenerator.getHheOvcOrganizationUnitServiceQuery()+additionalQuery+currentEnrollmentStatusQuery+ageQuery+sexQuery+sqg.getOvcServiceQueryByServiceDomainAndSubType(serviceType,serviceCode)+sqg.getOvcServiceDateQuery(startDate, endDate)+markedForDeleteQuery;
+                String query=SubQueryGenerator.getHheOvcOrganizationUnitServiceQuery()+ovcMarkedForDeleteQuery+additionalQuery+currentEnrollmentStatusQuery+ageQuery+sexQuery+sqg.getOvcServiceQueryByServiceDomainAndSubType(serviceType,serviceCode)+sqg.getOvcServiceDateQuery(startDate, endDate)+markedForDeleteQuery;
                 System.err.println("query is "+query);
                 List list = session.createQuery(query).list();
                 tx.commit();
@@ -584,7 +585,7 @@ public class ChildServiceDaoImpl implements ChildServiceDao
             String screenedForHivQuery="";
             session = HibernateUtil.getSession();
             tx = session.beginTransaction();
-            String query="select count(distinct service.ovcId) "+SubQueryGenerator.getHheOvcOrganizationUnitServiceQuery()+SubQueryGenerator.getHivUnknownOvcNotScreenedForHivRiskAssessmentQuery(startDate, endDate)+additionalQuery+currentEnrollmentStatusQuery+ageQuery+sexQuery+screenedForHivQuery+sqg.getOvcServiceDateQuery(startDate, endDate)+markedForDeleteQuery;
+            String query="select count(distinct service.ovcId) "+SubQueryGenerator.getHheOvcOrganizationUnitServiceQuery()+ovcMarkedForDeleteQuery+SubQueryGenerator.getHivUnknownOvcNotScreenedForHivRiskAssessmentQuery(startDate, endDate)+additionalQuery+currentEnrollmentStatusQuery+ageQuery+sexQuery+screenedForHivQuery+sqg.getOvcServiceDateQuery(startDate, endDate)+markedForDeleteQuery;
             System.err.println("query is "+query);
             List list = session.createQuery(query).list();
             tx.commit();
@@ -618,7 +619,7 @@ public class ChildServiceDaoImpl implements ChildServiceDao
             
             session = HibernateUtil.getSession();
             tx = session.beginTransaction();
-            String query="select count(distinct service.ovcId) "+SubQueryGenerator.getHheOvcOrganizationUnitServiceHivRiskAssessmentQuery()+SubQueryGenerator.getHivRiskAssessmentDateQuery(startDate,endDate)+additionalQuery+currentEnrollmentStatusQuery+SubQueryGenerator.getOvcHivStatusQuery(hivStatus)+ageQuery+sexQuery+screenedForHivQuery+sqg.getOvcServiceDateQuery(startDate, endDate)+markedForDeleteQuery;
+            String query="select count(distinct service.ovcId) "+SubQueryGenerator.getHheOvcOrganizationUnitServiceHivRiskAssessmentQuery()+ovcMarkedForDeleteQuery+SubQueryGenerator.getHivRiskAssessmentDateQuery(startDate,endDate)+additionalQuery+currentEnrollmentStatusQuery+SubQueryGenerator.getOvcHivStatusQuery(hivStatus)+ageQuery+sexQuery+screenedForHivQuery+sqg.getOvcServiceDateQuery(startDate, endDate)+markedForDeleteQuery;
             System.err.println("query is "+query);
             List list = session.createQuery(query).list();
             tx.commit();
@@ -652,7 +653,7 @@ public class ChildServiceDaoImpl implements ChildServiceDao
             String ageQuery=sqg.getAgeAtOvcServiceQuery(startAge,endAge);
             session = HibernateUtil.getSession();
             tx = session.beginTransaction();
-            String query=SubQueryGenerator.getHheOvcOrganizationUnitServiceQuery()+sqg.getOvcServiceQueryByServiceDomain(serviceType)+additionalQuery+ageQuery+sexQuery+currentEnrollmentStatusQuery+statusPeriodQuery+sqg.getOvcServiceDateQuery(startDate, endDate)+markedForDeleteQuery;
+            String query=SubQueryGenerator.getHheOvcOrganizationUnitServiceQuery()+ovcMarkedForDeleteQuery+sqg.getOvcServiceQueryByServiceDomain(serviceType)+additionalQuery+ageQuery+sexQuery+currentEnrollmentStatusQuery+statusPeriodQuery+sqg.getOvcServiceDateQuery(startDate, endDate)+markedForDeleteQuery;
             System.err.println("query is "+query);
             List list = session.createQuery(query).list();
             tx.commit();
@@ -697,7 +698,7 @@ public class ChildServiceDaoImpl implements ChildServiceDao
             String ageQuery=sqg.getAgeAtOvcServiceQuery(startAge,endAge);
             session = HibernateUtil.getSession();
             tx = session.beginTransaction();
-            String query="select count(distinct service.ovcId) "+SubQueryGenerator.getHheOvcOrganizationUnitServiceQuery()+sqg.getOvcServiceQueryByServiceDomain(serviceType)+additionalQuery+ageQuery+sexQuery+currentEnrollmentStatusQuery+statusPeriodQuery+sqg.getOvcServiceDateQuery(startDate, endDate)+markedForDeleteQuery;//+" and service.serviceDate between '"+startDate+"' and '"+endDate+"'";
+            String query="select count(distinct service.ovcId) "+SubQueryGenerator.getHheOvcOrganizationUnitServiceQuery()+ovcMarkedForDeleteQuery+sqg.getOvcServiceQueryByServiceDomain(serviceType)+additionalQuery+ageQuery+sexQuery+currentEnrollmentStatusQuery+statusPeriodQuery+sqg.getOvcServiceDateQuery(startDate, endDate)+markedForDeleteQuery;//+" and service.serviceDate between '"+startDate+"' and '"+endDate+"'";
             System.err.println("query is "+query);
             List list = session.createQuery(query).list();
             tx.commit();
@@ -730,7 +731,7 @@ public class ChildServiceDaoImpl implements ChildServiceDao
             
             session = HibernateUtil.getSession();
             tx = session.beginTransaction();
-            String query="select count(distinct service.ovcId) "+SubQueryGenerator.getHheOvcOrganizationUnitServiceHivRiskAssessmentQuery()+additionalQuery+currentEnrollmentStatusQuery+ageQuery+sexQuery+testNotIndicatedQuery+sqg.getOvcServiceDateQuery(startDate, endDate)+markedForDeleteQuery;
+            String query="select count(distinct service.ovcId) "+SubQueryGenerator.getHheOvcOrganizationUnitServiceHivRiskAssessmentQuery()+ovcMarkedForDeleteQuery+additionalQuery+currentEnrollmentStatusQuery+ageQuery+sexQuery+testNotIndicatedQuery+sqg.getOvcServiceDateQuery(startDate, endDate)+markedForDeleteQuery;
             System.err.println("query is "+query);
             List list = session.createQuery(query).list();
             tx.commit();
@@ -764,7 +765,7 @@ public class ChildServiceDaoImpl implements ChildServiceDao
             
             session = HibernateUtil.getSession();
             tx = session.beginTransaction();
-            String query="select count(distinct service.ovcId) "+SubQueryGenerator.getHheOvcOrganizationUnitServiceHivRiskAssessmentQuery()+additionalQuery+currentEnrollmentStatusQuery+ageQuery+sexQuery+testNotIndicatedQuery+sqg.getOvcServiceDateQuery(startDate, endDate)+markedForDeleteQuery;
+            String query="select count(distinct service.ovcId) "+SubQueryGenerator.getHheOvcOrganizationUnitServiceHivRiskAssessmentQuery()+ovcMarkedForDeleteQuery+additionalQuery+currentEnrollmentStatusQuery+ageQuery+sexQuery+testNotIndicatedQuery+sqg.getOvcServiceDateQuery(startDate, endDate)+markedForDeleteQuery;
             System.err.println("query is "+query);
             List list = session.createQuery(query).list();
             tx.commit();
@@ -798,7 +799,7 @@ public class ChildServiceDaoImpl implements ChildServiceDao
             
             session = HibernateUtil.getSession();
             tx = session.beginTransaction();
-            String query="select count(distinct service.ovcId) "+SubQueryGenerator.getHheOvcOrganizationUnitServiceHivRiskAssessmentQuery()+additionalQuery+currentEnrollmentStatusQuery+SubQueryGenerator.getOvcHivStatusQuery(hivStatus)+ageQuery+sexQuery+riskAssessmentStatusQuery+sqg.getOvcServiceDateQuery(startDate, endDate)+markedForDeleteQuery;
+            String query="select count(distinct service.ovcId) "+SubQueryGenerator.getHheOvcOrganizationUnitServiceHivRiskAssessmentQuery()+ovcMarkedForDeleteQuery+additionalQuery+currentEnrollmentStatusQuery+SubQueryGenerator.getOvcHivStatusQuery(hivStatus)+ageQuery+sexQuery+riskAssessmentStatusQuery+sqg.getOvcServiceDateQuery(startDate, endDate)+markedForDeleteQuery;
             System.err.println("query is "+query);
             List list = session.createQuery(query).list();
             tx.commit();
@@ -841,7 +842,7 @@ public class ChildServiceDaoImpl implements ChildServiceDao
             hivTreatmentQuery=SubQueryGenerator.getOvcHivPositiveNotOnTreatmentQuery();
             session = HibernateUtil.getSession();
             tx = session.beginTransaction();
-            String query="select count(distinct service.ovcId) "+SubQueryGenerator.getHheOvcOrganizationUnitServiceQuery()+additionalQuery+currentEnrollmentStatusQuery+statusPeriodQuery+SubQueryGenerator.getOvcHivStatusQuery(hivStatus)+ageQuery+sexQuery+hivTreatmentQuery+sqg.getOvcServiceDateQuery(startDate, endDate)+markedForDeleteQuery;
+            String query="select count(distinct service.ovcId) "+SubQueryGenerator.getHheOvcOrganizationUnitServiceQuery()+ovcMarkedForDeleteQuery+additionalQuery+currentEnrollmentStatusQuery+statusPeriodQuery+SubQueryGenerator.getOvcHivStatusQuery(hivStatus)+ageQuery+sexQuery+hivTreatmentQuery+sqg.getOvcServiceDateQuery(startDate, endDate)+markedForDeleteQuery;
             //String query="select count(distinct service.ovcId) "+SubQueryGenerator.getHheOvcOrganizationUnitServiceEnrollmentStatusHistoryQuery()+additionalQuery+currentEnrollmentStatusQuery+SubQueryGenerator.getOvcHivStatusQuery(hivStatus)+ageQuery+sexQuery+hivTreatmentQuery+sqg.getOvcServiceDateQuery(startDate, endDate)+markedForDeleteQuery;
             System.err.println("query is "+query);
             List list = session.createQuery(query).list();
@@ -877,7 +878,7 @@ public class ChildServiceDaoImpl implements ChildServiceDao
             String ageQuery=sqg.getAgeAtOvcServiceQuery(startAge,endAge);
             session = HibernateUtil.getSession();
             tx = session.beginTransaction();
-            String query="select count(distinct service.ovcId) "+SubQueryGenerator.getHheOvcOrganizationUnitServiceQuery()+additionalQuery+ageQuery+sexQuery+currentEnrollmentStatusQuery+sqg.getOvcStartDateOfCurrentStatusQuery(startOfLastQuarter)+sqg.getOvcServiceDateQuery(startOfLastQuarter, endDate)+markedForDeleteQuery;
+            String query="select count(distinct service.ovcId) "+SubQueryGenerator.getHheOvcOrganizationUnitServiceQuery()+ovcMarkedForDeleteQuery+additionalQuery+ageQuery+sexQuery+currentEnrollmentStatusQuery+sqg.getOvcStartDateOfCurrentStatusQuery(startOfLastQuarter)+sqg.getOvcServiceDateQuery(startOfLastQuarter, endDate)+markedForDeleteQuery;
             //String query="select count(distinct service.ovcId) "+SubQueryGenerator.getHheOvcOrganizationUnitServiceEnrollmentStatusHistoryQuery()+additionalQuery+ageQuery+sexQuery+currentEnrollmentStatusQuery+sqg.getEnrollmentStatusHistoryDateOfCurrentStatusQuery(startDate, endDate)+sqg.getOvcServiceDateQuery(startDate, endDate)+markedForDeleteQuery;
             System.err.println("query is "+query);
             List list = session.createQuery(query).list();
@@ -909,7 +910,7 @@ public class ChildServiceDaoImpl implements ChildServiceDao
             String ageQuery=sqg.getAgeAtOvcServiceQuery(startAge,endAge);
             session = HibernateUtil.getSession();
             tx = session.beginTransaction();
-            String query="select count(distinct service.ovcId) "+SubQueryGenerator.getHheOvcOrganizationUnitServiceQuery()+additionalQuery+ageQuery+sexQuery+currentEnrollmentStatusQuery+sqg.getOvcServiceDateQuery(startDate, endDate)+markedForDeleteQuery;
+            String query="select count(distinct service.ovcId) "+SubQueryGenerator.getHheOvcOrganizationUnitServiceQuery()+ovcMarkedForDeleteQuery+additionalQuery+ageQuery+sexQuery+currentEnrollmentStatusQuery+sqg.getOvcServiceDateQuery(startDate, endDate)+markedForDeleteQuery;
             System.err.println("query is "+query);
             List list = session.createQuery(query).list();
             tx.commit();
@@ -945,7 +946,7 @@ public class ChildServiceDaoImpl implements ChildServiceDao
             //String ageQuery=sqg.getAgeAtOvcServiceQuery(startAge,endAge);
             session = HibernateUtil.getSession();
             tx = session.beginTransaction();
-            String query="select count(distinct service.ovcId) "+SubQueryGenerator.getHheOvcOrganizationUnitServiceQuarterlyStatusTrackerQuery()+additionalQuery+ageQuery+sexQuery+currentEnrollmentStatusQuery+sqg.getQuarterlyStatusTrackerDateOfCurrentStatusQuery(startDate, endDate)+sqg.getOvcServiceDateQuery(startOfLastQuarter, endDate)+markedForDeleteQuery;
+            String query="select count(distinct service.ovcId) "+SubQueryGenerator.getHheOvcOrganizationUnitServiceQuarterlyStatusTrackerQuery()+ovcMarkedForDeleteQuery+additionalQuery+ageQuery+sexQuery+currentEnrollmentStatusQuery+sqg.getQuarterlyStatusTrackerDateOfCurrentStatusQuery(startDate, endDate)+sqg.getOvcServiceDateQuery(startOfLastQuarter, endDate)+markedForDeleteQuery;
             //String query="select count(distinct service.ovcId) "+SubQueryGenerator.getHheOvcOrganizationUnitServiceEnrollmentStatusHistoryQuery()+additionalQuery+ageQuery+sexQuery+currentEnrollmentStatusQuery+sqg.getEnrollmentStatusHistoryDateOfCurrentStatusQuery(startDate, endDate)+sqg.getOvcServiceDateQuery(startDate, endDate)+markedForDeleteQuery;
             System.err.println("query is "+query);
             List list = session.createQuery(query).list();
@@ -983,7 +984,7 @@ public class ChildServiceDaoImpl implements ChildServiceDao
             session = HibernateUtil.getSession();
             tx = session.beginTransaction();
             //String query="select count(distinct service.ovcId) "+SubQueryGenerator.getHheOvcOrganizationUnitServiceQuery()+additionalQuery+ageQuery+sexQuery+currentEnrollmentStatusQuery+sqg.getOvcServiceDateQuery(startDate, endDate)+markedForDeleteQuery;
-            String query="select count(distinct service.ovcId) "+SubQueryGenerator.getHheOvcOrganizationUnitServiceQuarterlyStatusTrackerQuery()+additionalQuery+ageQuery+sexQuery+currentEnrollmentStatusQuery+sqg.getQuarterlyStatusTrackerDateOfCurrentStatusQuery(startDate, endDate)+sqg.getOvcServiceDateQuery(startDate, endDate)+markedForDeleteQuery;
+            String query="select count(distinct service.ovcId) "+SubQueryGenerator.getHheOvcOrganizationUnitServiceQuarterlyStatusTrackerQuery()+ovcMarkedForDeleteQuery+additionalQuery+ageQuery+sexQuery+currentEnrollmentStatusQuery+sqg.getQuarterlyStatusTrackerDateOfCurrentStatusQuery(startDate, endDate)+sqg.getOvcServiceDateQuery(startDate, endDate)+markedForDeleteQuery;
             System.err.println("query is "+query);
             List list = session.createQuery(query).list();
             tx.commit();
@@ -1023,7 +1024,7 @@ public class ChildServiceDaoImpl implements ChildServiceDao
             session = HibernateUtil.getSession();
             tx = session.beginTransaction();
             //String query="select count(distinct service.ovcId) "+SubQueryGenerator.getHheOvcOrganizationUnitServiceQuery()+additionalQuery+currentEnrollmentStatusQuery+SubQueryGenerator.getOvcHivStatusQuery(hivStatus)+ageQuery+sexQuery+hivTreatmentQuery+sqg.getOvcServiceDateQuery(startDate, endDate)+markedForDeleteQuery;
-            String query="select count(distinct service.ovcId) "+SubQueryGenerator.getHheOvcOrganizationUnitServiceQuarterlyStatusTrackerQuery()+additionalQuery+currentEnrollmentStatusQuery+sqg.getQuarterlyStatusTrackerDateOfCurrentStatusQuery(startDate, endDate) +SubQueryGenerator.getEnrollmentStatusHivStatusQuery(hivStatus)+ageQuery+sexQuery+hivTreatmentQuery+sqg.getOvcServiceDateQuery(startDate, endDate)+markedForDeleteQuery;
+            String query="select count(distinct service.ovcId) "+SubQueryGenerator.getHheOvcOrganizationUnitServiceQuarterlyStatusTrackerQuery()+ovcMarkedForDeleteQuery+additionalQuery+currentEnrollmentStatusQuery+sqg.getQuarterlyStatusTrackerDateOfCurrentStatusQuery(startDate, endDate) +SubQueryGenerator.getEnrollmentStatusHivStatusQuery(hivStatus)+ageQuery+sexQuery+hivTreatmentQuery+sqg.getOvcServiceDateQuery(startDate, endDate)+markedForDeleteQuery;
             System.err.println("query is "+query);
             List list = session.createQuery(query).list();
             tx.commit();
@@ -1049,7 +1050,7 @@ public class ChildServiceDaoImpl implements ChildServiceDao
             String ageQuery=sqg.getAgeAtOvcServiceQuery(startAge,endAge);
             session = HibernateUtil.getSession();
             tx = session.beginTransaction();
-            String query="select count (distinct service.ovcId) from Ovc ovc, ChildService service where ovc.ovcId=service.ovcId and ovc.currentEnrollmentStatus=1 "+ageQuery+sqg.getOvcServiceDateQuery(startDate, endDate)+markedForDeleteQuery;
+            String query="select count (distinct service.ovcId)"+SubQueryGenerator.getHheOvcOrganizationUnitServiceQuery()+" and ovc.currentEnrollmentStatus=1 "+ovcMarkedForDeleteQuery+ageQuery+sqg.getOvcServiceDateQuery(startDate, endDate)+markedForDeleteQuery;
             System.err.println("query is "+query);
             List list = session.createQuery(query).list();
             tx.commit();
@@ -1133,7 +1134,7 @@ public class ChildServiceDaoImpl implements ChildServiceDao
             String ageQuery=sqg.getAgeAtOvcServiceQuery(startAge,endAge);
             session = HibernateUtil.getSession();
             tx = session.beginTransaction();
-            String query=SubQueryGenerator.getHheOvcOrganizationUnitServiceQuery()+additionalQuery+ageQuery+sexQuery+currentEnrollmentStatusQuery+sqg.getOvcServiceDateQuery(startDate, endDate)+markedForDeleteQuery;
+            String query=SubQueryGenerator.getHheOvcOrganizationUnitServiceQuery()+ovcMarkedForDeleteQuery+additionalQuery+ageQuery+sexQuery+currentEnrollmentStatusQuery+sqg.getOvcServiceDateQuery(startDate, endDate)+markedForDeleteQuery;
             //" and service.serviceDate between '"+startDate+"' and '"+endDate+"'";
             System.err.println("query is "+query);
             List list = session.createQuery(query).list();
@@ -1360,10 +1361,10 @@ public class ChildServiceDaoImpl implements ChildServiceDao
                 ovc=util.getChildEnrollmentDaoInstance().getOvc(service.getOvcId());
                 if(ovc !=null)
                 {
-                    if(DateManager.compareDates(ovc.getDateOfCurrentStatus(), service.getDateOfEnrollmentStatus()))
+                    if(DateManager.compareDates(ovc.getDateOfCurrentEnrollmentStatus(), service.getDateOfEnrollmentStatus()))
                     {
                         ovc.setCurrentEnrollmentStatus(service.getEnrollmentStatus());
-                        ovc.setDateOfCurrentStatus(service.getDateOfEnrollmentStatus());
+                        ovc.setDateOfCurrentEnrollmentStatus(service.getDateOfEnrollmentStatus());
                         //util.getChildEnrollmentDaoInstance().updateOvc(ovc, false, false);
                     }
                 }

@@ -59,7 +59,7 @@ public class CareAndSupportAction extends org.apache.struts.action.Action {
             throws Exception 
     {
         CareAndSupportForm casform=(CareAndSupportForm)form;
-        String moduleName="HIV Risk assessment";
+        String moduleName="HIV Care and Support";
         HttpSession session=request.getSession();
         DaoUtility util=new DaoUtility();
         //HouseholdEnrollmentDao hhedao=util.getHouseholdEnrollmentDaoInstance();
@@ -99,12 +99,15 @@ public class CareAndSupportAction extends org.apache.struts.action.Action {
         CommunityWorkerRecordsManager.setEnumeratorsRegistrationList(session);
         HivPropertiesManager.setHivStatusList(session, HivPropertiesManager.getThreeMainHivStatus());
         AccessManager acm=new AccessManager();
+        //setWithdrawalStatusMessage(session,casform.getBeneficiaryId(),AppConstant.TRUEVALUE,AppConstant.TRUEVALUE,requiredAction);
         requiredAction=acm.getActionName(requiredAction, user);
         System.err.println("requiredAction is "+requiredAction);
         if(requiredAction==null)
         {
-            CipherAESExample.showEncryptedResult("SiakaMomoh Mathematician Abejukolo");
+            //CipherAESExample.showEncryptedResult("SiakaMomoh Mathematician Abejukolo");
             //CipherSample.testCipher("Dan Asabe");
+            //set null beneficiaryid to the setWithdrawalStatusMessage method to reset the session and button to initial values
+            setWithdrawalStatusMessage(session,null,AppConstant.FALSEVALUE,AppConstant.TRUEVALUE);
             casform.reset(mapping, request);
             setButtonState(session,"false","true");
             return mapping.findForward(SUCCESS);
@@ -140,7 +143,7 @@ public class CareAndSupportAction extends org.apache.struts.action.Action {
             casform.setHhUniqueId(hhUniqueId);
             casform.setBeneficiaryId(beneficiaryId);
             setBeneficiaryDetails(casform,session);
-            //setOvcDetails(casform,session);
+            //setWithdrawalStatusMessage(session,casform.getBeneficiaryId(),AppConstant.TRUEVALUE,AppConstant.TRUEVALUE,requiredAction);
             return mapping.findForward(SUCCESS);
         }
         else if(requiredAction.equalsIgnoreCase("assessmentDetails"))
@@ -161,7 +164,7 @@ public class CareAndSupportAction extends org.apache.struts.action.Action {
                 casform.setDateOfAssessment(dateOfAssessment);
 
                 casform.setDateOfNextAppointment(DateManager.getMthDayYearStringDateFormat(casc.getDateOfNextAppointment(),1));
-                casform.setDateOfViralLoadTest(DateManager.getMthDayYearStringDateFormat(casc.getDateOfViralLoadTest(),1));
+                casform.setDateOfViralLoadSampleCollection(DateManager.getMthDayYearStringDateFormat(casc.getDateOfViralLoadSampleCollection(),1));
 
                 casform.setEnrolledOnTreatment(casc.getEnrolledOnTreatment());
                 casform.setFacilityId(casc.getFacilityId());
@@ -169,6 +172,8 @@ public class CareAndSupportAction extends org.apache.struts.action.Action {
                 casform.setMonthsOfTransportationSupport(casc.getMonthsOfTransportationSupport());
                 casform.setBeneficiaryId(casc.getBeneficiaryId());
                 casform.setPickedUpMedication(casc.getPickedUpMedication());
+                casform.setDateOfLastPickup(DateManager.convertDateToString(casc.getDateOfLastDrugPickup(),DateManager.MM_DD_YYYY_SLASH));
+                casform.setNumberOfDaysOfRefill(casc.getNumberOfDaysOfRefill());
                 casform.setReasonViralLoadNotDone(casc.getReasonViralLoadNotDone());
                 casform.setReasonsPeopleSkipARV(appUtil.splitString(casc.getReasonsPeopleSkipARV(),","));
                 casform.setReceivedTransportationSupport(casc.getReceivedTransportationSupport());
@@ -179,6 +184,7 @@ public class CareAndSupportAction extends org.apache.struts.action.Action {
                 casform.setViralLoadTestDone(casc.getViralLoadTestDone());
                 casform.setVolunteerName(casc.getVolunteerName());
                 setButtonState(session,"true","false");
+                //setWithdrawalStatusMessage(session,casform.getBeneficiaryId(),AppConstant.TRUEVALUE,AppConstant.TRUEVALUE,requiredAction);
             }
             casform.setHhSerialNo(hhSerialNo);
             casform.setHhUniqueId(hhUniqueId);
@@ -216,6 +222,43 @@ public class CareAndSupportAction extends org.apache.struts.action.Action {
         }
         return mapping.findForward(SUCCESS);
     }
+    private void setWithdrawalStatusMessage(HttpSession session,String beneficiaryId,String saveBtnDisabledValue,String modifyBtnDisabledValue) throws Exception
+    {
+        AppUtility appUtil=new AppUtility();
+        String attributeName="casWithdrawnMessage";
+        if(beneficiaryId !=null)
+        {
+            DaoUtility util=new DaoUtility();
+            Beneficiary beneficiary=util.getAdultHouseholdMemberDaoInstance().getAdultHouseholdMember(beneficiaryId);
+            if(beneficiary==null)
+            {
+                beneficiary=util.getChildEnrollmentDaoInstance().getOvc(beneficiaryId);
+            }
+            if(beneficiary !=null)
+            {
+                if(appUtil.getBeneficiaryWithrawnMessage(beneficiary.getCurrentEnrollmentStatus()) !=null)
+                {
+                    setButtonState(session,AppConstant.TRUEVALUE,AppConstant.TRUEVALUE);
+                    session.setAttribute(attributeName, appUtil.getBeneficiaryWithrawnMessage(beneficiary.getCurrentEnrollmentStatus()));
+                }
+                else
+                {
+                    session.removeAttribute(attributeName);
+                    setButtonState(session,saveBtnDisabledValue,modifyBtnDisabledValue);
+                }
+            }
+            else
+            {
+                session.removeAttribute(attributeName);
+                setButtonState(session,saveBtnDisabledValue,modifyBtnDisabledValue);
+            }
+        }
+        else
+        {
+            session.removeAttribute(attributeName);
+            setButtonState(session,saveBtnDisabledValue,modifyBtnDisabledValue);
+        }
+    }
     private void saveUserActivity(String userName,String userAction,String description)
     {
         UserActivityManager uam=new UserActivityManager();
@@ -234,8 +277,15 @@ public class CareAndSupportAction extends org.apache.struts.action.Action {
         casc.setDateCreated(DateManager.getCurrentDateInstance());
         casc.setDateOfAssessment(DateManager.getDateInstance(DateManager.processMthDayYearToMysqlFormat(form.getDateOfAssessment())));
         casc.setLastModifiedDate(DateManager.getCurrentDateInstance());
+        casc.setDateOfNextAppointment(DateManager.getDefaultStartDateInstance());
+        if(form.getDateOfNextAppointment() !=null && form.getDateOfNextAppointment().indexOf("/") !=-1)
         casc.setDateOfNextAppointment(DateManager.getDateInstance(DateManager.processMthDayYearToMysqlFormat(form.getDateOfNextAppointment())));
-        casc.setDateOfViralLoadTest(DateManager.getDateInstance(DateManager.processMthDayYearToMysqlFormat(form.getDateOfViralLoadTest())));
+        casc.setDateOfViralLoadSampleCollection(DateManager.getDefaultStartDateInstance());
+        if(form.getDateOfViralLoadSampleCollection() !=null && form.getDateOfViralLoadSampleCollection().indexOf("/") !=-1)
+        casc.setDateOfViralLoadSampleCollection(DateManager.getDateInstance(DateManager.processMthDayYearToMysqlFormat(form.getDateOfViralLoadSampleCollection())));
+        casc.setDateOfLastDrugPickup(DateManager.getDefaultStartDateInstance());
+        if(form.getDateOfLastPickup() !=null && form.getDateOfLastPickup().indexOf("/") !=-1)
+        casc.setDateOfLastDrugPickup(DateManager.getDateInstanceFromMthDayYearFormat(form.getDateOfLastPickup()));
         
         casc.setEnrolledOnTreatment(form.getEnrolledOnTreatment());
         casc.setFacilityId(form.getFacilityId());
@@ -266,13 +316,14 @@ public class CareAndSupportAction extends org.apache.struts.action.Action {
         form.setCoughSymptom(casc.getCoughSymptom());
         form.setDateOfAssessment(DateManager.getMthDayYearStringDateFormat(casc.getDateOfAssessment(),1));
         form.setDateOfNextAppointment(DateManager.getMthDayYearStringDateFormat(casc.getDateOfNextAppointment(),0));
-        form.setDateOfViralLoadTest(DateManager.getMthDayYearStringDateFormat(casc.getDateOfViralLoadTest(),0));
+        form.setDateOfViralLoadSampleCollection(DateManager.getMthDayYearStringDateFormat(casc.getDateOfViralLoadSampleCollection(),0));
         form.setEnrolledOnTreatment(casc.getEnrolledOnTreatment());
         form.setFacilityId(casc.getFacilityId());
         form.setMissedARVsRecently(casc.getMissedARVsRecently());
         form.setMonthsOfTransportationSupport(casc.getMonthsOfTransportationSupport());
         form.setBeneficiaryId(casc.getBeneficiaryId());
         form.setPickedUpMedication(casc.getPickedUpMedication());
+        form.setDateOfLastPickup(DateManager.convertDateToString(casc.getDateOfLastDrugPickup(),DateManager.MM_DD_YYYY_SLASH));
         form.setReasonViralLoadNotDone(casc.getReasonViralLoadNotDone());
         form.setReasonsPeopleSkipARV(appUtil.splitString(casc.getReasonsPeopleSkipARV(),","));
         form.setReceivedTransportationSupport(casc.getReceivedTransportationSupport());
@@ -358,6 +409,12 @@ public class CareAndSupportAction extends org.apache.struts.action.Action {
                     session.setAttribute("casHealthFacilityDisabled", "true");
                     session.setAttribute("casOnTreatmentQuestionsDisabled", "true");
                 }
+                setWithdrawalStatusMessage(session,hhrform.getBeneficiaryId(),AppConstant.TRUEVALUE,AppConstant.FALSEVALUE);
+                //setButtonState(session,"true","false");
+            }
+            else
+            {
+                setWithdrawalStatusMessage(session,hhrform.getBeneficiaryId(),AppConstant.FALSEVALUE,AppConstant.TRUEVALUE);
             }
         }
         catch(Exception ex)

@@ -12,6 +12,7 @@ import com.nomis.operationsManagement.OvcServiceManager;
 import com.nomis.operationsManagement.QuarterlyServiceTrackerManager;
 import com.nomis.operationsManagement.UserActivityManager;
 import com.nomis.ovc.business.AdultHouseholdMember;
+import com.nomis.ovc.business.Beneficiary;
 import com.nomis.ovc.business.DatasetSetting;
 import com.nomis.ovc.business.HouseholdEnrollment;
 import com.nomis.ovc.business.HouseholdService;
@@ -21,7 +22,7 @@ import com.nomis.ovc.metadata.OrganizationUnit;
 import com.nomis.ovc.util.AppConstant;
 import com.nomis.ovc.util.AppManager;
 import com.nomis.ovc.util.AppUtility;
-import com.nomis.ovc.util.DatabasetManager;
+import com.nomis.ovc.util.DatasetManager;
 import com.nomis.ovc.util.DateManager;
 import com.nomis.ovc.util.HivPropertiesManager;
 import java.util.ArrayList;
@@ -66,8 +67,8 @@ public class CaregiverServiceAction extends org.apache.struts.action.Action {
         OrganizationUnitAttributesManager ouaManager=new OrganizationUnitAttributesManager();
         AppManager appManager=new AppManager();
         User user=appManager.getCurrentUser(session);
-        DatasetSetting dsts=util.getDatasetSettingDaoInstance().getDatasetSettingByModuleId(DatabasetManager.getHouseholdServiceModuleId());
-        if(dsts !=null && dsts.getDatasetId().equalsIgnoreCase(DatabasetManager.getNatHouseholdServiceDatasetId()))
+        DatasetSetting dsts=util.getDatasetSettingDaoInstance().getDatasetSettingByModuleId(DatasetManager.getHouseholdServiceModuleId());
+        if(dsts !=null && dsts.getDatasetId().equalsIgnoreCase(DatasetManager.getNatHouseholdServiceDatasetId()))
         {
             System.err.println("dsts.getDatasetId() is "+dsts.getDatasetId());
             return mapping.findForward("NationalHouseholdServiceForm");
@@ -97,9 +98,13 @@ public class CaregiverServiceAction extends org.apache.struts.action.Action {
         setHouseholdMemberListPerHousehold(session, hhsform.getHhUniqueId());
         HivPropertiesManager.setHivStatusList(session, HivPropertiesManager.getThreeMainHivStatus());
         CommunityWorkerRecordsManager.setEnumeratorsRegistrationList(session);
-        setButtonState(session,"false","true");
+        //setButtonState(session,"false","true");
+        //setWithdrawalStatusMessage(session,hhsform.getBeneficiaryId(),AppConstant.TRUEVALUE,AppConstant.TRUEVALUE);
+        
         if(requiredAction==null)
         {
+            //set null beneficiaryid to the setWithdrawalStatusMessage method to reset the session and button to initial values
+            setWithdrawalStatusMessage(session,null,AppConstant.FALSEVALUE,AppConstant.TRUEVALUE);
             hhsform.reset(mapping, request);
             return mapping.findForward(SUCCESS);
         }
@@ -124,6 +129,7 @@ public class CaregiverServiceAction extends org.apache.struts.action.Action {
             hhsform.setHhUniqueId(hhUniqueId);
             hhsform.setHhName(hhName);
             hhsform=setOrganizationUnitProperties(session, hhUniqueId,hhsform,userName);
+            
             return mapping.findForward(SUCCESS);
         }
         else if(requiredAction.equalsIgnoreCase("ahmDetails"))
@@ -133,11 +139,17 @@ public class CaregiverServiceAction extends org.apache.struts.action.Action {
             if(ahm !=null)
             {
                 hhsform=getAdultHouseholdMemberForm(request,hhsform);
+                setWithdrawalStatusMessage(session,hhsform.getBeneficiaryId(),AppConstant.TRUEVALUE,AppConstant.FALSEVALUE); 
                 return mapping.findForward(SUCCESS);
+            }
+            else
+            {
+                setWithdrawalStatusMessage(session,hhsform.getBeneficiaryId(),AppConstant.FALSEVALUE,AppConstant.TRUEVALUE);
             }
             hhsform.reset(mapping, request);
             hhsform.setHhSerialNo(hhSerialNo);
             hhsform.setHhUniqueId(hhUniqueId);
+            //setWithdrawalStatusMessage(session,hhsform.getBeneficiaryId(),AppConstant.TRUEVALUE,AppConstant.TRUEVALUE);
             return mapping.findForward(SUCCESS);
         }
         else if(requiredAction.equalsIgnoreCase("serviceDetails"))
@@ -165,6 +177,7 @@ public class CaregiverServiceAction extends org.apache.struts.action.Action {
                 hhsform.setVolunteerName(service.getCommunityWorkerId());
                 hhsform=getAdultHouseholdMemberForm(request,hhsform);
                 setButtonState(session,"true","false");
+                setWithdrawalStatusMessage(session,hhsform.getBeneficiaryId(),AppConstant.TRUEVALUE,AppConstant.FALSEVALUE); 
             }
             else
             {
@@ -173,7 +186,9 @@ public class CaregiverServiceAction extends org.apache.struts.action.Action {
                 hhsform.setHhUniqueId(hhUniqueId);
                 hhsform.setBeneficiaryId(beneficiaryId);
                 hhsform.setServiceDate(hhsformServiceDate);
+                setWithdrawalStatusMessage(session,hhsform.getBeneficiaryId(),AppConstant.FALSEVALUE,AppConstant.TRUEVALUE); 
             }
+            
             return mapping.findForward(SUCCESS);
         }
         else if(requiredAction.equalsIgnoreCase("save"))
@@ -228,6 +243,40 @@ public class CaregiverServiceAction extends org.apache.struts.action.Action {
         
         return mapping.findForward(SUCCESS);
     }
+    private void setWithdrawalStatusMessage(HttpSession session,String beneficiaryId,String saveBtnDisabledValue,String modifyBtnDisabledValue) throws Exception
+    {
+        AppUtility appUtil=new AppUtility();
+        String attributeName="hhsWithdrawnMessage";
+        if(beneficiaryId !=null)
+        {
+            DaoUtility util=new DaoUtility();
+            Beneficiary beneficiary=util.getAdultHouseholdMemberDaoInstance().getAdultHouseholdMember(beneficiaryId);
+            if(beneficiary !=null)
+            {
+                if(appUtil.getBeneficiaryWithrawnMessage(beneficiary.getCurrentEnrollmentStatus()) !=null)
+                {
+                    setButtonState(session,AppConstant.TRUEVALUE,AppConstant.TRUEVALUE);
+                    session.setAttribute(attributeName, appUtil.getBeneficiaryWithrawnMessage(beneficiary.getCurrentEnrollmentStatus()));
+                }
+                else
+                {
+                    session.removeAttribute(attributeName);
+                    setButtonState(session,saveBtnDisabledValue,modifyBtnDisabledValue);
+                }
+            }
+            else
+            {
+                session.removeAttribute(attributeName);
+                setButtonState(session,saveBtnDisabledValue,modifyBtnDisabledValue);
+            }
+        }
+        else
+        {
+            session.removeAttribute(attributeName);
+            setButtonState(session,saveBtnDisabledValue,modifyBtnDisabledValue);
+        }
+    }
+
     private void saveUserActivity(String userName,String userAction,String description)
     {
         UserActivityManager uam=new UserActivityManager();

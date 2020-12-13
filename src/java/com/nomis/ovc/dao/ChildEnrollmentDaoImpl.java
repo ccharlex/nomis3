@@ -32,6 +32,46 @@ public class ChildEnrollmentDaoImpl implements ChildEnrollmentDao
     HivOperationsManager hom=new HivOperationsManager();
     SubQueryGenerator sqg=new SubQueryGenerator();
     String markedForDeleteQuery=" and ovc.markedForDelete=0";
+    public List getRecordsByVulnerabilityStatusId(String vulnerabilityStatusId) throws Exception
+    {
+        List list=null;
+        try
+        {
+            session = HibernateUtil.getSession();
+            tx = session.beginTransaction();
+            String query="from Ovc ovc where ovc.vulnerabilityStatusCode like '"+vulnerabilityStatusId+"'";
+            System.err.println("query is "+query);
+            list = session.createQuery(query).list();
+            tx.commit();
+            closeSession(session);
+        }
+        catch(Exception ex)
+        {
+            closeSession(session);
+            ex.printStackTrace();
+        }
+        return list;
+    }
+    public List getRecordsWithKnownBaselineHivStatusButUnknownCurrentHivStatus() throws Exception
+    {
+        List list=null;
+        try
+        {
+            session = HibernateUtil.getSession();
+            tx = session.beginTransaction();
+            String query="from Ovc ovc where ovc.baselineHivStatus>0 and (ovc.currentHivStatus=0 or ovc.currentHivStatus="+AppConstant.HIV_UNKNOWN_NUM+" or ovc.currentHivStatus ="+AppConstant.HIV_UNDISCLOSED_NUM+")";
+            System.err.println("query is "+query);
+            list = session.createQuery(query).list();
+            tx.commit();
+            closeSession(session);
+        }
+        catch(Exception ex)
+        {
+            closeSession(session);
+            ex.printStackTrace();
+        }
+        return list;
+    }
     public int getNumberOfOvcSupportedToAccessARTServicesInReportPeriod(ReportParameterTemplate rpt,String startDate,String endDate,int enrollmentStatus,String sex) throws Exception
     {
         int count=0;
@@ -43,7 +83,7 @@ public class ChildEnrollmentDaoImpl implements ChildEnrollmentDao
             String currentEnrollmentQuery=SubQueryGenerator.getOvcCurrentEnrollmentStatusQuery(enrollmentStatus);
             //ART support value is 1 if given transportation support and 2 when not given
             String artSupportQuery=SubQueryGenerator.getARTSupportQuery(1);
-            String dateOfArtSupportQuery=SubQueryGenerator.getDateOfCareAndSupportAssessmentQuery(startDate,endDate);
+            String dateOfArtSupportQuery=SubQueryGenerator.getCareAndSupportDateOfAssessmentQuery(startDate,endDate);
             if(rpt !=null && rpt.getLevel2OuId() !=null && rpt.getLevel2OuId().trim().length()>0 && !rpt.getLevel2OuId().equalsIgnoreCase("select") && !rpt.getLevel2OuId().equalsIgnoreCase("All"))
             {
                 additionalOrgUnitQuery=sqg.getOrganizationUnitQuery(rpt);
@@ -76,7 +116,7 @@ public class ChildEnrollmentDaoImpl implements ChildEnrollmentDao
             String ageQuery=sqg.getOvcCurrentAgeQuery(rpt.getStartAge(), rpt.getEndAge());
             String currentEnrollmentQuery=SubQueryGenerator.getOvcCurrentEnrollmentStatusQuery(enrollmentStatus);
             String artSupportQuery=SubQueryGenerator.getARTSupportQuery(1);
-            String dateOfArtSupportQuery=SubQueryGenerator.getDateOfCareAndSupportAssessmentQuery(startDate,endDate);
+            String dateOfArtSupportQuery=SubQueryGenerator.getCareAndSupportDateOfAssessmentQuery(startDate,endDate);
             String additionalOrgUnitQuery="";
             if(rpt !=null && rpt.getLevel2OuId() !=null && rpt.getLevel2OuId().trim().length()>0 && !rpt.getLevel2OuId().equalsIgnoreCase("select") && !rpt.getLevel2OuId().equalsIgnoreCase("All"))
             {
@@ -1200,8 +1240,9 @@ public class ChildEnrollmentDaoImpl implements ChildEnrollmentDao
             hsmdao.saveHivStatusManager(hsm,true);
         }*/
     }
-    public void updateOvcOnly(Ovc ovc) throws Exception
+    public int updateOvcOnly(Ovc ovc) throws Exception
     {
+        int success=0;
         try
         {
             if(ovc !=null)
@@ -1212,38 +1253,37 @@ public class ChildEnrollmentDaoImpl implements ChildEnrollmentDao
                     if(ovc2.getDateOfCurrentBirthRegStatus().after(ovc.getDateOfCurrentBirthRegStatus()))
                     {
                         ovc.setCurrentBirthRegistrationStatus(ovc2.getCurrentBirthRegistrationStatus());
-                        ovc.setDateOfCurrentBirthRegStatus(ovc2.getDateOfCurrentBirthRegStatus());
-                        ovc=(Ovc)hom.processBeneficiaryHivStatus(ovc);
-                        
+                        ovc.setDateOfCurrentBirthRegStatus(ovc2.getDateOfCurrentBirthRegStatus());                        
                     }
+                    ovc=(Ovc)hom.processBeneficiaryHivStatus(ovc);
                     session = HibernateUtil.getSession();
                     tx = session.beginTransaction();
                     session.update(ovc);
                     tx.commit();
                     closeSession(session);
-                    System.err.println("Ovc with Id "+ovc.getOvcId()+" saved");
+                    success=1;
+                    System.err.println("Ovc with Id "+ovc.getOvcId()+" updated");
                 }
             }
         }
         catch(Exception ex)
         {
+            success=-1;
           closeSession(session);  
           ex.printStackTrace();
         }
+        return success;
     }
     public void saveOvc(Ovc ovc,boolean saveHiv,boolean saveBirthRegistration) throws Exception
     {
         try
         {
             //System.err.println(" ovc.getDateOfEnrollment() in SaveOvc is "+ovc.getDateOfEnrollment());
-            if(ovc !=null && getOvc(ovc.getOvcId())==null)
+            if(ovc !=null && getOvc(ovc.getOvcId())==null && ovc.getFirstName() !=null && ovc.getSurname() !=null)
             {
                 //System.err.println("Ovc with Id "+ovc.getOvcId()+" about to be saved");
                 ovc=getCleanedOvc(ovc);
-                System.err.println(" ovc.getDateOfEnrollment() 2 in SaveOvc is "+ovc.getDateOfEnrollment());
                 ovc=(Ovc)hom.processBeneficiaryHivStatus(ovc);
-                //System.err.println(" ovc.getDateOfEnrollment() 3 in SaveOvc is "+ovc.getDateOfEnrollment());
-                //System.err.println("Ovc with Id "+ovc.getOvcId()+" about to be saved after cleanup");
                 session = HibernateUtil.getSession();
                 tx = session.beginTransaction();
                 session.save(ovc);
@@ -1262,28 +1302,37 @@ public class ChildEnrollmentDaoImpl implements ChildEnrollmentDao
     public Ovc getCleanedOvc(Ovc ovc) throws Exception
     {
         //AppManager appManager=new AppManager();
-        AppUtility appUtil=new AppUtility();
-        if(ovc.getHivTreatmentFacilityId() !=null && ovc.getHivTreatmentFacilityId().equalsIgnoreCase("select"))
-        ovc.setHivTreatmentFacilityId(null);
-        ovc=getPreparedOvc(ovc);
-        if(ovc.getDateOfCurrentHivStatus()==null)
+        if(ovc !=null  && ovc.getFirstName() !=null && ovc.getSurname() !=null)
         {
-            ovc.setCurrentHivStatus(ovc.getBaselineHivStatus());
-            ovc.setDateOfCurrentHivStatus(ovc.getDateOfEnrollment());
-        }
-        if(ovc.getDateOfCurrentBirthRegStatus()==null)
-        {
+            AppUtility appUtil=new AppUtility();
+            if(ovc.getHivTreatmentFacilityId() !=null && ovc.getHivTreatmentFacilityId().equalsIgnoreCase("select"))
+            ovc.setHivTreatmentFacilityId(null);
+            ovc=getPreparedOvc(ovc);
+            if(ovc.getDateOfCurrentHivStatus()==null)
+            {
+                ovc.setCurrentHivStatus(ovc.getBaselineHivStatus());
+                ovc.setDateOfCurrentHivStatus(ovc.getDateOfEnrollment());
+            }
+            if(ovc.getDateOfCurrentBirthRegStatus()==null)
+            {
+                ovc.setCurrentBirthRegistrationStatus(ovc.getBaselineBirthRegistrationStatus());
+                ovc.setDateOfCurrentBirthRegStatus(ovc.getDateOfEnrollment());
+            }
+            if(ovc.getDateCasePlanDeveloped()==null)
+            ovc.setDateCasePlanDeveloped(ovc.getDateOfEnrollment());
+
+            //else if(ovc.getDateOfCurrentSchoolStatus().)
+            if(ovc.getCurrentBirthRegistrationStatus()==0)
             ovc.setCurrentBirthRegistrationStatus(ovc.getBaselineBirthRegistrationStatus());
-            ovc.setDateOfCurrentBirthRegStatus(ovc.getDateOfEnrollment());
+            ovc.setFirstName(ovc.getFirstName().trim());
+            ovc.setSurname(ovc.getSurname().trim());
+            if(ovc.getFirstName().length()>25)
+            ovc.setFirstName(ovc.getFirstName().substring(0, 25));
+            if(ovc.getSurname().length()>25)
+            ovc.setSurname(ovc.getSurname().substring(0, 25));
+            ovc.setFirstName(appUtil.changeFirstLetterToUpperCase(ovc.getFirstName()));
+            ovc.setSurname(appUtil.changeFirstLetterToUpperCase(ovc.getSurname()));
         }
-        if(ovc.getDateCasePlanDeveloped()==null)
-        ovc.setDateCasePlanDeveloped(ovc.getDateOfEnrollment());
-        
-        //else if(ovc.getDateOfCurrentSchoolStatus().)
-        if(ovc.getCurrentBirthRegistrationStatus()==0)
-        ovc.setCurrentBirthRegistrationStatus(ovc.getBaselineBirthRegistrationStatus());
-        ovc.setFirstName(appUtil.changeFirstLetterToUpperCase(ovc.getFirstName()));
-        ovc.setSurname(appUtil.changeFirstLetterToUpperCase(ovc.getSurname()));
         //if(ovc.getCurrentHivStatusCode()==0)
         return ovc;
     }
@@ -1291,32 +1340,29 @@ public class ChildEnrollmentDaoImpl implements ChildEnrollmentDao
     {
         try
         {
-            System.err.println("Inside updateOvc");
+            //System.err.println("Inside updateOvc");
             Ovc ovc2=getOvc(ovc.getOvcId());
-            if(ovc !=null && ovc2 !=null)
+            if(ovc !=null  && ovc.getFirstName() !=null && ovc.getSurname() !=null && ovc2 !=null)
             {
-                System.err.println(" ovc.getDateOfEnrollment() in updateOvc is "+ovc.getDateOfEnrollment());
+                //System.err.println(" ovc.getDateOfEnrollment() in updateOvc is "+ovc.getDateOfEnrollment());
                 if(ovc2.getLastModifiedDate().before(ovc.getLastModifiedDate()) || ovc2.getLastModifiedDate().equals(ovc.getLastModifiedDate()))
                 {
-                    System.err.println("Inside updateOvc, ovc2.getLastModifiedDate().before(ovc.getLastModifiedDate())");
+                    //System.err.println("Inside updateOvc, ovc2.getLastModifiedDate().before(ovc.getLastModifiedDate())");
                     
                     ovc=getCleanedOvc(ovc);
                     //System.err.println(" ovc.getDateOfEnrollment() 2 in updateOvc is "+ovc.getDateOfEnrollment());
                     ovc=getOvcWithUpdatedCurrentParameters(ovc,ovc2);
                     //System.err.println(" ovc.getDateOfEnrollment()3 in updateOvc is "+ovc.getDateOfEnrollment());
-                    if(ovc.getDateOfCurrentHivStatus().before(ovc2.getDateOfCurrentHivStatus()))
+                    if(!ovc.isForUpdateHivStatus() && ovc.getDateOfCurrentHivStatus().before(ovc2.getDateOfCurrentHivStatus()))
                     {
                         ovc.setCurrentHivStatus(ovc2.getCurrentHivStatus());
                         ovc.setDateOfCurrentHivStatus(ovc2.getDateOfCurrentHivStatus());
                         ovc.setEnrolledOnTreatment(ovc2.getEnrolledOnTreatment());
-                        ovc.setHivTreatmentFacilityId(ovc2.getHivTreatmentFacilityId()); 
+                        ovc.setHivTreatmentFacilityId(ovc2.getHivTreatmentFacilityId());
+                        
                     }
                     updateOvcOnly(ovc);
-                    /*ovc=(Ovc)hom.processBeneficiaryHivStatus(ovc);
-                    session = HibernateUtil.getSession();
-                    tx = session.beginTransaction();
-                    session.update(ovc);
-                    tx.commit();*/
+                    
                     closeSession(session);
                     //System.err.println("Inside updateOvc, ovc.getCurrentHivStatusCode() "+ovc.getCurrentHivStatusCode());
                 }
@@ -1391,16 +1437,18 @@ public class ChildEnrollmentDaoImpl implements ChildEnrollmentDao
         hdao.deleteRiskAssessmentRecordsPerChild(ovcId);
         deleteBeneficiaryHivRecord(ovcId);
     }
-    private Ovc getOvcWithCurrentAge(Ovc ovc)
+    public Ovc getOvcWithCurrentAge(Ovc ovc) throws Exception
     {
         if(ovc !=null)
         {
-            int currentAge=AppManager.getCurrentAge(DateManager.convertDateToString(ovc.getDateOfEnrollment(),DateManager.DB_DATE_FORMAT), ovc.getAgeAtBaseline());
             Date ddateOfBirth=DateManager.getPreviousDate(ovc.getDateOfEnrollment(), ovc.getAgeAtBaseline());
+            int currentAge=AppManager.getCurrentAge(DateManager.convertDateToString(ovc.getDateOfEnrollment(),DateManager.DB_DATE_FORMAT), ovc.getAgeAtBaseline());
+            int currentAgeUnit=AppManager.getCurrentAgeUnit(DateManager.convertDateToString(ddateOfBirth,DateManager.DB_DATE_FORMAT));
             ovc.setCurrentAge(currentAge);
+            ovc.setCurrentAgeUnit(currentAgeUnit);
             ovc.setDateOfBirth(ddateOfBirth);
         }
-        return ovc;
+        return ovc; 
     }
     public Ovc getPreparedOvc(Ovc ovc)
     {
@@ -1415,7 +1463,7 @@ public class ChildEnrollmentDaoImpl implements ChildEnrollmentDao
             if(ovc.getCurrentEnrollmentStatus()==0)
             {
                 ovc.setCurrentEnrollmentStatus(AppConstant.ACTIVE_NUM);
-                ovc.setDateOfCurrentStatus(ovc.getDateOfEnrollment());
+                ovc.setDateOfCurrentEnrollmentStatus(ovc.getDateOfEnrollment());
             }   
         }
         return ovc;
@@ -1446,7 +1494,7 @@ public class ChildEnrollmentDaoImpl implements ChildEnrollmentDao
             if((ovc.getDateOfCurrentHivStatus().before(ovc2.getDateOfCurrentHivStatus())))
             {
                 ovc.setCurrentHivStatus(ovc2.getCurrentHivStatus());
-                ovc.setDateOfCurrentStatus(ovc2.getDateOfCurrentHivStatus());
+                ovc.setDateOfCurrentHivStatus(ovc2.getDateOfCurrentHivStatus());
                 if(ovc.getCurrentHivStatus()==AppConstant.HIV_POSITIVE_NUM)
                 {
                     ovc.setEnrolledOnTreatment(ovc2.getEnrolledOnTreatment());
@@ -1561,6 +1609,27 @@ public class ChildEnrollmentDaoImpl implements ChildEnrollmentDao
                     System.err.println("ovc with old ovcId "+ovc.getOvcId()+" deleted");*/
                 }
                 System.err.println("Ovc Id in OVCDaoImpl changed from --"+oldOvcId+"-- to "+newOvcId);
+            }
+        }
+    }
+    public void setOvcNewEnrollmentStatus(String hhUniqueId,int enrollmentStatus,Date dateOfNewEnrollmentStatus) throws Exception
+    {
+        List list=this.getOvcPerHousehold(hhUniqueId);
+        if(list !=null)
+        {
+            Ovc ovc=null;
+            for(Object obj:list)
+            {
+                ovc=(Ovc)obj;
+                if(ovc.getCurrentEnrollmentStatus()!=AppConstant.DIED_NUM && ovc.getCurrentEnrollmentStatus() !=AppConstant.AGED_OUT_NUM)
+                {
+                    if(ovc !=null && (ovc.getDateOfCurrentEnrollmentStatus().before(dateOfNewEnrollmentStatus) || ovc.getDateOfCurrentEnrollmentStatus().equals(dateOfNewEnrollmentStatus)))
+                    {
+                        ovc.setCurrentEnrollmentStatus(enrollmentStatus);
+                        ovc.setDateOfCurrentEnrollmentStatus(dateOfNewEnrollmentStatus);
+                        updateOvc(ovc, false, false);
+                    }
+                }
             }
         }
     }

@@ -9,6 +9,7 @@ import com.nomis.operationsManagement.AccessManager;
 import com.nomis.operationsManagement.EnrollmentStatusManager;
 import com.nomis.ovc.business.User;
 import com.nomis.ovc.util.AppManager;
+import com.nomis.ovc.util.AppUtility;
 import com.nomis.ovc.util.DatabaseUtilities;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -53,8 +54,9 @@ public class AdhocOperationsAction extends org.apache.struts.action.Action {
             setButtonState(session,"true");
             //return mapping.findForward(PARAMPAGE);
         }
-        
+        setButtonState(session,"false");
         //AppManager appManager=new AppManager();
+        
         String userName=appManager.getCurrentUserName(session);
         if(requiredAction==null)
         {
@@ -71,8 +73,8 @@ public class AdhocOperationsAction extends org.apache.struts.action.Action {
         {
             EnrollmentStatusManager esm=new EnrollmentStatusManager();
             //esm.updateLastDateOfCurrentEnrollmentStatus();
-            String message=""+esm.updateBeneficiaryEnrollmentStatusHistory(userName)+" Enrollment status records updated to history store";
-            request.setAttribute("adhocTaskMsg", message);
+            //String message=""+esm.updateBeneficiaryEnrollmentStatusHistory(userName)+" Enrollment status records updated to history store";
+            //request.setAttribute("adhocTaskMsg", message);
         }
         else if(requiredAction.equalsIgnoreCase("resetCurrentHivStatusToPositive"))
         {
@@ -93,6 +95,14 @@ public class AdhocOperationsAction extends org.apache.struts.action.Action {
     }
     public void setButtonState(HttpSession session,String disabled)
     {
-        session.setAttribute("hhmergeDeleteBtnDisabled", disabled);
+        session.setAttribute("adhocOperationsBtnDisabled", disabled);
+        /*if(AppUtility.isMetadataAccessEnabled())
+        {
+            session.setAttribute("adhocOperationsBtnDisabled", disabled);
+        }
+        else
+        {
+            session.setAttribute("adhocOperationsBtnDisabled", "true");
+        }*/ 
     }
 }

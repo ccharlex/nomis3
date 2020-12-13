@@ -632,34 +632,31 @@ public static int exportReferralFacilityRecordsInXml(String parentFolderPath,Lis
           int startSize=0;
         int count=0;
         ReferralFacility rf=null;
-	StringWriter sw=new StringWriter();
-	StreamResult streamResult = new StreamResult(sw);
-	SAXTransformerFactory tf = (SAXTransformerFactory) SAXTransformerFactory.newInstance();
-
-	TransformerHandler hd = tf.newTransformerHandler();
-	Transformer serializer = hd.getTransformer();
-	serializer.setOutputProperty(OutputKeys.ENCODING,isoEncoding);
-
-	serializer.setOutputProperty(OutputKeys.INDENT,"yes");
-	hd.setResult(streamResult);
-	AttributesImpl atts = new AttributesImpl();
-                
-        String[] columnNames={"facilityId","facilityName","typeOfFacility","address","contactEmail","contactPhone","nameOfContactPerson","organizationUnitId","latitude","longitude","dateCreated","lastModifiedDate","recordedBy"};
-        atts.clear();
+	String[] columnNames={"facilityId","facilityName","typeOfFacility","address","contactEmail","contactPhone","nameOfContactPerson","organizationUnitId","latitude","longitude","dateCreated","lastModifiedDate","recordedBy"};
         
         if(list !=null)
         {
-            hd.startDocument();
-            hd.startElement("","",parentTag,atts);
+            
             startSize=count;
             System.err.println("startSize is "+startSize);
             double loopCount=Math.ceil((list.size()/5000d));
-              for(int k=0; k<loopCount; k++)
-              {
+              //for(int k=0; k<loopCount; k++)
+              //{
+                  StringWriter sw=new StringWriter();
+                StreamResult streamResult = new StreamResult(sw);
+                SAXTransformerFactory tf = (SAXTransformerFactory) SAXTransformerFactory.newInstance();
+                TransformerHandler hd = tf.newTransformerHandler();
+                Transformer serializer = hd.getTransformer();
+                serializer.setOutputProperty(OutputKeys.ENCODING,"ISO-8859-1");
+                serializer.setOutputProperty(OutputKeys.INDENT,"yes");
+                hd.setResult(streamResult);
+                AttributesImpl atts = new AttributesImpl();
+                  hd.startDocument();
+                  hd.startElement("","",parentTag,atts);
                     for(int j=startSize; j<list.size(); j++)
                     {
-                        if(j>((k+1)*4999))
-                        break;
+                        /*if(j>((k+1)*4999))
+                        break;*/
                       rf=(ReferralFacility)list.get(j);
                       String address=getPropertyValue(rf.getAddress());
                       String contactEmail=getPropertyValue(rf.getContactEmail());
@@ -686,13 +683,13 @@ public static int exportReferralFacilityRecordsInXml(String parentFolderPath,Lis
                       hd.endElement("","",parentFolder);
                       count++;
                     }
-
+                    //startSize=count;
                     hd.endElement("","",parentTag);
                     hd.endDocument();
                     String xmlString = sw.toString();
                     fileName=parentFolder+".xml";
-                    if(k>0)
-                    fileName=parentFolder+k+".xml";
+                    //if(k>0)
+                    //fileName=parentFolder+k+".xml";
 
                     //String exportDestination=appUtil.getMetadataExportFilePath()+fileSeperator+parentFolder+fileSeperator+fileName;
                     if(parentFolderPath ==null)//parentFolderPath
@@ -706,7 +703,7 @@ public static int exportReferralFacilityRecordsInXml(String parentFolderPath,Lis
                     bw.write(xmlString);
                     bw.flush();
                     bw.close();
-                }
+                //}
             }
         }
        catch(Exception ex)
@@ -743,7 +740,7 @@ public static int exportVulnerabilityStatusRecordsInXml(String parentFolderPath,
 	hd.setResult(streamResult);
 	AttributesImpl atts = new AttributesImpl();
                 
-        String[] columnNames={"vulnerabilityStatusId","vulnerabilityStatusName","recordedBy","markedForDelete","vsEnabled","dateCreated","lastModifiedDate"};
+        String[] columnNames={"vulnerabilityStatusId","vulnerabilityStatusName","recordedBy","markedForDelete","vsEnabled","dateCreated","lastModifiedDate","vsCategory"};
         atts.clear();
         
         if(list !=null)
@@ -767,8 +764,9 @@ public static int exportVulnerabilityStatusRecordsInXml(String parentFolderPath,
                       String lastModifiedDate=getPropertyValue(DateManager.convertDateToString(vs.getLastModifiedDate(),DateManager.DB_DATE_FORMAT));
                       String markedForDelete=getIntegerPropertyValue(vs.getMarkedForDelete()+"");
                       String vsEnabled=getIntegerPropertyValue(vs.getVsEnabled()+"");
+                      String vsCategory=getIntegerPropertyValue(vs.getVsCategory()+"");
                       
-                      String[] fieldValues={vulnerabilityStatusId,vulnerabilityStatusName,recordedBy,markedForDelete,vsEnabled,dateCreated,lastModifiedDate};
+                      String[] fieldValues={vulnerabilityStatusId,vulnerabilityStatusName,recordedBy,markedForDelete,vsEnabled,dateCreated,lastModifiedDate,vsCategory};
                       hd.startElement("","",parentFolder,atts);
                         for (int i=0;i<columnNames.length;i++)
                         {

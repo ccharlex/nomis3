@@ -5,6 +5,8 @@
 package com.nomis.ovc.util;
 
 import com.nomis.operationsManagement.OrganizationUnitHierarchyManager;
+import com.nomis.ovc.business.CareAndSupportChecklist;
+import com.nomis.ovc.business.CommunityBasedOrganization;
 import com.nomis.ovc.business.CustomIndicatorsReport;
 import com.nomis.ovc.business.Partner;
 import com.nomis.ovc.dao.DaoUtility;
@@ -35,6 +37,137 @@ public class ExcelWriter implements Serializable {
     public ExcelWriter()
     {
         orgUnitHierachyAttribute=OrganizationUnitHierarchyManager.getOrgUnitHierachyAttribute();
+    }
+    public WritableWorkbook writeCareAndSupportRegisterToExcel(OutputStream os, List mainList) 
+    {
+        WritableWorkbook wworkbook = null;
+        //HSSFWorkbook wb = new HSSFWorkbook();
+        WritableSheet wsheet = null;
+        Label label = null;
+        Number number = null;
+        
+        try 
+        {
+            wworkbook = Workbook.createWorkbook(os);
+            wsheet = wworkbook.createSheet("Report Sheet", 0);
+
+            int t = 0;
+            int row = 1;
+            String[] columnHeadings = {"S/No","Implementing partner",orgUnitHierachyAttribute.getLevel2HierachyName(),orgUnitHierachyAttribute.getLevel3HierachyName(),"CBO","Category","Household ID", "Beneficiary ID", "Sex", "Age","Age unit", "Enrolled on ART","PEPFAR ID","Treatment facility","ART Start date","Date enrolled in OVC program","Last drug pickup date", "Days of ARV refill", "Date VL Sample collected", "VL Result","Current ART status"};
+            CareAndSupportChecklist csc=null;
+            //CustomIndicatorsReport rt = null;
+            CommunityBasedOrganization cbo=null;
+            OrganizationUnit level2Ou=null;
+            OrganizationUnit level3Ou=null;
+            String level2OuName=null;
+            String level3OuName=null;
+            String cboName=null;
+            Partner partner=null;
+            String partnerName=null;
+            for (int i = 0; i < columnHeadings.length; i++) {
+                label = new Label(i, 0, columnHeadings[i]);
+                wsheet.addCell(label);
+            }
+            if (mainList != null) 
+            {
+                List stateValueList=null;
+                int cell = 0;
+                for (int j = 0; j < mainList.size(); j++) 
+                {  
+                     csc=(CareAndSupportChecklist)mainList.get(j);                  
+                    //stateValueList=(List)mainList.get(j);
+                    //for(int k=0; k<stateValueList.size(); k++)
+                    //{
+                        partnerName=null;
+                        level2OuName=null;
+                        level3OuName=null;
+                        cboName=null;
+                        cell = 0;
+                        
+                        level2Ou=csc.getBeneficiary().getHhe().getLevel2Ou();
+                        level3Ou=csc.getBeneficiary().getHhe().getLevel3Ou();
+                        if(level2Ou !=null)
+                        level2OuName=level2Ou.getName();
+                        if(level3Ou !=null)
+                        level3OuName=level3Ou.getName();
+                        partner=util.getPartnerDaoInstance().getPartner(csc.getBeneficiary().getHhe().getPartnerCode());
+                        if(partner !=null)
+                        partnerName=partner.getPartnerName();
+                        cbo=util.getCommunityBasedOrganizationDaoInstance().getCommunityBasedOrganization(csc.getBeneficiary().getHhe().getCboId());
+                        if(cbo !=null)
+                        cboName=cbo.getCboName();
+                        number = new Number(cell, row, j+1);
+                        wsheet.addCell(number);
+                        label = new Label(++cell, row, partnerName);
+                        wsheet.addCell(label);
+                        label = new Label(++cell, row, level2OuName);
+                        wsheet.addCell(label);
+                        label = new Label(++cell, row, level3OuName);
+                        wsheet.addCell(label);
+                        label = new Label(++cell, row, cboName);
+                        wsheet.addCell(label);
+                        label = new Label(++cell, row, csc.getBeneficiary().getBeneficiaryTypeName());
+                        wsheet.addCell(label);
+                        label = new Label(++cell, row, csc.getBeneficiary().getHhe().getHhUniqueId());
+                        wsheet.addCell(label);
+                        label = new Label(++cell, row, csc.getBeneficiaryId());
+                        wsheet.addCell(label);
+                        label = new Label(++cell, row, csc.getBeneficiary().getSex());
+                        wsheet.addCell(label);
+                        number = new Number(++cell, row, csc.getBeneficiary().getCurrentAge());
+                        wsheet.addCell(number);
+                        label = new Label(++cell, row, csc.getBeneficiary().getCurrentAgeUnitName());
+                        wsheet.addCell(label);
+                        label = new Label(++cell, row, csc.getBeneficiary().getEnrolledOnTreatmentObject().getName());
+                        wsheet.addCell(label);
+                        label = new Label(++cell, row, " ");
+                        wsheet.addCell(label);
+                        label = new Label(++cell, row, csc.getBeneficiary().getReferralFacility().getFacilityName());
+                        wsheet.addCell(label);
+                        //label = new Label(++cell, row, DateManager.convertDateToString(csc.getBeneficiary().getDateEnrolledOnTreatment(),DateManager.DD_MM_YYYY_SLASH));
+                        label = new Label(++cell, row, DateManager.convertDateToString(DateManager.getNullDateValueForDefaultStartDateInstance(csc.getBeneficiary().getDateEnrolledOnTreatment()),DateManager.DD_MM_YYYY_SLASH));
+                        wsheet.addCell(label);
+                        label = new Label(++cell, row,DateManager.convertDateToString(DateManager.getNullDateValueForDefaultStartDateInstance(csc.getBeneficiary().getDateOfEnrollment()),DateManager.DD_MM_YYYY_SLASH));
+                        wsheet.addCell(label);
+                        label = new Label(++cell, row,DateManager.convertDateToString(DateManager.getNullDateValueForDefaultStartDateInstance(csc.getDateOfLastDrugPickup()),DateManager.DD_MM_YYYY_SLASH));
+                        wsheet.addCell(label);
+                        number = new Number(++cell, row, csc.getNumberOfDaysOfRefill());
+                        wsheet.addCell(number);
+                        label = new Label(++cell, row,DateManager.convertDateToString(DateManager.getNullDateValueForDefaultStartDateInstance(csc.getDateOfViralLoadSampleCollection()),DateManager.DD_MM_YYYY_SLASH));
+                        wsheet.addCell(label);
+                        number = new Number(++cell, row, csc.getViralLoadResult());
+                        wsheet.addCell(number);
+
+                        //get for females too
+                        /*number = new Number(++cell, row, rt.getFemaleLessThan1());
+                        wsheet.addCell(number);
+                        number = new Number(++cell, row, rt.getFemale1to4());
+                        wsheet.addCell(number);
+                        number = new Number(++cell, row, rt.getFemale5to9());
+                        wsheet.addCell(number);
+                        number = new Number(++cell, row, rt.getFemale10to14());
+                        wsheet.addCell(number);
+                        number = new Number(++cell, row, rt.getFemale15to17());
+                        wsheet.addCell(number);
+                        number = new Number(++cell, row, rt.getFemale18to24());
+                        wsheet.addCell(number);
+                        number = new Number(++cell, row, rt.getFemale25Plus());
+                        wsheet.addCell(number);
+
+                        number = new Number(++cell, row, rt.getFemaleTotal());
+                        wsheet.addCell(number);
+                        number = new Number(++cell, row, rt.getGrandTotal());
+                        wsheet.addCell(number);*/
+
+                        row++;
+                    //}
+                }
+                t++;
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return wworkbook;
     }
     public WritableWorkbook writeRevisedQuarterlyReportTemplateToExcel(OutputStream os, List mainList) 
     {

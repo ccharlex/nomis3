@@ -7,11 +7,6 @@
 <a href="householdenrollment.do">Household Vulnerability Assessment</a>
 <a href="adulthouseholdmember.do">Caregiver information management </a>
 <a href="childenrollment.do" >Child enrollment </a>
-<%--<a href="nationalchildenrollment.do" >National Child enrollment form</a>
-<a href="nationalchildService.do">National Child service </a>
-<a href="nationalhouseholdenrollment.do">National Household Vulnerability Assessment</a>
-<a href="nationalhouseholdservice.do">National Household service </a>
-<a href="nationalhivriskassessment.do">National HIV Risk assessment checklist </a>--%>
 <a href="childservice.do">Child service </a>
 <a href="caregiverservice.do">Household service form </a>
 <a href="householdreferral.do">Household referral </a>
@@ -23,3 +18,4 @@
 <a href="careandsupport.do">Care and Support checklist </a>
 <a href="caregiveraccesstoemergencyfund.do">Caregiver access to emergency fund </a>
 <a href="householdcareplan.do">Household care plan </a>
+<a href="enrollmentstatusmanagement.do">Enrollment status management</a>

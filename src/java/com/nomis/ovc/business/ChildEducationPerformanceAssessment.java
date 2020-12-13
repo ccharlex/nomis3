@@ -34,6 +34,7 @@ public class ChildEducationPerformanceAssessment implements Serializable
     private String volunteerName;
     private String recordedBy;
     private int markedForDelete;
+    private String reasonsChildMissedSchoolOrVocTraining;
 
     public int getChildHasInjuriesOrMarks() {
         return childHasInjuriesOrMarks;
@@ -201,6 +202,14 @@ public class ChildEducationPerformanceAssessment implements Serializable
 
     public void setMarkedForDelete(int markedForDelete) {
         this.markedForDelete = markedForDelete;
+    }
+
+    public String getReasonsChildMissedSchoolOrVocTraining() {
+        return reasonsChildMissedSchoolOrVocTraining;
+    }
+
+    public void setReasonsChildMissedSchoolOrVocTraining(String reasonsChildMissedSchoolOrVocTraining) {
+        this.reasonsChildMissedSchoolOrVocTraining = reasonsChildMissedSchoolOrVocTraining;
     }
     
 }

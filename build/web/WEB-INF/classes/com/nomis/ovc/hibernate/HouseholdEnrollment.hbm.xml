@@ -30,5 +30,8 @@
       <property name="stableAdult" column="STABLEADULT" type="int"/>
       <property name="violenceExperienceReported" column="VIOLENCEEXPERIENCEREPORTED" type="int"/>
       <property name="volunteerName" column="VOLUNTEERNAME" type="string"/>
+      <property name="numberOfChildrenInHousehold" column="NUMBEROFCHILDRENINHOUSEHOLD" type="int"/>
+      <property name="numberOfPeopleInHousehold" column="NUMBEROFPEOPLEINHOUSEHOLD" type="int"/>
+      <property name="legacyId" column="LEGACYID" type="string"/>
   </class>
 </hibernate-mapping>

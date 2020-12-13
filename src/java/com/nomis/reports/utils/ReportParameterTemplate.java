@@ -33,6 +33,8 @@ public class ReportParameterTemplate
     private int schoolStatus;
     private ReportPeriod financialYear;
     private int reportType;
+    private boolean childrenAgeDisaggregated=true;
+    private boolean adultAgeDisaggregated=true;
     
     public String getCboId() {
         return cboId;
@@ -204,6 +206,22 @@ public class ReportParameterTemplate
 
     public void setReportType(int reportType) {
         this.reportType = reportType;
+    }
+
+    public boolean isAdultAgeDisaggregated() {
+        return adultAgeDisaggregated;
+    }
+
+    public void setAdultAgeDisaggregated(boolean adultAgeDisaggregated) {
+        this.adultAgeDisaggregated = adultAgeDisaggregated;
+    }
+
+    public boolean isChildrenAgeDisaggregated() {
+        return childrenAgeDisaggregated;
+    }
+
+    public void setChildrenAgeDisaggregated(boolean childrenAgeDisaggregated) {
+        this.childrenAgeDisaggregated = childrenAgeDisaggregated;
     }
     
 }

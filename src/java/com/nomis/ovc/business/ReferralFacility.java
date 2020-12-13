@@ -29,6 +29,7 @@ public class ReferralFacility implements Serializable
     private double latitude;
     private double longitude;
     private String recordedBy;
+    private String datimId;
     private OrganizationUnit level2Ou;
     private OrganizationUnit level3Ou;
     private OrganizationUnit level4Ou;
@@ -163,6 +164,14 @@ public class ReferralFacility implements Serializable
 
     public void setLevel4Ou(OrganizationUnit level4Ou) {
         this.level4Ou = level4Ou;
+    }
+
+    public String getDatimId() {
+        return datimId;
+    }
+
+    public void setDatimId(String datimId) {
+        this.datimId = datimId;
     }
 
 }

@@ -10,10 +10,12 @@ import com.nomis.operationsManagement.OrganizationUnitAttributesManager;
 import com.nomis.operationsManagement.UserActivityManager;
 import com.nomis.ovc.business.AdultHouseholdMember;
 import com.nomis.ovc.business.CareplanAchievementChecklist;
+import com.nomis.ovc.business.HouseholdEnrollment;
 import com.nomis.ovc.business.User;
 import com.nomis.ovc.dao.DaoUtility;
 import com.nomis.ovc.util.AppConstant;
 import com.nomis.ovc.util.AppManager;
+import com.nomis.ovc.util.AppUtility;
 import com.nomis.ovc.util.DateManager;
 import com.nomis.ovc.util.UniqueIdManager;
 import java.util.Date;
@@ -74,6 +76,7 @@ public class CareplanAchievementAction extends org.apache.struts.action.Action {
             return mapping.findForward(SUCCESS);
         }
         CommunityWorkerRecordsManager.setEnumeratorsRegistrationList(session);
+        //setWithdrawalStatusMessage(session,cpaform.getHhUniqueId(),AppConstant.TRUEVALUE,AppConstant.TRUEVALUE);
         System.err.println("requiredAction is "+requiredAction);
         if(requiredAction==null)
         {
@@ -96,6 +99,11 @@ public class CareplanAchievementAction extends org.apache.struts.action.Action {
                 cpaform.setSex(ahm.getSex());
                 cpaform.setPhoneNumber(ahm.getPhoneNumber());
                 cpaform.setDateOfEnrollment(DateManager.convertDateToString(ahm.getDateOfEnrollment(), DateManager.MM_DD_YYYY_SLASH));
+                setWithdrawalStatusMessage(session,cpaform.getHhUniqueId(),AppConstant.TRUEVALUE,AppConstant.FALSEVALUE);
+            }
+            else
+            {
+                setWithdrawalStatusMessage(session,cpaform.getHhUniqueId(),AppConstant.FALSEVALUE,AppConstant.TRUEVALUE);
             }
         }
         else if(requiredAction.equalsIgnoreCase("assessmentDetails"))
@@ -153,6 +161,40 @@ public class CareplanAchievementAction extends org.apache.struts.action.Action {
             saveUserActivity(userName,moduleName,"Marked Care plan achievement record for household with Id "+cpa.getHhUniqueId()+" for delete");
         }
         return mapping.findForward(SUCCESS);
+    }
+    private void setWithdrawalStatusMessage(HttpSession session,String beneficiaryId,String saveBtnDisabledValue,String modifyBtnDisabledValue) throws Exception
+    {
+        AppUtility appUtil=new AppUtility();
+        String attributeName="cpaWithdrawnMessage";
+        if(beneficiaryId !=null)
+        {
+            DaoUtility util=new DaoUtility();
+            HouseholdEnrollment hhe=util.getHouseholdEnrollmentDaoInstance().getHouseholdEnrollment(beneficiaryId);
+            
+            if(hhe !=null)
+            {
+                if(appUtil.getBeneficiaryWithrawnMessage(hhe.getCurrentEnrollmentStatus()) !=null)
+                {
+                    setButtonState(session,AppConstant.TRUEVALUE,AppConstant.TRUEVALUE);
+                    session.setAttribute(attributeName, appUtil.getBeneficiaryWithrawnMessage(hhe.getCurrentEnrollmentStatus()));
+                }
+                else
+                {
+                    session.removeAttribute(attributeName);
+                    setButtonState(session,saveBtnDisabledValue,modifyBtnDisabledValue);
+                }
+            }
+            else
+            {
+                session.removeAttribute(attributeName);
+                setButtonState(session,saveBtnDisabledValue,modifyBtnDisabledValue);
+            }
+        }
+        else
+        {
+            session.removeAttribute(attributeName);
+            setButtonState(session,saveBtnDisabledValue,modifyBtnDisabledValue);
+        }
     }
     private CareplanAchievementChecklist getCareplanAchievementChecklist(CareplanAchievementForm cpaform,String userName)
     {

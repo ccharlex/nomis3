@@ -4,6 +4,8 @@
  */
 package com.nomis.ovc.business;
 
+import com.nomis.operationsManagement.BeneficiaryManager;
+import com.nomis.ovc.util.AppConstant;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -25,6 +27,10 @@ public class CaregiverAccessToEmergencyFund implements Serializable
     private int markedForDelete;
     private String volunteerName;
     private String recordedBy;
+    private CommunityWorker communityWorker;
+    int serialNo=0;
+    String rowColor=AppConstant.FIRSTREPORTROWCOLOUR;
+    private AdultHouseholdMember adultHouseholdMember; 
 
     public int getAccessMoneyToPay() {
         return accessMoneyToPay;
@@ -121,5 +127,31 @@ public class CaregiverAccessToEmergencyFund implements Serializable
     public void setVolunteerName(String volunteerName) {
         this.volunteerName = volunteerName;
     }
-    
+    public CommunityWorker getCommunityWorker() {
+        return communityWorker=BeneficiaryManager.getCommunityWorker(volunteerName);
+    }
+
+    public String getRowColor() {
+        return rowColor;
+    }
+
+    public void setRowColor(String rowColor) {
+        this.rowColor = rowColor;
+    }
+
+    public int getSerialNo() {
+        return serialNo;
+    }
+
+    public void setSerialNo(int serialNo) {
+        this.serialNo = serialNo;
+    }
+
+    public AdultHouseholdMember getAdultHouseholdMember() {
+        return adultHouseholdMember;
+    }
+
+    public void setAdultHouseholdMember(AdultHouseholdMember adultHouseholdMember) {
+        this.adultHouseholdMember = adultHouseholdMember;
+    }
 }

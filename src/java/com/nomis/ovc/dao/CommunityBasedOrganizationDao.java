@@ -22,4 +22,7 @@ public interface CommunityBasedOrganizationDao
     public List getCommunityBasedOrganizationByAssignedLevel3OrgUnit(String level3OuId) throws Exception;
     public int updateCBOsWithWrongLevel2OuId(String wrongLevel2OuId,String correctLevel2OuId) throws Exception;
     public CommunityBasedOrganization getCommunityBasedOrganizationByName(String cboName) throws Exception;
+    public CommunityBasedOrganization getCommunityBasedOrganizationByLevel2OuIdAndCboName(String level2OuId,String cboName) throws Exception;
+    public CommunityBasedOrganization createCommunityBasedOrganization(String level2OuId,String cboCode,String cboName,String userName,String legacyId) throws Exception;
+    public CommunityBasedOrganization getCommunityBasedOrganizationByLegacyId(String legacyId) throws Exception;
 }

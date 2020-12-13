@@ -5,6 +5,7 @@
 package com.nomis.reports.controller;
 
 import com.nomis.operationsManagement.AccessManager;
+import com.nomis.operationsManagement.FinancialYearManager;
 import com.nomis.operationsManagement.OrganizationUnitAttributesManager;
 import com.nomis.ovc.util.AppConstant;
 import com.nomis.ovc.util.AppManager;
@@ -54,12 +55,27 @@ public class DatimReportAction extends org.apache.struts.action.Action {
         OrganizationUnitAttributesManager ouaManager=new OrganizationUnitAttributesManager();
         AppManager appManager=new AppManager();
         String userName=appManager.getCurrentUserName(session);
+        
         String level2OuId=drf.getLevel2OuId();
         String level3OuId=drf.getLevel3OuId();
         String level4OuId=drf.getOrganizationUnitId();
         String cboId=drf.getCboId();
+        String reportPeriod=drf.getReportPeriod();
         String startDate=drf.getStartDate();
         String endDate=drf.getEndDate();
+        
+        ouaManager.getLevel2OrganizationUnitForReports(session);
+        ouaManager.setOrganizationUnitAttributesByOuId(request, level2OuId, level3OuId, level4OuId,cboId);
+        ouaManager.setOrganizationUnitHierarchyAttributes(session);
+        
+        System.err.println("reportPeriod is "+reportPeriod);
+        if(reportPeriod !=null && reportPeriod.indexOf(":") !=-1)
+        {
+            String[] reportPeriodArray=reportPeriod.split(":");
+            startDate=reportPeriodArray[0];
+            endDate=reportPeriodArray[1];
+        }
+        
         if(AccessManager.isDue())
         {
             setButtonState(session,"true","true");
@@ -73,13 +89,10 @@ public class DatimReportAction extends org.apache.struts.action.Action {
         //run update on current records in enrollmentstatushistory table
         DatabaseUtilities dbUtil=new DatabaseUtilities();
         dbUtil.updateEnrollmentStatusHistory();
-        
-        ouaManager.getLevel2OrganizationUnitForReports(session);
-        ouaManager.setOrganizationUnitAttributesByOuId(request, level2OuId, level3OuId, level4OuId,cboId);
-        ouaManager.setOrganizationUnitHierarchyAttributes(session);
+                
         String requiredAction=drf.getActionName();
         String reportType=drf.getReportType();
-                
+        setDateParametersForEnrollmentStatus(session);        
         if(requiredAction==null)
         {
             //DateManager.getNextMonth(2019, 03, 23,0);
@@ -115,21 +128,21 @@ public class DatimReportAction extends org.apache.struts.action.Action {
             rpt.setLevel2OuId(level2OuId);
             rpt.setLevel3OuId(level3OuId);
             rpt.setLevel4OuId(level4OuId);
-            if(startDate !=null && startDate.indexOf("/") !=-1)
+            if(startDate !=null && startDate.indexOf("-") !=-1)
             {
-                String[] startDateArray=startDate.split("/");
-                String[] endDateArray=startDate.split("/");
-                int startMth=Integer.parseInt(startDateArray[0]);
-                int startYear=Integer.parseInt(startDateArray[2]);
-                int endMth=Integer.parseInt(endDateArray[0]);
-                int endYear=Integer.parseInt(endDateArray[2]);
+                String[] startDateArray=startDate.split("-");
+                String[] endDateArray=startDate.split("-");
+                int startMth=Integer.parseInt(startDateArray[1]);
+                int startYear=Integer.parseInt(startDateArray[0]);
+                int endMth=Integer.parseInt(endDateArray[1]);
+                int endYear=Integer.parseInt(endDateArray[0]);
                 rpt.setStartMth(startMth);
                 rpt.setStartYear(startYear);
                 rpt.setEndMth(endMth);
                 rpt.setEndYear(endYear);
             }
-            startDate=DateManager.processMthDayYearToMysqlFormat(startDate);
-            endDate=DateManager.processMthDayYearToMysqlFormat(endDate);
+            //startDate=DateManager.processMthDayYearToMysqlFormat(startDate);
+            //endDate=DateManager.processMthDayYearToMysqlFormat(endDate);
                 
             rpt.setStartDate(startDate);
             rpt.setEndDate(endDate);
@@ -205,10 +218,19 @@ public class DatimReportAction extends org.apache.struts.action.Action {
                 String endYear=enddateArray[0];
                 String endMth=enddateArray[1];
                 String endDay=enddateArray[2];
-                periodLabel=startDay+dm.getMonthAsString(Integer.parseInt(startMth))+" "+startYear+" to "+endDay+" "+dm.getMonthAsString(Integer.parseInt(endMth))+" "+endYear;
+                periodLabel=startDay+" "+dm.getMonthAsString(Integer.parseInt(startMth))+" "+startYear+" to "+endDay+" "+dm.getMonthAsString(Integer.parseInt(endMth))+" "+endYear;
             }
         }
         return periodLabel;
+    }
+    private void setDateParametersForEnrollmentStatus(HttpSession session)
+    {
+        FinancialYearManager fym=new FinancialYearManager();
+        List list=fym.getListOfDateParameterTemplatesForSemiAnnualReport();
+        if(list==null)
+        list=new ArrayList();
+        session.setAttribute("dateParameterListForDatim", list);
+        //fym.getListOfDateParameterTemplatesForSemiAnnualReport();
     }
     public void setButtonState(HttpSession session,String saveDisabled,String modifyDisabled)
     {

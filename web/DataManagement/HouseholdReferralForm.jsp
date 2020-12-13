@@ -314,7 +314,7 @@ function setActionName(val)
                                     <tr><td colspan="4" align="center">Vulnerable Household Referral form </td></tr>
                                       <jsp:include page="../includes/OrganizationUnitHeader.jsp" />                                  
                                     <tr><td colspan="4" align="center" style="color:red"><html:errors/></td></tr>
-                                    
+                                    <tr><td style="font-size: 14px; font-weight: bold; color: red" colspan="4"><logic:present name="hhrWithdrawnMessage">${hhrWithdrawnMessage}</logic:present></td></tr>
                                     <tr>
                                         <td colspan="4">
                                             

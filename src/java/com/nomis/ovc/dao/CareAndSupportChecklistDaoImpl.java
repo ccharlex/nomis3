@@ -4,7 +4,10 @@
  */
 package com.nomis.ovc.dao;
 
+import com.nomis.ovc.business.AdultHouseholdMember;
 import com.nomis.ovc.business.CareAndSupportChecklist;
+import com.nomis.ovc.business.HouseholdEnrollment;
+import com.nomis.ovc.business.Ovc;
 import com.nomis.ovc.util.AppConstant;
 import com.nomis.reports.utils.ReportParameterTemplate;
 import java.util.ArrayList;
@@ -25,6 +28,116 @@ public class CareAndSupportChecklistDaoImpl implements CareAndSupportChecklistDa
     SessionFactory sessions;
     SubQueryGenerator sqg=new SubQueryGenerator();
     String markedForDeleteQuery=" and casc.markedForDelete=0";
+    public List getMostRecentCareAndSupportRecords(ReportParameterTemplate rpt) throws Exception
+    {
+        List recentCareAndSupportList=new ArrayList();
+        List cascList=new ArrayList();
+        if(getOvcCareAndSupportRecords(rpt) !=null)
+        cascList.addAll(getOvcCareAndSupportRecords(rpt));
+        if(getAdultCareAndSupportRecords(rpt) !=null)
+        cascList.addAll(getAdultCareAndSupportRecords(rpt));
+        
+        if(cascList !=null && !cascList.isEmpty())
+        {
+            List uniqueIdList=new ArrayList();
+            CareAndSupportChecklist casc=null;
+            for(Object obj:cascList)
+            {
+                casc=(CareAndSupportChecklist)obj;
+                if(!uniqueIdList.contains(casc.getBeneficiaryId()))
+                {
+                    recentCareAndSupportList.add(casc);
+                    uniqueIdList.add(casc.getBeneficiaryId());
+                }
+            }
+        }
+        
+        return recentCareAndSupportList;
+    }
+    public List getOvcCareAndSupportRecords(ReportParameterTemplate rpt) throws Exception
+    {
+        List mainList=new ArrayList();
+        try
+        {
+            SubQueryGenerator sqg=new SubQueryGenerator();
+            String additionalOrgUnitQuery="";
+            if(rpt !=null && rpt.getLevel2OuId() !=null && rpt.getLevel2OuId().trim().length()>0 && !rpt.getLevel2OuId().equalsIgnoreCase("select") && !rpt.getLevel2OuId().equalsIgnoreCase("All"))
+            {
+                additionalOrgUnitQuery=sqg.getOrganizationUnitQuery(rpt);
+            }
+            String query=SubQueryGenerator.getHheOvcCareAndSupportOrganizationUnitQuery()+additionalOrgUnitQuery+sqg.getCareAndSupportDateOfAssessmentQuery(rpt.getStartDate(),rpt.getEndDate())+" order by casc.dateOfAssessment desc";
+            System.err.println(query);
+            session = HibernateUtil.getSession();
+            tx = session.beginTransaction();
+            List list = session.createQuery(query).list();
+            tx.commit();
+            closeSession(session);
+            if(list !=null)
+            {
+                Ovc ovc=null;
+                HouseholdEnrollment hhe=null;
+                CareAndSupportChecklist casc=null;
+                for(Object obj:list)
+                {
+                    Object[] objArray=(Object[])obj;
+                    hhe=(HouseholdEnrollment)objArray[0];
+                    ovc=(Ovc)objArray[1];
+                    casc=(CareAndSupportChecklist)objArray[2];
+                    ovc.setHhe(hhe);
+                    casc.setBeneficiary(ovc);
+                    mainList.add(casc);
+                }
+            }
+        }
+         catch (Exception ex)
+         {
+             closeSession(session);
+            throw new Exception(ex);
+         }
+        return mainList;
+    }
+    public List getAdultCareAndSupportRecords(ReportParameterTemplate rpt) throws Exception
+    {
+        List mainList=new ArrayList();
+        try
+        {
+            SubQueryGenerator sqg=new SubQueryGenerator();
+            String additionalOrgUnitQuery="";
+            if(rpt !=null && rpt.getLevel2OuId() !=null && rpt.getLevel2OuId().trim().length()>0 && !rpt.getLevel2OuId().equalsIgnoreCase("select") && !rpt.getLevel2OuId().equalsIgnoreCase("All"))
+            {
+                additionalOrgUnitQuery=sqg.getOrganizationUnitQuery(rpt);
+            }
+            String query=SubQueryGenerator.getHheAdultHouseholdMemberCareAndSupportOrganizationUnitQuery()+additionalOrgUnitQuery+sqg.getCareAndSupportDateOfAssessmentQuery(rpt.getStartDate(),rpt.getEndDate())+" order by casc.dateOfAssessment desc";
+            System.err.println(query);
+            session = HibernateUtil.getSession();
+            tx = session.beginTransaction();
+            List list = session.createQuery(query).list();
+            tx.commit();
+            closeSession(session);
+            if(list !=null)
+            {
+                AdultHouseholdMember ahm=null;
+                HouseholdEnrollment hhe=null;
+                CareAndSupportChecklist casc=null;
+                for(Object obj:list)
+                {
+                    Object[] objArray=(Object[])obj;
+                    hhe=(HouseholdEnrollment)objArray[0];
+                    ahm=(AdultHouseholdMember)objArray[1];
+                    casc=(CareAndSupportChecklist)objArray[2];
+                    ahm.setHhe(hhe);
+                    casc.setBeneficiary(ahm);
+                    mainList.add(casc);
+                }
+            }
+        }
+         catch (Exception ex)
+         {
+             closeSession(session);
+            throw new Exception(ex);
+         }
+        return mainList;
+    }
     public List getCareAndSupportRecordsForExport(ReportParameterTemplate rpt) throws Exception
     {
         List mainList=new ArrayList();
@@ -184,7 +297,7 @@ public class CareAndSupportChecklistDaoImpl implements CareAndSupportChecklistDa
         {
             if(casc !=null && this.getCareAndSupportChecklist(casc.getBeneficiaryId(),casc.getDateOfAssessment()) ==null)
             {
-                System.err.println("casc with Id "+casc.getBeneficiaryId()+" about to be saved after cleanup");
+                //System.err.println("casc with Id "+casc.getBeneficiaryId()+" about to be saved after cleanup");
                 session = HibernateUtil.getSession();
                 tx = session.beginTransaction();
                 session.save(casc);
@@ -206,7 +319,6 @@ public class CareAndSupportChecklistDaoImpl implements CareAndSupportChecklistDa
             if(casc !=null)
             {
                  CareAndSupportChecklist casc2=getCareAndSupportChecklist(casc.getBeneficiaryId(),casc.getDateOfAssessment());
-                System.err.println("casc with Id "+casc.getBeneficiaryId()+" about to be saved after cleanup");
                 if(casc2 !=null)
                 {
                     casc2.setMarkedForDelete(AppConstant.MARKEDFORDELETE);
@@ -232,7 +344,6 @@ public class CareAndSupportChecklistDaoImpl implements CareAndSupportChecklistDa
             if(casc !=null)
             {
                  CareAndSupportChecklist casc2=getCareAndSupportChecklist(casc.getBeneficiaryId(),casc.getDateOfAssessment());
-                System.err.println("casc with Id "+casc.getBeneficiaryId()+" about to be saved after cleanup");
                 if(casc2 !=null)
                 {
                     casc.setRecordId(casc2.getRecordId()); 
@@ -241,7 +352,7 @@ public class CareAndSupportChecklistDaoImpl implements CareAndSupportChecklistDa
                     session.update(casc);
                     tx.commit();
                     closeSession(session);
-                    System.err.println("casc with Id "+casc.getBeneficiaryId()+" saved");
+                    System.err.println("casc with Id "+casc.getBeneficiaryId()+" updated");
                 }
             }
         }
@@ -266,7 +377,7 @@ public class CareAndSupportChecklistDaoImpl implements CareAndSupportChecklistDa
                     session.delete(casc);
                     tx.commit();
                     closeSession(session);
-                    System.err.println("casc with Id "+casc.getBeneficiaryId()+" saved");
+                    System.err.println("casc with Id "+casc.getBeneficiaryId()+" deleted");
                 }
             }
         }

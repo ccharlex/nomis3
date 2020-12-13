@@ -24,6 +24,7 @@ public class OrganizationUnit implements Serializable
     private int oulevel;
     private Date dateCreated;
     private Date lastModifiedDate;
+    private String legacyId;
 
     public Date getDateCreated() {
         return dateCreated;
@@ -111,6 +112,14 @@ public class OrganizationUnit implements Serializable
 
     public void setUid(String uid) {
         this.uid = uid;
+    }
+
+    public String getLegacyId() {
+        return legacyId;
+    }
+
+    public void setLegacyId(String legacyId) {
+        this.legacyId = legacyId;
     }
     
 }

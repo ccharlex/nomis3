@@ -43,9 +43,9 @@ public class OvcReportManager
         {
             //this method resets the age for adults
             rpt=getAdultReportTemplate(rpt);
-            DatimReportTemplate drt=drg.getNoOfCaregiversExitedWithoutGraduationServed(rpt,rpt.getStartDate(),rpt.getEndDate(),maleSex);
+            DatimReportTemplate drt=drg.getNoOfCaregiversExitedWithoutGraduationServed(rpt,rpt.getStartDate(),rpt.getEndDate(),rpt.getStartAge(),rpt.getEndAge(),maleSex);
             int maleCount=drt.getOvc_servExitedWithoutGraduation();
-            drt=drg.getNoOfCaregiversExitedWithoutGraduationServed(rpt,rpt.getStartDate(),rpt.getEndDate(),femaleSex);
+            drt=drg.getNoOfCaregiversExitedWithoutGraduationServed(rpt,rpt.getStartDate(),rpt.getEndDate(),rpt.getStartAge(),rpt.getEndAge(),femaleSex);
             int femaleCount=drt.getOvc_servExitedWithoutGraduation();
             int total=maleCount+femaleCount;
             
@@ -75,9 +75,9 @@ public class OvcReportManager
         {
             //this method resets the age for adults
             rpt=getAdultReportTemplate(rpt);
-            DatimReportTemplate drt=drg.getNoOfCaregiversServedAndTransfered(rpt,rpt.getStartDate(),rpt.getEndDate(),maleSex);
+            DatimReportTemplate drt=drg.getNoOfCaregiversServedAndTransfered(rpt,rpt.getStartDate(),rpt.getEndDate(),rpt.getStartAge(),rpt.getEndAge(),maleSex);
             int maleCount=drt.getOvc_servTransfered();
-            drt=drg.getNoOfCaregiversServedAndTransfered(rpt,rpt.getStartDate(),rpt.getEndDate(),femaleSex);
+            drt=drg.getNoOfCaregiversServedAndTransfered(rpt,rpt.getStartDate(),rpt.getEndDate(),rpt.getStartAge(),rpt.getEndAge(),femaleSex);
             int femaleCount=drt.getOvc_servTransfered();
             int total=maleCount+femaleCount;
             
@@ -1066,6 +1066,8 @@ public class OvcReportManager
         String femaleSex=AppConstant.FEMALESEX;
         try
         {
+            if(startAge < 5)
+            startAge=5;
             rpt.setStartAge(startAge);
             rpt.setEndAge(endAge);
             rpt.setSchoolStatus(schoolStatus);
@@ -1095,6 +1097,8 @@ public class OvcReportManager
         List mainList=new ArrayList();
         try
         {
+            if(startAge <5)
+            startAge=5;
             rpt.setStartAge(startAge);
             rpt.setEndAge(endAge);
             rpt.setSchoolStatus(schoolStatus);

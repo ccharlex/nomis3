@@ -89,7 +89,7 @@ function submitForm(requiredAction,formId)
        return true
 }
 
-function setBtnName(name)
+function confirmAction(name)
 {
      if(name=="save" || name=="generateForms")
      {

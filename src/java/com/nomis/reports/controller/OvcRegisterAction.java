@@ -9,10 +9,13 @@ import com.nomis.operationsManagement.BeneficiaryDetailsManager;
 import com.nomis.operationsManagement.OrganizationUnitAttributesManager;
 import com.nomis.ovc.business.AdultHouseholdMember;
 import com.nomis.ovc.business.CareAndSupportChecklist;
+import com.nomis.ovc.business.CaregiverAccessToEmergencyFund;
+import com.nomis.ovc.business.CareplanAchievementChecklist;
 import com.nomis.ovc.business.ChildService;
 import com.nomis.ovc.business.HivRiskAssessment;
 import com.nomis.ovc.business.HouseholdEnrollment;
 import com.nomis.ovc.business.HouseholdService;
+import com.nomis.ovc.business.NutritionAssessment;
 import com.nomis.ovc.business.Ovc;
 import com.nomis.ovc.business.User;
 import com.nomis.ovc.dao.DaoUtility;
@@ -20,13 +23,16 @@ import com.nomis.ovc.dao.SubQueryGenerator;
 import com.nomis.ovc.util.AppConstant;
 import com.nomis.ovc.util.AppManager;
 import com.nomis.ovc.util.DateManager;
+import com.nomis.ovc.util.ExcelWriter;
 import com.nomis.reports.utils.ReportParameterManager;
 import com.nomis.reports.utils.ReportParameterTemplate;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import jxl.write.WritableWorkbook;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
@@ -171,7 +177,7 @@ public class OvcRegisterAction extends org.apache.struts.action.Action {
                     ovc=BeneficiaryDetailsManager.getPreparedOvc(ovc, user);
                     ovc.setSerialNo(i+1);
                     if(i%2>0)
-                    ovc.setRowColor("#D7E5F2");
+                    ovc.setRowColor(AppConstant.SECONDREPORTROWCOLOUR);
                     hheList.add(ovc);
                 }
                 session.setAttribute("ovcListForRegister", hheList);
@@ -197,7 +203,7 @@ public class OvcRegisterAction extends org.apache.struts.action.Action {
                         ahm=BeneficiaryDetailsManager.getPreparedAdultHouseholdMember(ahm, user);
                         ahm.setSerialNo(i+1);
                         if(i%2>0)
-                        ahm.setRowColor("#D7E5F2");
+                        ahm.setRowColor(AppConstant.SECONDREPORTROWCOLOUR);
                         beneficiaryList.add(ahm);
                         idList.add(ahm.getBeneficiaryId());
                     }
@@ -222,7 +228,7 @@ public class OvcRegisterAction extends org.apache.struts.action.Action {
                     hhp=(HouseholdEnrollment)list.get(i);
                     hhp.setSerialNo(i+1);
                     if(i%2>0)
-                    hhp.setRowColor("#D7E5F2");
+                    hhp.setRowColor(AppConstant.SECONDREPORTROWCOLOUR);
                     hheList.add(hhp);
                 }
                 request.setAttribute("reportType", "Household Register");
@@ -243,7 +249,7 @@ public class OvcRegisterAction extends org.apache.struts.action.Action {
                     service=(ChildService)list.get(i);
                     service.setSerialNo(i+1);
                     if(i%2>0)
-                    service.setRowColor("#D7E5F2");
+                    service.setRowColor(AppConstant.SECONDREPORTROWCOLOUR);
                     serviceList.add(service);
                 }
                 request.setAttribute("reportType", "OVC Service Register");
@@ -264,7 +270,7 @@ public class OvcRegisterAction extends org.apache.struts.action.Action {
                     service=(HouseholdService)list.get(i);
                     service.setSerialNo(i+1);
                     if(i%2>0)
-                    service.setRowColor("#D7E5F2");
+                    service.setRowColor(AppConstant.SECONDREPORTROWCOLOUR);
                     serviceList.add(service);
                 }
                 request.setAttribute("reportType", "Household Service Register");
@@ -287,7 +293,7 @@ public class OvcRegisterAction extends org.apache.struts.action.Action {
                     referral=(HouseholdReferral)list.get(i);
                     referral.setSerialNo(i+1);
                     if(i%2>0)
-                    referral.setRowColor("#D7E5F2");
+                    referral.setRowColor(AppConstant.SECONDREPORTROWCOLOUR);
                     if(referral.getBeneficiaryType()==AppConstant.OVC_TYPE_NUM);
                     {
                         ovc=util.getOvcDaoInstance().getOvc(referral.getBeneficiaryId());
@@ -344,7 +350,7 @@ public class OvcRegisterAction extends org.apache.struts.action.Action {
                     hra=(HivRiskAssessment)list.get(i);
                     hra.setSerialNo(i+1);
                     if(i%2>0)
-                    hra.setRowColor("#D7E5F2");
+                    hra.setRowColor(AppConstant.SECONDREPORTROWCOLOUR);
                     hraList.add(hra);
                 }
                 request.setAttribute("reportType", "HIV Risk assessment Register");
@@ -368,7 +374,7 @@ public class OvcRegisterAction extends org.apache.struts.action.Action {
                     casc=(CareAndSupportChecklist)list.get(i);
                     casc.setSerialNo(i+1);
                     if(i%2>0)
-                    casc.setRowColor("#D7E5F2");
+                    casc.setRowColor(AppConstant.SECONDREPORTROWCOLOUR);
                     hraList.add(casc);
                 }
                 request.setAttribute("reportType", "Care and Support Register");
@@ -376,6 +382,104 @@ public class OvcRegisterAction extends org.apache.struts.action.Action {
                 hhrf.reset(mapping, request);
                 //System.err.println("hraRegister is hraRegister");
                 return mapping.findForward("careAndSupportRegister");
+            }
+            else if(registerType.equalsIgnoreCase("careAndSupportExcelTemplate"))
+            {
+                DaoUtility daoutil=new DaoUtility();
+                List list=daoutil.getCareAndSupportChecklistDaoInstance().getMostRecentCareAndSupportRecords(rpt);
+                
+                if(list !=null)
+                {
+                    try
+                    {
+                        String fileName="CareAndSupportReport"+DateManager.getDefaultCurrentDateAndTime();
+                        response.setContentType("application/vnd.ms-excel");
+                        response.setHeader("Content-Disposition", "attachment; filename="+fileName+".xls");
+                        OutputStream os=response.getOutputStream();
+                        ExcelWriter ew=new ExcelWriter();
+                        WritableWorkbook wworkbook=ew.writeCareAndSupportRegisterToExcel(os, list) ;
+                        if(wworkbook !=null)
+                        {
+                            wworkbook.write();
+                            wworkbook.close();
+                        }
+                        os.close();
+                    }
+                    catch(Exception ex)
+                    {
+                        ex.printStackTrace();
+                    }
+                    hhrf.reset(mapping, request);
+                }
+                return null;
+            }
+            else if(registerType.equalsIgnoreCase("nutritionAssessment"))
+            {
+                DaoUtility daoutil=new DaoUtility();
+                List naList=new ArrayList();
+                List list=daoutil.getNutritionalAssessmentDaoInstance().getNutritionAssessmentRecords(rpt);
+                
+                if(list==null)
+                list=new ArrayList();
+                NutritionAssessment na=null;
+                for(int i=0; i<list.size(); i++)
+                {
+                    na=(NutritionAssessment)list.get(i);
+                    na.setSerialNo(i+1);
+                    if(i%2>0)
+                    na.setRowColor(AppConstant.SECONDREPORTROWCOLOUR);
+                    naList.add(na);
+                }
+                request.setAttribute("reportType", "Nutrition assessment Register");
+                session.setAttribute("nutritionAssessmentListForRegister", naList);
+                hhrf.reset(mapping, request);
+                return mapping.findForward("nutritionAssessmentRegister");
+                
+            }
+            else if(registerType.equalsIgnoreCase("caregiverAccessToEmergencyFund"))
+            {
+                DaoUtility daoutil=new DaoUtility();
+                List caefList=new ArrayList();
+                List list=daoutil.getCaregiverAccessToEmergencyFundDaoInstance().getCaregiverAccessToEmergencyFundRecords(rpt);
+                
+                if(list==null)
+                list=new ArrayList();
+                CaregiverAccessToEmergencyFund caef=null;
+                for(int i=0; i<list.size(); i++)
+                {
+                    caef=(CaregiverAccessToEmergencyFund)list.get(i);
+                    caef.setSerialNo(i+1);
+                    if(i%2>0)
+                    caef.setRowColor(AppConstant.SECONDREPORTROWCOLOUR);
+                    caefList.add(caef);
+                }
+                request.setAttribute("reportType", "Caregiver access to emergency fund Register");
+                session.setAttribute("caregiverAccessToEmergencyFundListForRegister", caefList);
+                hhrf.reset(mapping, request);
+                return mapping.findForward("caregiverAccessToEmergencyFundRegister");
+                
+            }
+            else if(registerType.equalsIgnoreCase("careplanAchievementChecklist"))
+            {
+                DaoUtility daoutil=new DaoUtility();
+                List cpaList=new ArrayList();
+                List list=daoutil.getCareplanAchievementChecklistDaoInstance().getCareplanAchievementChecklistRecords(rpt);
+                
+                if(list==null)
+                list=new ArrayList();
+                CareplanAchievementChecklist cpa=null;
+                for(int i=0; i<list.size(); i++)
+                {
+                    cpa=(CareplanAchievementChecklist)list.get(i);
+                    cpa.setSerialNo(i+1);
+                    if(i%2>0)
+                    cpa.setRowColor(AppConstant.SECONDREPORTROWCOLOUR);
+                    cpaList.add(cpa);
+                }
+                request.setAttribute("reportType", "Careplan achievement Register");
+                session.setAttribute("careplanAchievementListForRegister", cpaList);
+                hhrf.reset(mapping, request);
+                return mapping.findForward("careplanAchievementRegister"); 
             }
             /*else if(registerType.equalsIgnoreCase("graduationBenchmark"))
             {
@@ -392,7 +496,7 @@ public class OvcRegisterAction extends org.apache.struts.action.Action {
                     gbm=(GraduationBenchmarkAchievement)list.get(i);
                     gbm.setSerialNo(i+1);
                     if(i%2>0)
-                    gbm.setRowColor("#D7E5F2");
+                    gbm.setRowColor(AppConstant.SECONDREPORTROWCOLOUR);
                     gbmList.add(gbm);
                 }
                 request.setAttribute("reportType", "Graduation Benchmark Register");
@@ -416,7 +520,7 @@ public class OvcRegisterAction extends org.apache.struts.action.Action {
                     trn=(Training)list.get(i);
                     trn.setSerialNo(i+1);
                     if(i%2>0)
-                    trn.setRowColor("#D7E5F2");
+                    trn.setRowColor(AppConstant.SECONDREPORTROWCOLOUR);
                     trnList.add(trn);
                 }
                 request.setAttribute("reportType", "Training Register");

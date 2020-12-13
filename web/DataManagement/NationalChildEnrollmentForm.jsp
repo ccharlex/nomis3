@@ -551,8 +551,8 @@ function setActionName(val)
                     <tr>
                       <td width="675" height="102">
                           <table width="670" border="1" bordercolor="#D7E5F2" class="regsitertable">
-                              <logic:present name="vulnerabilityStatusList">
-                                  <logic:iterate name="vulnerabilityStatusList" id="subList">
+                              <logic:present name="mainVulnerabilityStatusList">
+                                  <logic:iterate name="mainVulnerabilityStatusList" id="subList">
                                       <tr><td><html:multibox property='vulnerabilityStatus' styleId="${subList[0].vulnerabilityStatusId}" value="${subList[0].vulnerabilityStatusId}" styleClass='smallfieldcellselect'/> </td><td>${subList[0].vulnerabilityStatusName} </td> 
                                           <td><html:multibox property='vulnerabilityStatus' styleId="${subList[1].vulnerabilityStatusId}" value="${subList[1].vulnerabilityStatusId}" styleClass='smallfieldcellselect'/> </td><td>${subList[1].vulnerabilityStatusName} </td> 
                                       </tr>

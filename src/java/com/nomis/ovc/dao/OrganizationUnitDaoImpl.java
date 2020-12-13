@@ -461,13 +461,34 @@ public class OrganizationUnitDaoImpl implements OrganizationUnitDao
          }
         return list;
     }
-    public OrganizationUnit createWard(OrganizationUnit parentOu,String wardName) throws Exception
+    public OrganizationUnit getOrganizationUnitByLegacyId(String legacyId) throws Exception
+    {
+       OrganizationUnit ou=null;
+        try
+        {
+            session = HibernateUtil.getSession();
+            tx = session.beginTransaction();
+            List list = session.createQuery("from OrganizationUnit ou where ou.legacyId=:lid").setString("lid", legacyId).list();
+            tx.commit();
+            closeSession(session);
+            if(list !=null && !list.isEmpty())
+            {
+                ou=(OrganizationUnit)list.get(0);
+            }
+        }
+         catch (Exception ex)
+         {
+             closeSession(session);
+            throw new Exception(ex);
+         }
+        return ou;
+    }
+    public OrganizationUnit createWard(OrganizationUnit parentOu,String wardName,String ouCode,String legacyId) throws Exception
     {
         OrganizationUnit ward=null;
         if(parentOu !=null && wardName !=null)
         {
             //System.err.println("Parent name is "+parentOu.getName()+" and ward name "+wardName);
-            
                 ward=getOrganizationUnitByParentIdAndChildName(parentOu.getUid(),wardName);
                 if(ward==null)
                 {
@@ -476,10 +497,12 @@ public class OrganizationUnitDaoImpl implements OrganizationUnitDao
                     ward.setDateCreated(DateManager.getCurrentDateInstance());
                     ward.setLastModifiedDate(DateManager.getCurrentDateInstance());
                     ward.setName(wardName);
-                    ward.setOuPath(this.getOuPath(ward)); 
+                    ward.setOuPath(getOuPath(ward)); 
+                    ward.setOucode(ouCode);
                     //ward.setOuPath(parentOu.getOuPath()+"\\"+ward.getUid());
                     ward.setOulevel(parentOu.getOulevel()+1);
                     ward.setParentId(parentOu.getUid());
+                    ward.setLegacyId(legacyId);
                     saveOrganizationUnit(ward);
                     //System.err.println("ward with name "+ward.getName()+" created");
                 }

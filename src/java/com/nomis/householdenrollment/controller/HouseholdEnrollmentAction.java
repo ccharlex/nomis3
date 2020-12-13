@@ -8,6 +8,7 @@ import com.nomis.operationsManagement.AccessManager;
 import com.nomis.operationsManagement.OrganizationUnitAttributesManager;
 import com.nomis.operationsManagement.UserActivityManager;
 import com.nomis.ovc.business.AdultHouseholdMember;
+import com.nomis.ovc.business.Beneficiary;
 import com.nomis.ovc.business.DatasetSetting;
 import com.nomis.ovc.business.HouseholdEnrollment;
 import com.nomis.ovc.business.RevisedHouseholdVulnerabilityAssessment;
@@ -23,7 +24,7 @@ import com.nomis.ovc.util.DateManager;
 import com.nomis.ovc.util.ReferralFacilityManager;
 import com.nomis.reports.utils.ReportParameterTemplate;
 import com.nomis.ovc.util.AppManager;
-import com.nomis.ovc.util.DatabasetManager;
+import com.nomis.ovc.util.DatasetManager;
 import com.nomis.ovc.util.HivPropertiesManager;
 import java.util.ArrayList;
 import java.util.Date;
@@ -68,7 +69,7 @@ public class HouseholdEnrollmentAction extends org.apache.struts.action.Action {
         OrganizationUnitAttributesManager ouaManager=new OrganizationUnitAttributesManager();
         AppManager appManager=new AppManager();
         User user=appManager.getCurrentUser(session);
-        DatasetSetting dsts=util.getDatasetSettingDaoInstance().getDatasetSettingByModuleId(DatabasetManager.getHhEnrolmentModuleId());
+        DatasetSetting dsts=util.getDatasetSettingDaoInstance().getDatasetSettingByModuleId(DatasetManager.getHhEnrolmentModuleId());
         if(dsts !=null && dsts.getDatasetId().equalsIgnoreCase("nathhvaform"))
         {
             moduleName="NationalHouseholdAssessment";
@@ -100,7 +101,7 @@ public class HouseholdEnrollmentAction extends org.apache.struts.action.Action {
         if(requiredAction!=null && !requiredAction.equalsIgnoreCase("level3OuList") && !requiredAction.equalsIgnoreCase("level4OuList"))
         setButtonState(session,AppConstant.FALSEVALUE,AppConstant.TRUEVALUE);
         generateSchoolList(session,hheform);
-        loadfacility(session,level2OuId,level3OuId);
+        loadfacility(session,level2OuId,null);
         
         List dayList=DateManager.generateDays(1);
         List monthList=DateManager.generateSingleValueMonths();
@@ -109,9 +110,11 @@ public class HouseholdEnrollmentAction extends org.apache.struts.action.Action {
         session.setAttribute("hhpMonthList", monthList);
         session.setAttribute("hhpYearList", yearList);
         loadCommunityWorkers(level4OuId,session);
-        
+        //setWithdrawalStatusMessage(session,hheform.getHhUniqueId(),AppConstant.TRUEVALUE,AppConstant.TRUEVALUE);
         if(requiredAction==null)
         {
+            //set null hhUniqueid to the setWithdrawalStatusMessage method to reset the session and button to initial values
+            setWithdrawalStatusMessage(session,null,AppConstant.FALSEVALUE,AppConstant.TRUEVALUE);
             //MetadataImportManager mdim=new MetadataImportManager();
             //mdim.importMetadata(request);
             //OrganizationUnitExportManager.createOrganizationUnitDataExportInXml(null);
@@ -204,9 +207,11 @@ public class HouseholdEnrollmentAction extends org.apache.struts.action.Action {
                     //System.err.println("hheform.getCboId() is "+hheform.getCboId());               
                     setButtonState(session,AppConstant.TRUEVALUE,AppConstant.FALSEVALUE);
                 }
+                setWithdrawalStatusMessage(session,hheform.getHhUniqueId(),AppConstant.TRUEVALUE,AppConstant.FALSEVALUE); 
             }
             else
             {
+                setWithdrawalStatusMessage(session,hheform.getHhUniqueId(),AppConstant.FALSEVALUE,AppConstant.TRUEVALUE);
                 hheform.setSerialNo(hhSerialNo);
                 hheform.setHhUniqueId(hhUniqueId);
             }
@@ -252,9 +257,12 @@ public class HouseholdEnrollmentAction extends org.apache.struts.action.Action {
             AdultHouseholdMember householdHead=util.getAdultHouseholdMemberDaoInstance().getHeadOfHousehold(hhe.getHhUniqueId());
             if(householdHead !=null)
             {
+                //System.err.println("householdHead in HouseholdEnrollmentAction is not null");
                 primaryCaregiver.setHhUniqueId(hhe.getHhUniqueId());
                 primaryCaregiver.setBeneficiaryId(householdHead.getBeneficiaryId());
                 primaryCaregiver.setEnrollmentId(householdHead.getEnrollmentId());
+                primaryCaregiver.setBeneficiaryType(AppConstant.HOUSEHOLD_TYPE_NUM);
+                //primaryCaregiver.set
                 ahmdao.updateAdultHouseholdMember(primaryCaregiver);
             }
             RevisedHouseholdVulnerabilityAssessment rhva= getHouseholdAssessment(hheform,userName);
@@ -503,6 +511,39 @@ public class HouseholdEnrollmentAction extends org.apache.struts.action.Action {
             }
         }
         
+    }
+    private void setWithdrawalStatusMessage(HttpSession session,String beneficiaryId,String saveBtnDisabledValue,String modifyBtnDisabledValue) throws Exception
+    {
+        AppUtility appUtil=new AppUtility();
+        String attributeName="hhWithdrawnMessage";
+        if(beneficiaryId !=null)
+        {
+            DaoUtility util=new DaoUtility();
+            HouseholdEnrollment hhe=util.getHouseholdEnrollmentDaoInstance().getHouseholdEnrollment(beneficiaryId);
+            if(hhe !=null)
+            {
+                if(appUtil.getBeneficiaryWithrawnMessage(hhe.getCurrentEnrollmentStatus()) !=null)
+                {
+                    setButtonState(session,AppConstant.TRUEVALUE,AppConstant.TRUEVALUE);
+                    session.setAttribute(attributeName, appUtil.getBeneficiaryWithrawnMessage(hhe.getCurrentEnrollmentStatus()));
+                }
+                else
+                {
+                    session.removeAttribute(attributeName);
+                    setButtonState(session,saveBtnDisabledValue,modifyBtnDisabledValue);
+                }
+            }
+            else
+            {
+                session.removeAttribute(attributeName);
+                setButtonState(session,saveBtnDisabledValue,modifyBtnDisabledValue);
+            }
+        }
+        else
+        {
+            session.removeAttribute(attributeName);
+            setButtonState(session,saveBtnDisabledValue,modifyBtnDisabledValue);
+        }
     }
     private boolean isNull(String str)
     {

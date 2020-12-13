@@ -15,5 +15,6 @@
     <property name="longitude" column="LONGITUDE" type="double"/>
     <property name="recordedBy" column="RECORDEDBY" type="string"/>
     <property name="organizationUnitId" column="ORGANIZATIONUNITID" type="string"/>
+    <property name="datimId" column="DATIMID" type="string"/>
   </class>
 </hibernate-mapping>

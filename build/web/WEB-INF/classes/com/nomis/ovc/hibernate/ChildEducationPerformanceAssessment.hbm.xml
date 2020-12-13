@@ -25,5 +25,6 @@
     <property name="steadyImprovementInClassWork" column="STEADYIMPROVEMENTINCLASSWORK" type="int"/>
     <property name="steadyImprovementInVocWork" column="STEADYIMPROVEMENTINVOCWORK" type="int"/>
     <property name="volunteerName" column="VOLUNTEERNAME" type="string"/>
+    <property name="reasonsChildMissedSchoolOrVocTraining" column="REASONSCHILDMISSEDSCHOOLORVOCTRAINING" type="string"/>
   </class>
 </hibernate-mapping>

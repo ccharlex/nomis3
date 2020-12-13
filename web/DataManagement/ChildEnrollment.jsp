@@ -428,14 +428,15 @@ function setActionName(val)
                 <center>
                     <table>
 
-                        <tr><td colspan="4" align="center">Child enrollment form</td></tr>
+                        <tr><td colspan="4" align="center" style="font-size:large;">Child enrollment form</td></tr>
                           <jsp:include page="../includes/OrganizationUnitHeader.jsp" />                                  
                         <tr><td colspan="4" align="center" style="color:red; font-size: 16px;"><html:errors/></td></tr>
                         <tr><td colspan="4" align="center"><logic:present name="accessErrorMsg">${accessErrorMsg}</logic:present></td></tr>
+                        <tr><td colspan="4" align="center" style="font-size: 14px; font-weight: bold; color: red"><logic:present name="vcWithdrawnMessage">${vcWithdrawnMessage}</logic:present></td></tr>
                         <tr>
                             <td colspan="4">
 
-                                <fieldset><legend>Child information</legend>
+                                <fieldset><legend style="font-size:large;">Child information</legend>
                             <table>
                                 <tr>
                                         <td > </td>
@@ -551,15 +552,15 @@ function setActionName(val)
                          <tr>
                   <td height="123" valign="top" colspan="4">
                       <fieldset>
-                        <legend class="fieldset">Vulnerability status </legend>
+                        <legend class="fieldset" style="font-size:large;">Main Enrollment stream</legend>
                         <div style="width:680px; height:120px; overflow:scroll; border:1px silver solid; text-align:left; background-color:#FFFFFF;">
                         <table width="100%" border="0" cellpadding="0" cellspacing="0" class="regsitertable">
                     <!--DWLayoutTable-->
                     <tr>
                       <td width="675" height="102">
                           <table width="670" border="1" bordercolor="#D7E5F2" class="regsitertable">
-                              <logic:present name="vulnerabilityStatusList">
-                                  <logic:iterate name="vulnerabilityStatusList" id="subList">
+                              <logic:present name="mainVulnerabilityStatusList">
+                                  <logic:iterate name="mainVulnerabilityStatusList" id="subList">
                                       <tr><td><html:multibox property='vulnerabilityStatus' styleId="${subList[0].vulnerabilityStatusId}" value="${subList[0].vulnerabilityStatusId}" styleClass='smallfieldcellselect'/> </td><td>${subList[0].vulnerabilityStatusName} </td> 
                                           <td><html:multibox property='vulnerabilityStatus' styleId="${subList[1].vulnerabilityStatusId}" value="${subList[1].vulnerabilityStatusId}" styleClass='smallfieldcellselect'/> </td><td>${subList[1].vulnerabilityStatusName} </td> 
                                       </tr>
@@ -573,7 +574,34 @@ function setActionName(val)
                   </table>
                 </div>
                   </fieldset></td>
-                </tr>                           
+                </tr>   
+                
+                <tr>
+                  <td height="123" valign="top" colspan="4">
+                      <fieldset>
+                        <legend class="fieldset" style="font-size:large;">Other Enrollment stream</legend>
+                        <div style="width:680px; height:120px; overflow:scroll; border:1px silver solid; text-align:left; background-color:#FFFFFF;">
+                        <table width="100%" border="0" cellpadding="0" cellspacing="0" class="regsitertable">
+                    <!--DWLayoutTable-->
+                    <tr>
+                      <td width="675" height="102">
+                          <table width="670" border="1" bordercolor="#D7E5F2" class="regsitertable">
+                              <logic:present name="otherVulnerabilityStatusList">
+                                  <logic:iterate name="otherVulnerabilityStatusList" id="subList">
+                                      <tr><td><html:multibox property='otherVulnerabilityStatus' styleId="${subList[0].vulnerabilityStatusId}" value="${subList[0].vulnerabilityStatusId}" styleClass='smallfieldcellselect'/> </td><td>${subList[0].vulnerabilityStatusName} </td> 
+                                          <td><html:multibox property='otherVulnerabilityStatus' styleId="${subList[1].vulnerabilityStatusId}" value="${subList[1].vulnerabilityStatusId}" styleClass='smallfieldcellselect'/> </td><td>${subList[1].vulnerabilityStatusName} </td> 
+                                      </tr>
+                                  </logic:iterate>
+                              </logic:present>
+                              
+                        </table>
+
+                      </td>
+                      </tr>
+                  </table>
+                </div>
+                  </fieldset></td>
+                </tr>
                          
                          <tr> 
                              <td>HIV status</td>

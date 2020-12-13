@@ -94,8 +94,9 @@ var beneficiaryType=0
 var defaultDate="01/01/1900"
 $(function() {
         $("#dateOfAssessment").datepicker();
-        $("#dateOfViralLoadTest").datepicker();
+        $("#dateOfViralLoadSampleCollection").datepicker();
         $("#dateOfNextAppointment").datepicker();
+        $("#dateOfLastPickup").datepicker();
     });
 
 function stateChanged()
@@ -264,14 +265,14 @@ function enableDisableViralLoadRelatedFields(val)
 {
     if(val==1)
     {
-        document.getElementById("dateOfViralLoadTest").disabled=false
+        document.getElementById("dateOfViralLoadSampleCollection").disabled=false
         document.getElementById("viralLoadResultKnown").disabled=false
         document.getElementById("viralLoadResult").disabled=false
         document.getElementById("reasonViralLoadNotDone").disabled=false
     }
     else
     {
-        document.getElementById("dateOfViralLoadTest").disabled=true
+        document.getElementById("dateOfViralLoadSampleCollection").disabled=true
         document.getElementById("viralLoadResultKnown").disabled=true
         document.getElementById("viralLoadResult").disabled=true
         document.getElementById("reasonViralLoadNotDone").disabled=true
@@ -456,7 +457,7 @@ function enableDisableTransportationSupportField(val)
                                     <tr><td colspan="4" align="center">Care and support checklist </td></tr>
                                       <jsp:include page="../includes/OrganizationUnitHeader.jsp" />                                  
                                     <tr><td colspan="4" align="center" style="color:red"><html:errors/></td></tr>
-                                    
+                                    <tr><td style="font-size: 14px; font-weight: bold; color: red" colspan="4"><logic:present name="casWithdrawnMessage">${casWithdrawnMessage}</logic:present></td></tr>
                                     <tr>
                                         <td colspan="4">
                                             
@@ -611,6 +612,18 @@ function enableDisableTransportationSupportField(val)
                                   </html:select> </td>
                           </tr>
                           <tr>
+                              <td class="right" colspan="2">Date of last pickup</td>
+                              <td colspan="2">
+                                  <html:text styleClass="fieldcellinput" property="dateOfLastPickup" style="width:82px;" styleId="dateOfLastPickup" readonly="true"/>
+                              </td>
+                          </tr>
+                          <tr>
+                              <td class="right" colspan="2">Number of days of refill</td>
+                              <td colspan="2">
+                                  <html:text styleClass="fieldcellinput" property="numberOfDaysOfRefill" style="width:82px;" styleId="numberOfDaysOfRefill" />
+                              </td>
+                          </tr>
+                          <tr>
                               <td class="right" colspan="2">Has the beneficiary missed his/her ARVs more than two doses in a month in the last 3 months?</td>
                               <td colspan="2">
                                   <html:select styleClass="fieldcellinput" property="missedARVsRecently" style="width:82px;" styleId="missedARVsRecently" onchange="disableARVSkippingOptions(this.value)" disabled="${casOnTreatmentQuestionsDisabled}">
@@ -657,7 +670,7 @@ function enableDisableTransportationSupportField(val)
                                   <html:select styleClass="fieldcellinput" property="viralLoadTestDone" style="width:82px;" styleId="viralLoadTestDone" disabled="${casOnTreatmentQuestionsDisabled}" onchange="enableDisableViralLoadRelatedFields(this.value)">
                                       <html:option value="0">select...</html:option><html:option value="2">No</html:option><html:option value="1">Yes</html:option>
                                   </html:select> </td>
-                                <td>When was the viral load test done? <html:text property="dateOfViralLoadTest" styleId="dateOfViralLoadTest" readonly="true" disabled="${casOnTreatmentQuestionsDisabled}"/> </td>
+                                <td>When was the viral load sample collected? <html:text property="dateOfViralLoadSampleCollection" styleId="dateOfViralLoadSampleCollection" styleClass="fieldcellinput" style="width:82px;" readonly="true" /> </td>
                           </tr>
                           <tr>
                               <td class="right" colspan="2">Do you know the viral load test result?</td>

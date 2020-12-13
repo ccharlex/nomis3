@@ -40,10 +40,12 @@
                                 <th >Is the beneficiary currently on ART?</th>
                                 <th >HIV Treatment facility</th>
                                 <th >Has the beneficiary picked up his/her medication?</th>
+                                <th >Date of last drug pickup</th>
+                                <th >Number of days of refill</th>
                                 <th >Has the beneficiary missed his/her ARVs more than two doses in a month in the last 3 months?</th>
                                 <th>Reasons people skip ARVs</th>
                                 <th>Has beneficiary carried out viral load test in the last one year?</th>
-                                <th>Date of viral load</th>
+                                <th>Date of sample collection</th>
                                 <th>Do you know the viral load test result?</th>
                                 <th>What was the result?</th>
                                 <th>Why was the viral load not done?</th>
@@ -76,10 +78,14 @@
                                        <td>${cas.enrolledOnTreatmentOptionName}</td>
                                        <td>${cas.facilityName}</td>
                                        <td>${cas.pickedUpMedicationOptionName}</td>
+                                       
+                                       <td>${cas.dateOfLastDrugPickup}</td>
+                                       <td>${cas.numberOfDaysOfRefill}</td>
+                                       
                                        <td>${cas.missedARVsRecentlyOptionName}</td>
                                        <td>${cas.reasonsPeopleSkipARV}</td>
                                        <td>${cas.viralLoadTestDoneOptionName}</td>
-                                       <td>${cas.dateOfViralLoadTest}</td>
+                                       <td>${cas.dateOfViralLoadSampleCollection}</td>
                                        <td>${cas.viralLoadResultKnownOptionName}</td>
                                        <td>${cas.viralLoadResult}</td>
                                        <td>${cas.reasonViralLoadNotDone}</td>

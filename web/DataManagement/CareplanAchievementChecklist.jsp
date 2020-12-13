@@ -3,11 +3,7 @@
     Created on : Dec 26, 2019, 9:36:26 PM
     Author     : smomoh
 --%>
-<%-- 
-    Document   : HivRiskAssessmentChecklist
-    Created on : Dec 25, 2019, 7:13:13 PM
-    Author     : smomoh
---%>
+
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
    "http://www.w3.org/TR/html4/loose.dtd">
 
@@ -320,7 +316,7 @@ function setActionName(val)
                                     <tr><td colspan="4" align="center">Care plan achievement checklist </td></tr>
                                       <jsp:include page="../includes/OrganizationUnitHeader.jsp" />                                  
                                     <tr><td colspan="4" align="center" style="color:red"><html:errors/></td></tr>
-                                    
+                                    <tr><td style="font-size: 14px; font-weight: bold; color: red" colspan="4"><logic:present name="cpaWithdrawnMessage">${cpaWithdrawnMessage}</logic:present></td></tr>
                                     <tr>
                                         <td colspan="4">
                                             

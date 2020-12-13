@@ -77,7 +77,7 @@ public class HivPropertiesManager
         return getHivPositive();
         else if(value==AppConstant.HIV_NEGATIVE_NUM)
         return getHivNegative();
-        else if(value==AppConstant.HIV_UNKNOWN_NUM)
+        else if(value==0 || value==AppConstant.HIV_UNKNOWN_NUM)
         return getHivUnknown();
         else if(value==AppConstant.HIV_UNDISCLOSED_NUM)
         return getHivUndisclosed();

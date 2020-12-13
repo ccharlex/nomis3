@@ -6,6 +6,7 @@ package com.nomis.ovc.dao;
 
 import com.nomis.ovc.business.AdultHouseholdMember;
 import com.nomis.reports.utils.ReportParameterTemplate;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -33,7 +34,7 @@ public interface AdultHouseholdMemberDao
     public List getListOfAdultHouseholdMembersWithZeroAge() throws Exception;
     public int updateAdultHouseholdMembersAge() throws Exception;
     public List getListOfAdultHouseholdMembersByLevel4OrganizationUnit(String level4OuId) throws Exception;
-    public int getNumberOfAdultHouseholdMembersExitedWithoutGraduation(ReportParameterTemplate rpt,String startDate,String endDate,String sex) throws Exception;
+    public int getNumberOfAdultHouseholdMembersExitedWithoutGraduation(ReportParameterTemplate rpt,String startDate,String endDate,int startAge,int endAge,String sex) throws Exception;
     //public void changeAdultHouseholdMemberBeneficiaryId(String oldHhUniqueId, String newHhUniqueId) throws Exception;
     public void updateAdultHouseholdMemberWithoutDuplicateCheck(AdultHouseholdMember ahm,AdultHouseholdMember existingAhm) throws Exception;
     public List getAdultHouseholdMembersWithBaselineAgeLessThan18() throws Exception;
@@ -48,4 +49,7 @@ public interface AdultHouseholdMemberDao
     public List getListOfAdultHouseholdMembersTestedAndRecievedResultInReportPeriodByEnrollmentStatusAndHivStatus(ReportParameterTemplate rpt,String startDate,String endDate,int enrollmentStatus,int enrolledOnTreatmentValue,int hivStatus,String sex) throws Exception;
     public int getNumberOfAdultHouseholdMembersSupportedToAccessARTServicesInReportPeriod(ReportParameterTemplate rpt,String startDate,String endDate,int enrollmentStatus,String sex) throws Exception;
     public List getListOfAdultHouseholdMembersSupportedToAccessARTServicesInReportPeriod(ReportParameterTemplate rpt,String startDate,String endDate,int enrollmentStatus,String sex) throws Exception;
+    public void setAdultHouseholdMemberNewEnrollmentStatus(String hhUniqueId,int enrollmentStatus,Date dateOfNewEnrollmentStatus) throws Exception;
+    public List getRecordsWithPositiveHivStatusAtBaselineButOtherStatusCurrently() throws Exception;
+    public List getRecordsWithKnownBaselineHivStatusButUnknownCurrentHivStatus() throws Exception;
 }

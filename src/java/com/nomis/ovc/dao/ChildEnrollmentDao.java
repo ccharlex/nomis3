@@ -6,6 +6,7 @@ package com.nomis.ovc.dao;
 
 import com.nomis.ovc.business.Ovc;
 import com.nomis.reports.utils.ReportParameterTemplate;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -51,7 +52,7 @@ public interface ChildEnrollmentDao
     public List getListOfOvcByLevel4OrganizationUnitByEnrollmentStatus(String level4OuId,int enrollmentStatus) throws Exception;
     public void changeOvcId(String oldOvcId, String newOvcId) throws Exception;
     public List getRecordsWithPositiveHivStatusAtBaselineButOtherStatusCurrently() throws Exception;
-    public void updateOvcOnly(Ovc ovc) throws Exception;
+    public int updateOvcOnly(Ovc ovc) throws Exception;
     public void saveOvcCurrentHivStatus(Ovc ovc) throws Exception;
     public Ovc getOvcByName(String hhUniqueId,String firstName,String surname) throws Exception;
     public int getNumberOfOvcPerCaregiver(String caregiverId) throws Exception;
@@ -62,4 +63,8 @@ public interface ChildEnrollmentDao
     public int getNumberOfOvcTestedAndRecievedResultInReportPeriodByEnrollmentStatusAndHivStatus(ReportParameterTemplate rpt,String startDate,String endDate,int enrolledOnTreatmentValue,int enrollmentStatus,int hivStatus,String sex) throws Exception;
     public int getNumberOfOvcSupportedToAccessARTServicesInReportPeriod(ReportParameterTemplate rpt,String startDate,String endDate,int enrollmentStatus,String sex) throws Exception;
     public List getListOfOvcSupportedToAccessARTServicesInReportPeriod(ReportParameterTemplate rpt,String startDate,String endDate,int enrollmentStatus,String sex) throws Exception;
+    public Ovc getOvcWithCurrentAge(Ovc ovc) throws Exception;
+    public void setOvcNewEnrollmentStatus(String hhUniqueId,int enrollmentStatus,Date dateOfNewEnrollmentStatus) throws Exception;
+    public List getRecordsWithKnownBaselineHivStatusButUnknownCurrentHivStatus() throws Exception;
+    public List getRecordsByVulnerabilityStatusId(String vulnerabilityStatusId) throws Exception;
 }

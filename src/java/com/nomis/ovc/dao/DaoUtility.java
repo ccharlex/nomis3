@@ -212,4 +212,8 @@ public class DaoUtility
     {
         return new NutritionStatusDaoImpl();
     }
+    public OccupationDao getOccupationDaoInstance()
+    {
+        return new OccupationDaoImpl();
+    }
 }

@@ -3,10 +3,10 @@
     Created on : Feb 21, 2014, 10:08:24 PM
     Author     : Siaka
 --%>
+<a href="analytics.do">Analytics</a>
 <a href="ovcregister.do" target="_blank"> Enrollment registers</a>
 <a href="listofindicators.do" target="_blank">List of indicators </a>
 <a href="datimreport.do" target="_blank">DATIM report </a>
-<a href="analytics.do">Analytics</a>
 <a href="customIndicatorsreport.do" >Custom indicators download </a>
 <a href="#" target="_blank"> </a>
 <a href="#" target="_blank"> </a>

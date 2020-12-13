@@ -44,7 +44,8 @@ public class BeneficiaryStatusUpdateDaoImpl implements BeneficiaryStatusUpdateDa
                 if(this.getBeneficiaryStatusUpdate(bsu.getBeneficiaryId())==null)
                 {
                     bsu=getCleanedBeneficiaryStatusUpdate(bsu);
-                    //System.err.println("bsu.getBeneficiaryId in saveBeneficiaryStatusUpdate is "+bsu.getBeneficiaryId());
+                    System.err.println("bsu.getBeneficiaryId in saveBeneficiaryStatusUpdate is "+bsu.getBeneficiaryId());
+                    System.err.println("bsu.getNewHivStatus() in saveBeneficiaryStatusUpdate is "+bsu.getNewHivStatus());
                     session = HibernateUtil.getSession();
                     tx = session.beginTransaction();
                     session.save(bsu);
@@ -75,32 +76,39 @@ public class BeneficiaryStatusUpdateDaoImpl implements BeneficiaryStatusUpdateDa
             System.err.println("Inside updateBeneficiaryStatusUpdate ");
             if(bsu !=null)
             {
-                System.err.println(" ID is "+bsu.getBeneficiaryId()+" "+bsu.getFirstName()+" bsu.getNewHivStatus() "+bsu.getNewHivStatus()+" "+bsu.getDateOfNewStatus());
+                //System.err.println(" ID is "+bsu.getBeneficiaryId()+" "+bsu.getFirstName()+" bsu.getNewHivStatus() "+bsu.getNewHivStatus()+" "+bsu.getDateOfNewStatus());
+                System.err.println("bsu.getCaregiverHivStatus()1 is "+bsu.getCaregiverHivStatus());
                 BeneficiaryStatusUpdate bsu2=this.getBeneficiaryStatusUpdate(bsu.getBeneficiaryId());
                 if(bsu2 !=null)
                 {
+                    System.err.println("bsu.getCaregiverHivStatus()2 is "+bsu.getCaregiverHivStatus());
                     saveHivStatusHistory(bsu2);
-                    System.err.println("bsu.getLastHivStatus() "+bsu.getLastHivStatus()+" bsu.getNewHivStatus() is "+bsu.getNewHivStatus());
+                    //System.err.println("bsu.getLastHivStatus() "+bsu.getLastHivStatus()+" bsu.getNewHivStatus() is "+bsu.getNewHivStatus());
                     bsu.setDateCreated(bsu2.getDateCreated());
                     if((bsu.getDateOfNewStatus().equals(bsu2.getDateOfNewStatus())) || bsu.getDateOfNewStatus().after(bsu2.getDateOfNewStatus()))
                     {
+                        System.err.println("bsu.getCaregiverHivStatus()3 is "+bsu.getCaregiverHivStatus());
                         if(bsu.getNewHivStatus()==AppConstant.HIV_POSITIVE_NUM && bsu.getEnrolledOnTreatment()==0)
                         {
                             bsu.setEnrolledOnTreatment(bsu2.getEnrolledOnTreatment());
                             bsu.setFacilityId(bsu2.getFacilityId());
                         }
-                        bsu=getCleanedBeneficiaryStatusUpdate(bsu);
-                        session = HibernateUtil.getSession();
-                        tx = session.beginTransaction();
-                        session.update(bsu);
-                        tx.commit();
-                        closeSession(session);
+                        
                         System.err.println(bsu.getNewHivStatus()+" HIV status updated ");
-                        if(updateBeneficiaryHivStatus)
-                        {
-                            updateBeneficiaryCurrentHivStatus(bsu);
-                            saveHivStatusHistory(bsu);
-                        }
+                        
+                    }
+                    System.err.println("bsu.getCaregiverHivStatus()4 is "+bsu.getCaregiverHivStatus());
+                    bsu=getCleanedBeneficiaryStatusUpdate(bsu);
+                    session = HibernateUtil.getSession();
+                    tx = session.beginTransaction();
+                    session.update(bsu);
+                    tx.commit();
+                    closeSession(session);
+                    if(updateBeneficiaryHivStatus)
+                    {
+                        System.err.println("bsu.getCaregiverHivStatus()5 is "+bsu.getCaregiverHivStatus());
+                        updateBeneficiaryCurrentHivStatus(bsu);
+                        saveHivStatusHistory(bsu);
                     }
                 }
                 else
@@ -295,7 +303,9 @@ public class BeneficiaryStatusUpdateDaoImpl implements BeneficiaryStatusUpdateDa
     {
         if(bsu !=null)
         {
-            System.err.println(" ID is "+bsu.getBeneficiaryId()+" "+bsu.getFirstName()+" bsu.getNewHivStatus() "+bsu.getNewHivStatus()+" "+bsu.getDateOfNewStatus());
+            System.err.println("bsu.getCaregiverHivStatus() in  updateBeneficiaryCurrentHivStatus() is "+bsu.getCaregiverHivStatus());
+            System.err.println("bsu.getCaregiverEnrolledOnTreatment() in  updateBeneficiaryCurrentHivStatus() is "+bsu.getCaregiverEnrolledOnTreatment()+" and bsu.getDateCaregiverEnrolledOnTreatment() is "+bsu.getDateCaregiverEnrolledOnTreatment());
+            //System.err.println(" ID is "+bsu.getBeneficiaryId()+" "+bsu.getFirstName()+" bsu.getNewHivStatus() "+bsu.getNewHivStatus()+" "+bsu.getDateOfNewStatus());
             EnrollmentStatusHistoryDao eshdao=new EnrollmentStatusHistoryDaoImpl();
             if(bsu.getUpdateChildBirthRegStatus()==1 || bsu.getUpdateChildHivStatus()==1)
             {
@@ -394,43 +404,47 @@ public class BeneficiaryStatusUpdateDaoImpl implements BeneficiaryStatusUpdateDa
             //{
             if(bsu.getUpdateCaregiverHivStatus()==1)
             {
-                System.err.println("About to update ahm in bsu dao");
+                //System.err.println("About to update ahm in bsu dao");
                 AdultHouseholdMemberDao ahmdao=new AdultHouseholdMemberDaoImpl();
                 AdultHouseholdMember ahm=ahmdao.getAdultHouseholdMember(bsu.getCaregiverId());
                 if(ahm !=null)
                 {
                     System.err.println("ahm is not null in bsu dao");
-                    if(bsu.getDateOfNewStatus()==null)
-                    bsu.setDateOfNewStatus(bsu.getDateOfLastHivStatus());
-                    if(bsu.getDateOfNewStatus() !=null)
+                    //System.err.println("bsu.getCaregiverEnrolledOnTreatment()2 in  updateBeneficiaryCurrentHivStatus() is "+bsu.getCaregiverEnrolledOnTreatment()+" and bsu.getDateCaregiverEnrolledOnTreatment() is "+bsu.getDateCaregiverEnrolledOnTreatment());
+                    if(bsu.getDateOfCaregiverHivStatus()==null)
+                    bsu.setDateOfCaregiverHivStatus(bsu.getDateOfLastHivStatus());
+                    if(bsu.getDateOfCaregiverHivStatus() !=null)
                     {
-                        System.err.println("bsu.getDateOfNewStatus() is not null in bsu dao");
+                        //System.err.println("bsu.getCaregiverEnrolledOnTreatment() in  updateBeneficiaryCurrentHivStatus() is "+bsu.getCaregiverEnrolledOnTreatment()+" and bsu.getDateCaregiverEnrolledOnTreatment()3 is "+bsu.getDateCaregiverEnrolledOnTreatment());
+                        //System.err.println("bsu.getDateOfCaregiverHivStatus() is not null in bsu dao");
                         if(ahm.getDateOfCurrentHivStatus() !=null)
                         {
-                            System.err.println("ahm.getDateOfCurrentHivStatus() is not null in bsu dao");
+                            //System.err.println("bsu.getCaregiverEnrolledOnTreatment()4 in  updateBeneficiaryCurrentHivStatus() is "+bsu.getCaregiverEnrolledOnTreatment()+" and bsu.getDateCaregiverEnrolledOnTreatment() is "+bsu.getDateCaregiverEnrolledOnTreatment());
+                            //System.err.println("ahm.getDateOfCurrentHivStatus() is not null in bsu dao");
                             //If the date of current HIV status precedes the date new HIV status, update the current HIV status for beneficiary
-                            if((ahm.getDateOfCurrentHivStatus().equals(bsu.getDateOfNewStatus())) || (ahm.getDateOfCurrentHivStatus().before(bsu.getDateOfNewStatus())))
+                            if((ahm.getDateOfCurrentHivStatus().equals(bsu.getDateOfCaregiverHivStatus())) || (ahm.getDateOfCurrentHivStatus().before(bsu.getDateOfCaregiverHivStatus())))
                             {
                                 {
-                                    ahm.setCurrentHivStatus(bsu.getNewHivStatus());
-                                    ahm.setDateOfCurrentHivStatus(bsu.getDateOfNewStatus());
+                                    ahm.setCurrentHivStatus(bsu.getCaregiverHivStatus());
+                                    ahm.setDateOfCurrentHivStatus(bsu.getDateOfCaregiverHivStatus());
                                     
                                 }
                             }
                         }
                         else
                         {
-                            System.err.println("setting ahm.setCurrentHivStatus(bsu.getNewHivStatus()) in bsu dao");
-                            ahm.setCurrentHivStatus(bsu.getNewHivStatus());
-                            ahm.setDateOfCurrentHivStatus(bsu.getDateOfNewStatus());
+                            //System.err.println("setting ahm.setCurrentHivStatus(bsu.getNewHivStatus()) in bsu dao");
+                            ahm.setCurrentHivStatus(bsu.getCaregiverHivStatus());
+                            ahm.setDateOfCurrentHivStatus(bsu.getDateOfCaregiverHivStatus());
                         }
                         if(ahm.getCurrentHivStatus()==AppConstant.HIV_POSITIVE_NUM)
                         {
                             //if current HIV status is positive, update treatment related information
-                            System.err.println("setting ahm.setEnrolledOnTreatment(bsu.getEnrolledOnTreatment()); in bsu dao");
-                            ahm.setEnrolledOnTreatment(bsu.getEnrolledOnTreatment());
-                            ahm.setHivTreatmentFacilityId(bsu.getFacilityId());
-                            ahm.setDateEnrolledOnTreatment(bsu.getDateEnrolledOnTreatment());
+                            //System.err.println("bsu.getCaregiverEnrolledOnTreatment() in  updateBeneficiaryCurrentHivStatus()5 is "+bsu.getCaregiverEnrolledOnTreatment()+" and bsu.getDateCaregiverEnrolledOnTreatment() is "+bsu.getDateCaregiverEnrolledOnTreatment());
+                            //System.err.println("setting ahm.setEnrolledOnTreatment(bsu.getEnrolledOnTreatment()); in bsu dao");
+                            ahm.setEnrolledOnTreatment(bsu.getCaregiverEnrolledOnTreatment());
+                            ahm.setHivTreatmentFacilityId(bsu.getFacilityCaregiverEnrolled());
+                            ahm.setDateEnrolledOnTreatment(bsu.getDateCaregiverEnrolledOnTreatment());
                             ahm.setTreatmentId(bsu.getCaregiverTreatmentId());
                         }
                         else
@@ -440,11 +454,14 @@ public class BeneficiaryStatusUpdateDaoImpl implements BeneficiaryStatusUpdateDa
                             ahm.setDateEnrolledOnTreatment(DateManager.getDefaultStartDateInstance());
                             ahm.setTreatmentId(null);
                         }
-                        if((ahm.getDateOfCurrentHivStatus().equals(bsu.getDateOfNewStatus())))
+                        //System.err.println("bsu.getCaregiverEnrolledOnTreatment() in  updateBeneficiaryCurrentHivStatus()6 is "+bsu.getCaregiverEnrolledOnTreatment()+" and bsu.getDateCaregiverEnrolledOnTreatment() is "+bsu.getDateCaregiverEnrolledOnTreatment());
+                        
+                        if((ahm.getDateOfCurrentHivStatus().equals(bsu.getDateOfCaregiverHivStatus())))
                         {
                             //if the date of current HIV status is same as date of new HIV status, then update beneficiary HIV status
                             ahmdao.updateAdultHouseholdMember(ahm);
-                            System.err.println("setting ahmdao.updateAdultHouseholdMember(ahm) in bsu dao");
+                            //System.err.println("bsu.getCaregiverEnrolledOnTreatment() in  updateBeneficiaryCurrentHivStatus()7 is "+bsu.getCaregiverEnrolledOnTreatment()+" and bsu.getDateCaregiverEnrolledOnTreatment() is "+bsu.getDateCaregiverEnrolledOnTreatment());
+                            //System.err.println("setting ahmdao.updateAdultHouseholdMember(ahm) in bsu dao");
                         }
                         
                         //Update the HIV status for the quarter if the beneficiary has enrollment status record for that quarter

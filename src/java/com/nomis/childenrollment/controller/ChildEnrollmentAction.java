@@ -10,6 +10,7 @@ import com.nomis.operationsManagement.OrganizationUnitAttributesManager;
 import com.nomis.operationsManagement.UserActivityManager;
 import com.nomis.operationsManagement.VulnerabilityStatusManager;
 import com.nomis.ovc.business.AdultHouseholdMember;
+import com.nomis.ovc.business.Beneficiary;
 import com.nomis.ovc.business.DatasetSetting;
 import com.nomis.ovc.business.HouseholdEnrollment;
 import com.nomis.ovc.business.Ovc;
@@ -24,7 +25,7 @@ import com.nomis.ovc.util.HivPropertiesManager;
 import com.nomis.reports.utils.ReportParameterTemplate;
 import com.nomis.ovc.util.AppManager;
 import com.nomis.ovc.util.DatabaseUtilities;
-import com.nomis.ovc.util.DatabasetManager;
+import com.nomis.ovc.util.DatasetManager;
 import com.nomis.ovc.util.ReferralFacilityManager;
 import com.nomis.ovc.util.UniqueIdManager;
 import java.util.ArrayList;
@@ -63,7 +64,8 @@ public class ChildEnrollmentAction extends org.apache.struts.action.Action {
         ChildEnrollmentForm ceform=(ChildEnrollmentForm)form;
         HttpSession session=request.getSession();
         //session.setAttribute("mainHivStatus", HivPropertiesManager.getThreeMainHivStatus());
-        VulnerabilityStatusManager.setVulnerabilityStatusForDisplay(session);
+        VulnerabilityStatusManager.setMainVulnerabilityStatusForDisplay(session);
+        VulnerabilityStatusManager.setOtherVulnerabilityStatusForDisplay(session);
         
         String moduleName="Child enrollment";
         DaoUtility util=new DaoUtility();
@@ -77,8 +79,8 @@ public class ChildEnrollmentAction extends org.apache.struts.action.Action {
         String hhUniqueId=ceform.getHhUniqueId();
         ouaManager.setOrganizationUnitAttributes(session, level3OuId, userName, ceform.getCboId());
         User user=appManager.getCurrentUser(session);
-        DatasetSetting dsts=util.getDatasetSettingDaoInstance().getDatasetSettingByModuleId(DatabasetManager.getChildEnrollmentModuleId());
-        if(dsts !=null && dsts.getDatasetId().equalsIgnoreCase(DatabasetManager.getNatChildEnrollmentDatasetId()))
+        DatasetSetting dsts=util.getDatasetSettingDaoInstance().getDatasetSettingByModuleId(DatasetManager.getChildEnrollmentModuleId());
+        if(dsts !=null && dsts.getDatasetId().equalsIgnoreCase(DatasetManager.getNatChildEnrollmentDatasetId()))
         {
             return mapping.findForward("NationalChildEnrollmentForm");
         }
@@ -94,12 +96,6 @@ public class ChildEnrollmentAction extends org.apache.struts.action.Action {
             request.setAttribute("accessErrorMsg", AppConstant.DEFAULT_ACCESS_MSG);
             return mapping.findForward(SUCCESS);
         }
-        /*List dayList=DateManager.generateDays(1);
-        List monthList=DateManager.generateSingleValueMonths();
-        List yearList=DateManager.generateYears();
-        session.setAttribute("hhpDayList", dayList);
-        session.setAttribute("hhpMonthList", monthList);
-        session.setAttribute("hhpYearList", yearList);*/
         
         setChildrenListPerHousehold(session, hhUniqueId);
         setHouseholdMemberListPerHousehold(session, hhUniqueId);
@@ -107,9 +103,9 @@ public class ChildEnrollmentAction extends org.apache.struts.action.Action {
         generateSchoolList(session,ceform);
         generateSchoolGradeList(session);
         CommunityWorkerRecordsManager.setEnumeratorsRegistrationList(session);
-        loadfacility(session,level2OuId,level3OuId);
+        loadfacility(session,level2OuId,null);
         HivPropertiesManager.setHivStatusList(session, HivPropertiesManager.getThreeMainHivStatus());
-        //session.setAttribute("mainHivStatus", HivPropertiesManager.getThreeMainHivStatus());
+        //setWithdrawalStatusMessage(session,ceform.getOvcId(),AppConstant.FALSEVALUE,AppConstant.TRUEVALUE);
         if(requiredAction==null)
         {
             DatabaseUtilities dbUtils=new DatabaseUtilities();
@@ -120,6 +116,10 @@ public class ChildEnrollmentAction extends org.apache.struts.action.Action {
             setSchoolStatusProperties(session,"false");
             //reset HIV status properties
             setHIVStatusProperties(session,"false");
+            //set null ovcid to the setWithdrawalStatusMessage method to reset the session and button to initial values
+            setWithdrawalStatusMessage(session,null,AppConstant.FALSEVALUE,AppConstant.TRUEVALUE);
+            //setButtonState(session,AppConstant.FALSEVALUE,AppConstant.TRUEVALUE);
+            //session.removeAttribute("vcWithdrawnMessage");
             return mapping.findForward(SUCCESS);
         }
         else if(requiredAction.equalsIgnoreCase("level3OuList"))
@@ -193,7 +193,6 @@ public class ChildEnrollmentAction extends org.apache.struts.action.Action {
             ceform.setHhUniqueId(hhUniqueId);
             ceform.setEnrolledChildId(ovcId);
             ceform=setOvcDetails(session,ceform);
-            
             return mapping.findForward(SUCCESS);
         }
         else if(requiredAction.equalsIgnoreCase("adultMemberDetails"))
@@ -343,7 +342,7 @@ public class ChildEnrollmentAction extends org.apache.struts.action.Action {
             ovc.setTreatmentId(null);
         }
         ovc.setCurrentEnrollmentStatus(AppConstant.ACTIVE_NUM);
-        ovc.setDateOfCurrentStatus(dateOfEnrollment);
+        ovc.setDateOfCurrentEnrollmentStatus(dateOfEnrollment);
         ovc.setDateCreated(DateManager.getDateInstance(DateManager.getCurrentDate()));
         ovc.setDateOfEnrollment(dateOfEnrollment);
         ovc.setBaselineHivStatus(ceform.getBaselineHivStatus());
@@ -377,7 +376,43 @@ public class ChildEnrollmentAction extends org.apache.struts.action.Action {
         ovc.setSex(ceform.getSex());
         ovc.setSourceOfInfo(ceform.getSourceOfInfo());
         ovc.setSurname(ceform.getSurname());
-        ovc.setVulnerabilityStatusCode(appUtil.concatStr(ceform.getVulnerabilityStatus(),null));
+        String mainEnrollmentStream=appUtil.concatStr(ceform.getVulnerabilityStatus(),null);
+        String otherEnrollmentStream=appUtil.concatStr(ceform.getOtherVulnerabilityStatus(),null);
+        String enrollmentStream=null;
+        
+        //get values for both main and other enrollment streams and merge them together
+        if(mainEnrollmentStream !=null)
+        {
+            mainEnrollmentStream=mainEnrollmentStream.trim();
+            if(mainEnrollmentStream.length()>0)
+            {
+                if(mainEnrollmentStream.endsWith(","))
+                mainEnrollmentStream=mainEnrollmentStream.substring(0, mainEnrollmentStream.lastIndexOf(","));
+            }
+        }
+        if(otherEnrollmentStream !=null)
+        {
+            otherEnrollmentStream=otherEnrollmentStream.trim();
+            if(otherEnrollmentStream.length()>0)
+            {
+                if(otherEnrollmentStream.endsWith(","))
+                otherEnrollmentStream=otherEnrollmentStream.substring(0, otherEnrollmentStream.lastIndexOf(","));
+            }
+        }
+        if(mainEnrollmentStream !=null && mainEnrollmentStream.length()>0)
+        {
+            enrollmentStream=mainEnrollmentStream;
+        }
+        if(enrollmentStream !=null)
+        {
+            if(otherEnrollmentStream !=null && otherEnrollmentStream.length()>0)
+            enrollmentStream=enrollmentStream+","+otherEnrollmentStream;
+        }
+        else
+        {
+            enrollmentStream=otherEnrollmentStream;
+        }
+        ovc.setVulnerabilityStatusCode(enrollmentStream);
         ovc.setWeight(ceform.getWeight());
         ovc.setAgeAtBaseline(ceform.getAgeAtBaseline());
         ovc.setAgeUnitAtBaseline(ceform.getAgeUnitAtBaseline());
@@ -461,6 +496,7 @@ public class ChildEnrollmentAction extends org.apache.struts.action.Action {
                 ceform.setEnrolledOnTreatment(ovc.getEnrolledOnTreatment());
                 ceform.setGrade(ovc.getSchoolGrade());
                 ceform.setVulnerabilityStatus(appUtil.splitString(ovc.getVulnerabilityStatusCode(),","));
+                ceform.setOtherVulnerabilityStatus(appUtil.splitString(ovc.getVulnerabilityStatusCode(),","));
                 ceform.setBaselineHivStatus(ovc.getBaselineHivStatus());
                 ceform.setHivTreatmentFacilityId(ovc.getHivTreatmentFacilityId());
                 ceform.setTreatmentId(ovc.getTreatmentId());
@@ -501,7 +537,12 @@ public class ChildEnrollmentAction extends org.apache.struts.action.Action {
                 }
                 else
                 setHIVStatusProperties(session,"true");
-                setButtonState(session,"true","false");
+                setWithdrawalStatusMessage(session,ceform.getOvcId(),AppConstant.TRUEVALUE,AppConstant.FALSEVALUE);
+                //setButtonState(session,"true","false");
+            }
+            else
+            {
+                setWithdrawalStatusMessage(session,ceform.getOvcId(),AppConstant.FALSEVALUE,AppConstant.TRUEVALUE);
             }
         }
         catch(Exception ex)
@@ -509,6 +550,39 @@ public class ChildEnrollmentAction extends org.apache.struts.action.Action {
             ex.printStackTrace();
         }
         return ceform;
+    }
+    private void setWithdrawalStatusMessage(HttpSession session,String beneficiaryId,String saveBtnDisabledValue,String modifyBtnDisabledValue) throws Exception
+    {
+        AppUtility appUtil=new AppUtility();
+        String attributeName="vcWithdrawnMessage";
+        if(beneficiaryId !=null)
+        {
+            DaoUtility util=new DaoUtility();
+            Beneficiary beneficiary=util.getChildEnrollmentDaoInstance().getOvc(beneficiaryId);
+            if(beneficiary !=null)
+            {
+                if(appUtil.getBeneficiaryWithrawnMessage(beneficiary.getCurrentEnrollmentStatus()) !=null)
+                {
+                    setButtonState(session,AppConstant.TRUEVALUE,AppConstant.TRUEVALUE);
+                    session.setAttribute(attributeName, appUtil.getBeneficiaryWithrawnMessage(beneficiary.getCurrentEnrollmentStatus()));
+                }
+                else
+                {
+                    session.removeAttribute(attributeName);
+                    setButtonState(session,saveBtnDisabledValue,modifyBtnDisabledValue);
+                }
+            }
+            else
+            {
+                session.removeAttribute(attributeName);
+                setButtonState(session,saveBtnDisabledValue,modifyBtnDisabledValue);
+            }
+        }
+        else
+        {
+            session.removeAttribute(attributeName);
+            setButtonState(session,saveBtnDisabledValue,modifyBtnDisabledValue);
+        }
     }
     private void resetBaselineInfo(ChildEnrollmentForm ceform)
     {

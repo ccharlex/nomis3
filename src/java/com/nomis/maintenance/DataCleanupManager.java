@@ -476,10 +476,16 @@ public static String resetCurrentHivStatusForPositiveBaselineStatus()
     int riskAssessmentCount=0;
     try
     {
-    DaoUtility util=new DaoUtility();
-    
-    //get records with positive baseline hiv status whose current hiv status is not positive
-    List list=util.getChildEnrollmentDaoInstance().getRecordsWithPositiveHivStatusAtBaselineButOtherStatusCurrently();
+        DaoUtility util=new DaoUtility();
+        List list=new ArrayList();
+        List positiveList=util.getChildEnrollmentDaoInstance().getRecordsWithPositiveHivStatusAtBaselineButOtherStatusCurrently();
+        List negativeList=util.getChildEnrollmentDaoInstance().getRecordsWithKnownBaselineHivStatusButUnknownCurrentHivStatus();
+        if(positiveList !=null)
+        list.addAll(positiveList);
+        if(negativeList !=null)
+        list.addAll(negativeList);
+        //get records with positive baseline hiv status whose current hiv status is not positive
+        list=util.getChildEnrollmentDaoInstance().getRecordsWithPositiveHivStatusAtBaselineButOtherStatusCurrently();
         if(list !=null)
         {
             
@@ -487,20 +493,45 @@ public static String resetCurrentHivStatusForPositiveBaselineStatus()
             for(Object obj:list)
             {
                ovc=(Ovc)obj; 
-               if(ovc.getCurrentHivStatus()==AppConstant.HIV_TEST_NOT_INDICATED_NUM || ovc.getCurrentHivStatus()==AppConstant.HIV_TEST_REQUIRED_NUM)
+               if(ovc.getBaselineHivStatus()==AppConstant.HIV_POSITIVE_NUM && (ovc.getCurrentHivStatus()==AppConstant.HIV_TEST_NOT_INDICATED_NUM || ovc.getCurrentHivStatus()==AppConstant.HIV_TEST_REQUIRED_NUM))
                {
                    //This child was erroneously risk assessed, delete all risk assessment records
                    util.getHivRiskAssessmentDaoInstance().markRiskAssessmentRecordsForDelete(ovc.getOvcId());
                    riskAssessmentCount++;
                }
                ovc.setCurrentHivStatus(ovc.getBaselineHivStatus());
-               ovc.setDateOfCurrentHivStatus(ovc.getDateOfEnrollment());
+               ovc.setDateOfCurrentHivStatus(ovc.getDateOfBaselineHivStatus());
+               ovc.setForUpdateHivStatus(true);
                util.getChildEnrollmentDaoInstance().updateOvcOnly(ovc);
                count++;
-               message=count+" HIV positive records corrected and "+riskAssessmentCount+" records with HIV Risk assessment records marked for delete";
-               System.err.println(message);
+               
             }
-            
+           message=count+" Children current HIV records corrected and "+riskAssessmentCount+" records with HIV Risk assessment records marked for delete";
+           System.err.println(message); 
+        }
+        List ahmPositiveList=util.getAdultHouseholdMemberDaoInstance().getRecordsWithPositiveHivStatusAtBaselineButOtherStatusCurrently();
+        List ahmNegativeList=util.getAdultHouseholdMemberDaoInstance().getRecordsWithKnownBaselineHivStatusButUnknownCurrentHivStatus();
+        //get records with positive baseline hiv status whose current hiv status is not positive
+        List ahmList=new ArrayList();
+        if(ahmPositiveList !=null)
+        ahmList.addAll(ahmPositiveList);
+        if(ahmNegativeList !=null)
+        ahmList.addAll(ahmNegativeList);
+        if(ahmList !=null)
+        {
+            count=0;
+            AdultHouseholdMember ahm=null;
+            for(Object obj:ahmList)
+            {
+               ahm=(AdultHouseholdMember)obj; 
+               ahm.setCurrentHivStatus(ahm.getBaselineHivStatus());
+               ahm.setDateOfCurrentHivStatus(ahm.getDateOfBaselineHivStatus());
+               ahm.setForUpdateHivStatus(true);
+               util.getAdultHouseholdMemberDaoInstance().updateAdultHouseholdMember(ahm);
+               count++;
+            }
+            message+=" "+count+" Adult member Current HIV records corrected ";
+            System.err.println(message);
         }
     }
     catch(Exception ex)

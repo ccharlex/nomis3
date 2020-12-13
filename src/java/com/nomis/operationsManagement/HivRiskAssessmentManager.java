@@ -115,6 +115,18 @@ public class HivRiskAssessmentManager implements Serializable
         }
         return count;
     }
+    public static int getYesNoValue(String yesNoInput)
+    {
+        int yesNoValue=0;
+        if(yesNoInput !=null)
+        {
+            if(yesNoInput.equalsIgnoreCase("Yes"))
+            yesNoValue=AppConstant.YES_OPTION_NUM;
+            else if(yesNoInput.equalsIgnoreCase("No"))
+            yesNoValue=AppConstant.NO_OPTION_NUM;
+        }
+        return yesNoValue;
+    }
     public boolean childAtRiskOfHiv(HivRiskAssessment hra)
     {
         boolean childAtRiskOfHiv=false;

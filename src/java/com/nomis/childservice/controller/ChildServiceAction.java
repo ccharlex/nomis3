@@ -11,6 +11,7 @@ import com.nomis.operationsManagement.OrganizationUnitAttributesManager;
 import com.nomis.operationsManagement.OvcServiceAttributesManager;
 import com.nomis.operationsManagement.QuarterlyServiceTrackerManager;
 import com.nomis.operationsManagement.UserActivityManager;
+import com.nomis.ovc.business.Beneficiary;
 import com.nomis.ovc.business.ChildService;
 import com.nomis.ovc.business.DatasetSetting;
 import com.nomis.ovc.business.HouseholdEnrollment;
@@ -21,7 +22,7 @@ import com.nomis.ovc.metadata.OrganizationUnit;
 import com.nomis.ovc.util.AppConstant;
 import com.nomis.ovc.util.AppManager;
 import com.nomis.ovc.util.AppUtility;
-import com.nomis.ovc.util.DatabasetManager;
+import com.nomis.ovc.util.DatasetManager;
 import com.nomis.ovc.util.DateManager;
 import com.nomis.ovc.util.HivPropertiesManager;
 import com.nomis.ovc.util.UniqueIdManager;
@@ -75,8 +76,8 @@ public class ChildServiceAction extends org.apache.struts.action.Action {
         HivPropertiesManager.setAllHivStatusList(session);
         //HivPropertiesManager.setHivStatusList(session, HivPropertiesManager.getThreeMainHivStatus());
         CommunityWorkerRecordsManager.setEnumeratorsRegistrationList(session);
-        DatasetSetting dsts=util.getDatasetSettingDaoInstance().getDatasetSettingByModuleId(DatabasetManager.getChildServiceModuleId());
-        if(dsts !=null && dsts.getDatasetId().equalsIgnoreCase(DatabasetManager.getNatChildServiceDatasetId()))
+        DatasetSetting dsts=util.getDatasetSettingDaoInstance().getDatasetSettingByModuleId(DatasetManager.getChildServiceModuleId());
+        if(dsts !=null && dsts.getDatasetId().equalsIgnoreCase(DatasetManager.getNatChildServiceDatasetId()))
         {
             return mapping.findForward("NationalChildServiceForm");
         }
@@ -95,12 +96,15 @@ public class ChildServiceAction extends org.apache.struts.action.Action {
         }        
         setOvcPerHouseholdList(session, csform.getHhUniqueId());
         loadAdditionalServices(session);
+        //setWithdrawalStatusMessage(session,csform.getOvcId(),AppConstant.TRUEVALUE,AppConstant.TRUEVALUE);
         //setButtonState(session,"false","true");
         System.err.println("requiredAction is "+requiredAction);
         if(requiredAction==null)
         {
             //Update wash records by changing the service codes
             util.getChildServiceDaoInstance().getAndUpdateWashRecords();
+            //set null ovcid to the setWithdrawalStatusMessage method to reset the session and button to initial values
+            setWithdrawalStatusMessage(session,null,AppConstant.FALSEVALUE,AppConstant.TRUEVALUE);
             csform.reset(mapping, request);
             resetBaselineInfo(csform);
             return mapping.findForward(SUCCESS);
@@ -133,7 +137,7 @@ public class ChildServiceAction extends org.apache.struts.action.Action {
             csform.setOvcId(ovcId);
             csform.setOrganizationUnitId(organizationUnitId);
             setOvcDetails(csform,session);
-            
+            //setWithdrawalStatusMessage(session,csform.getOvcId(),AppConstant.TRUEVALUE,AppConstant.TRUEVALUE);
             return mapping.findForward(SUCCESS);
         }
         else if(requiredAction.equalsIgnoreCase("serviceDetails"))
@@ -156,7 +160,7 @@ public class ChildServiceAction extends org.apache.struts.action.Action {
                 csform.setGbvServices(appUtil.splitString(service.getGbvServices(), ","));
                 csform.setServiceDate(DateManager.convertDateToString(service.getServiceDate(),"MM/dd/yyyy"));
                 csform.setVolunteerName(service.getCommunityWorker());
-                setOvcDetails(csform,session);
+                //setOvcDetails(csform,session);
                 if(service.getSafetyServices() !=null && service.getSafetyServices().indexOf(mbcServiceCode) !=-1)
                 session.setAttribute("mbcdisabled", "false");
                 setButtonState(session,"true","false");
@@ -170,6 +174,7 @@ public class ChildServiceAction extends org.apache.struts.action.Action {
             }
             csform.setHhSerialNo(hhSerialNo);
             csform.setOrganizationUnitId(organizationUnitId);
+            setOvcDetails(csform,session);
             return mapping.findForward(SUCCESS);
         }
         else if(requiredAction.equalsIgnoreCase("ovcList"))
@@ -383,6 +388,11 @@ public class ChildServiceAction extends org.apache.struts.action.Action {
                     session.setAttribute("mbcdisabled", "true");
                     session.setAttribute("eidRelatedServices", "false");
                 }
+                setWithdrawalStatusMessage(session,csform.getOvcId(),AppConstant.TRUEVALUE,AppConstant.FALSEVALUE); 
+            }
+            else
+            {
+                setWithdrawalStatusMessage(session,csform.getOvcId(),AppConstant.FALSEVALUE,AppConstant.TRUEVALUE);
             }
         }
         catch(Exception ex)
@@ -413,6 +423,39 @@ public class ChildServiceAction extends org.apache.struts.action.Action {
         csform.setOvcId(null);
         csform.setPhoneNumber(null);
         csform.setSex(null);
+    }
+    private void setWithdrawalStatusMessage(HttpSession session,String beneficiaryId,String saveBtnDisabledValue,String modifyBtnDisabledValue) throws Exception
+    {
+        AppUtility appUtil=new AppUtility();
+        String attributeName="vcsWithdrawnMessage";
+        if(beneficiaryId !=null)
+        {
+            DaoUtility util=new DaoUtility();
+            Beneficiary beneficiary=util.getChildEnrollmentDaoInstance().getOvc(beneficiaryId);
+            if(beneficiary !=null)
+            {
+                if(appUtil.getBeneficiaryWithrawnMessage(beneficiary.getCurrentEnrollmentStatus()) !=null)
+                {
+                    setButtonState(session,AppConstant.TRUEVALUE,AppConstant.TRUEVALUE);
+                    session.setAttribute(attributeName, appUtil.getBeneficiaryWithrawnMessage(beneficiary.getCurrentEnrollmentStatus()));
+                }
+                else
+                {
+                    session.removeAttribute(attributeName);
+                    setButtonState(session,saveBtnDisabledValue,modifyBtnDisabledValue);
+                }
+            }
+            else
+            {
+                session.removeAttribute(attributeName);
+                setButtonState(session,saveBtnDisabledValue,modifyBtnDisabledValue);
+            }
+        }
+        else
+        {
+            session.removeAttribute(attributeName);
+            setButtonState(session,saveBtnDisabledValue,modifyBtnDisabledValue);
+        }
     }
     public void setButtonState(HttpSession session,String saveDisabled,String modifyDisabled)
     {

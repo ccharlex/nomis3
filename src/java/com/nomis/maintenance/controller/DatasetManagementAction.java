@@ -10,7 +10,7 @@ import com.nomis.ovc.business.User;
 import com.nomis.ovc.dao.DaoUtility;
 import com.nomis.ovc.util.AppConstant;
 import com.nomis.ovc.util.AppManager;
-import com.nomis.ovc.util.DatabasetManager;
+import com.nomis.ovc.util.DatasetManager;
 import com.nomis.ovc.util.DateManager;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
@@ -78,35 +78,35 @@ public class DatasetManagementAction extends org.apache.struts.action.Action {
         {
             DaoUtility util=new DaoUtility();
             DatasetSetting hhEnrollmentDataset=new DatasetSetting();
-            hhEnrollmentDataset.setModuleId(DatabasetManager.getHhEnrolmentModuleId());
+            hhEnrollmentDataset.setModuleId(DatasetManager.getHhEnrolmentModuleId());
             hhEnrollmentDataset.setDatasetId(hhEnrolment);
             hhEnrollmentDataset.setLastModifiedDate(DateManager.getCurrentDateInstance());
             hhEnrollmentDataset.setRecordedBy(userName);
             util.getDatasetSettingDaoInstance().saveDatasetSetting(hhEnrollmentDataset);
             
             DatasetSetting childEnrollmentDataset=new DatasetSetting();
-            childEnrollmentDataset.setModuleId(DatabasetManager.getChildEnrollmentModuleId());
+            childEnrollmentDataset.setModuleId(DatasetManager.getChildEnrollmentModuleId());
             childEnrollmentDataset.setDatasetId(childEnrolmentFormId);
             childEnrollmentDataset.setLastModifiedDate(DateManager.getCurrentDateInstance());
             childEnrollmentDataset.setRecordedBy(userName);
             util.getDatasetSettingDaoInstance().saveDatasetSetting(childEnrollmentDataset);
             
             DatasetSetting hhServiceDataset=new DatasetSetting();
-            hhServiceDataset.setModuleId(DatabasetManager.getHouseholdServiceModuleId());
+            hhServiceDataset.setModuleId(DatasetManager.getHouseholdServiceModuleId());
             hhServiceDataset.setDatasetId(hhServiceFormId);
             hhServiceDataset.setLastModifiedDate(DateManager.getCurrentDateInstance());
             hhServiceDataset.setRecordedBy(userName);
             util.getDatasetSettingDaoInstance().saveDatasetSetting(hhServiceDataset);
             
             DatasetSetting childServiceDataset=new DatasetSetting();
-            childServiceDataset.setModuleId(DatabasetManager.getChildServiceModuleId());
+            childServiceDataset.setModuleId(DatasetManager.getChildServiceModuleId());
             childServiceDataset.setDatasetId(childServiceFormId);
             childServiceDataset.setLastModifiedDate(DateManager.getCurrentDateInstance());
             childServiceDataset.setRecordedBy(userName);
             util.getDatasetSettingDaoInstance().saveDatasetSetting(childServiceDataset);
             
             DatasetSetting hivRiskAssessmentDataset=new DatasetSetting();
-            hivRiskAssessmentDataset.setModuleId(DatabasetManager.getHivRiskAsmtModuleId());
+            hivRiskAssessmentDataset.setModuleId(DatasetManager.getHivRiskAsmtModuleId());
             hivRiskAssessmentDataset.setDatasetId(hivRiskAsmt);
             hivRiskAssessmentDataset.setLastModifiedDate(DateManager.getCurrentDateInstance());
             hivRiskAssessmentDataset.setRecordedBy(userName);
@@ -133,15 +133,15 @@ public class DatasetManagementAction extends org.apache.struts.action.Action {
             for(Object obj:list)
             {
                 dst=(DatasetSetting)obj;
-                if(dst.getModuleId().equalsIgnoreCase(DatabasetManager.getHhEnrolmentModuleId()))
+                if(dst.getModuleId().equalsIgnoreCase(DatasetManager.getHhEnrolmentModuleId()))
                 dstform.setHhEnrollmentFormId(dst.getDatasetId());
-                else if(dst.getModuleId().equalsIgnoreCase(DatabasetManager.getChildEnrollmentModuleId()))
+                else if(dst.getModuleId().equalsIgnoreCase(DatasetManager.getChildEnrollmentModuleId()))
                 dstform.setChildEnrollmentFormId(dst.getDatasetId());
-                else if(dst.getModuleId().equalsIgnoreCase(DatabasetManager.getHouseholdServiceModuleId()))
+                else if(dst.getModuleId().equalsIgnoreCase(DatasetManager.getHouseholdServiceModuleId()))
                 dstform.setHhServiceFormId(dst.getDatasetId());
-                else if(dst.getModuleId().equalsIgnoreCase(DatabasetManager.getChildServiceModuleId()))
+                else if(dst.getModuleId().equalsIgnoreCase(DatasetManager.getChildServiceModuleId()))
                 dstform.setChildServiceFormId(dst.getDatasetId());
-                else if(dst.getModuleId().equalsIgnoreCase(DatabasetManager.getHivRiskAsmtModuleId()))
+                else if(dst.getModuleId().equalsIgnoreCase(DatasetManager.getHivRiskAsmtModuleId()))
                 dstform.setHivRiskAssessmentFormId(dst.getDatasetId());
             }
         }

@@ -31,13 +31,14 @@ public class DatimReportGenerator
         String startOfFinancialYear=rpt.getFinancialYear().getStartYear()+"-"+rpt.getFinancialYear().getStartMonth()+"-01";
         DatimReportTemplate dform=new DatimReportTemplate();
         //Datim2017Form dform=new Datim2017Form();
+        
         DatimReportTemplate activeRt=getNoOfActiveOvcServed(rpt,startDate, endDate,0,17,"All");
         DatimReportTemplate gradRt=getNoOfGraduatedOvcServed(rpt,startOfFinancialYear, endDate,0,17,"All");
         DatimReportTemplate childrenTransferedToPEPFARRt=getNoOfOvcServedAndTransfered(rpt,startOfFinancialYear, endDate,"All");
         DatimReportTemplate childrenTransferedToNonPEPFARRt=getNoOfOvcServedAndTransferedToNonPEPFAR(rpt,startOfFinancialYear, endDate,"All");
         
-        DatimReportTemplate caregiversTransferedToPEPFARRt=getNoOfCaregiversServedAndTransferedToPEPFAR(rpt,startOfFinancialYear,endDate,"");
-        DatimReportTemplate caregiversTransferedToNonPEPFARRt=getNoOfCaregiversServedAndTransferedToNonPEPFAR(rpt,startOfFinancialYear,endDate,"");
+        DatimReportTemplate caregiversTransferedToPEPFARRt=getNoOfCaregiversServedAndTransferedToPEPFAR(rpt,startOfFinancialYear,endDate,18,200,"");
+        DatimReportTemplate caregiversTransferedToNonPEPFARRt=getNoOfCaregiversServedAndTransferedToNonPEPFAR(rpt,startOfFinancialYear,endDate,18,200,"");
         
         int totalTransferedToPEPFAR=childrenTransferedToPEPFARRt.getOvc_servTransfered()+caregiversTransferedToPEPFARRt.getOvc_servTransfered();
         int totalTransferedToNonPEPFAR=childrenTransferedToNonPEPFARRt.getOvc_servTransfered()+caregiversTransferedToNonPEPFARRt.getOvc_servTransfered();
@@ -47,7 +48,7 @@ public class DatimReportGenerator
         //ReportTemplate caregiversTransferedRt=getNoOfCaregiversServedAndTransfered(rpt,startDate, endDate,"All");
         
         DatimReportTemplate exitedWithoutGraduationRt=getNoOfOvcExitedWithoutGraduationServed(rpt,startOfFinancialYear, endDate,"All");
-        DatimReportTemplate caregiversExitedWithoutGraduationRt=getNoOfCaregiversExitedWithoutGraduationServed(rpt,startOfFinancialYear, endDate,"All");
+        DatimReportTemplate caregiversExitedWithoutGraduationRt=getNoOfCaregiversExitedWithoutGraduationServed(rpt,startOfFinancialYear, endDate,18,200,"All");
         
         DatimReportTemplate hivPosActiveRt=getNoOfActiveHivPositiveOvcServed(rpt,startDate, endDate,"All");
         DatimReportTemplate hivPosGraduatedRt=getNoOfGraduatedHivPositiveOvcServed(rpt,startOfFinancialYear, endDate,"All");
@@ -75,6 +76,9 @@ public class DatimReportGenerator
         DatimReportTemplate active15to17FemaleRt=getNoOfActiveOvcServed(rpt,startDate, endDate,15,17,"F");
         DatimReportTemplate active18AndAboveMaleRt=getNoOfActiveCaregiversServed(rpt,startDate, endDate,18,150,"M");
         DatimReportTemplate active18AndAboveFemaleRt=getNoOfActiveCaregiversServed(rpt,startDate, endDate,18,150,"F");
+        
+        DatimReportTemplate activeOvc18PlusFemaleServed=getNoOfOvc18PlusServed(rpt,startDate, endDate,18,200,"M");
+        DatimReportTemplate activeOvc18PlusMaleServed=getNoOfOvc18PlusServed(rpt,startDate, endDate,18,200,"F");
         
         
         DatimReportTemplate gradLessThan1Rt=getNoOfGraduatedOvcServed(rpt,startOfFinancialYear, endDate,0,0,"All");
@@ -176,6 +180,9 @@ public class DatimReportGenerator
         dform.setOvc_servGraduated15to17Male(grad15to17MaleRt.getOvc_servGraduated());
         dform.setOvc_servGraduated18AndAboveFemale(grad18AndAboveFemaleRt.getOvc_servGraduated());
         dform.setOvc_servGraduated18AndAboveMale(grad18AndAboveMaleRt.getOvc_servGraduated());
+        
+        dform.setOvc_servFemale18To24(activeOvc18PlusFemaleServed.getOvc_servActive());
+        dform.setOvc_servMale18To24(activeOvc18PlusMaleServed.getOvc_servActive());
                 
         dform.setOvc_servActive(activeRt.getOvc_servActive()+totalActiveCaregivers);
         dform.setOvc_servGraduated(gradRt.getOvc_servGraduated()+totalGraduatedCaregivers);
@@ -231,39 +238,51 @@ public class DatimReportGenerator
         rt.setOvc_servGraduated(count);
         return rt;
     }
-    public DatimReportTemplate getNoOfCaregiversServedAndTransfered(ReportParameterTemplate rpt,String startDate,String endDate,String sex)
+    public DatimReportTemplate getNoOfCaregiversServedAndTransfered(ReportParameterTemplate rpt,String startDate,String endDate,int startAge,int endAge,String sex)
     {
-        DatimReportTemplate rt=new DatimReportTemplate();;
-        DatimReportTemplate pepfarRt=getNoOfCaregiversServedAndTransferedToPEPFAR(rpt,startDate,endDate,sex);
-        DatimReportTemplate nonPepfarRt=getNoOfCaregiversServedAndTransferedToNonPEPFAR(rpt,startDate,endDate,sex);
+        DatimReportTemplate rt=new DatimReportTemplate(); //18,200
+        if(!rpt.isAdultAgeDisaggregated())
+        {
+            startAge=18;
+            endAge=200;
+        }
+        DatimReportTemplate pepfarRt=getNoOfCaregiversServedAndTransferedToPEPFAR(rpt,startDate,endDate,startAge,endAge,sex);
+        DatimReportTemplate nonPepfarRt=getNoOfCaregiversServedAndTransferedToNonPEPFAR(rpt,startDate,endDate,startAge,endAge,sex);
         rt.setOvc_servTransfered(pepfarRt.getOvc_servTransfered()+nonPepfarRt.getOvc_servTransfered());
         return rt;
     }
-    public DatimReportTemplate getNoOfCaregiversServedAndTransferedToPEPFAR(ReportParameterTemplate rpt,String startDate,String endDate,String sex)
+    public DatimReportTemplate getNoOfCaregiversServedAndTransferedToPEPFAR(ReportParameterTemplate rpt,String startDate,String endDate,int startAge,int endAge,String sex)
     {
+        //,18,200
         DatimReportTemplate rt=new DatimReportTemplate();;
-        int pepfarcount=getNoOfCaregiversServedByEnrollmentStatus(rpt,AppConstant.TRANSFERED_PEPFAR_NUM,startDate,endDate,18,200,sex);
+        int pepfarcount=getNoOfCaregiversServedByEnrollmentStatus(rpt,AppConstant.TRANSFERED_PEPFAR_NUM,startDate,endDate,startAge,endAge,sex);
         rt.setOvc_servTransfered(pepfarcount);
         return rt;
     }
-    public DatimReportTemplate getNoOfCaregiversServedAndTransferedToNonPEPFAR(ReportParameterTemplate rpt,String startDate,String endDate,String sex)
+    public DatimReportTemplate getNoOfCaregiversServedAndTransferedToNonPEPFAR(ReportParameterTemplate rpt,String startDate,String endDate,int startAge,int endAge,String sex)
     {
+        //
         DatimReportTemplate rt=new DatimReportTemplate();;
-        int nonPepfarcount=getNoOfCaregiversServedByEnrollmentStatus(rpt,AppConstant.TRANSFERED_NONPEPFAR_NUM,startDate,endDate,18,200,sex);
+        int nonPepfarcount=getNoOfCaregiversServedByEnrollmentStatus(rpt,AppConstant.TRANSFERED_NONPEPFAR_NUM,startDate,endDate,startAge,endAge,sex);
         rt.setOvc_servTransfered(nonPepfarcount);
         return rt;
     }
-    public DatimReportTemplate getNoOfCaregiversExitedWithoutGraduationServed(ReportParameterTemplate rpt,String startDate,String endDate,String sex)
+    public DatimReportTemplate getNoOfCaregiversExitedWithoutGraduationServed(ReportParameterTemplate rpt,String startDate,String endDate,int startAge,int endAge,String sex)
     {
         DatimReportTemplate rt=new DatimReportTemplate();
         try
         {
+            if(!rpt.isAdultAgeDisaggregated())
+            {
+                startAge=18;
+                endAge=200;
+            }
             //System.err.println("endDate in DatimReportGenerator.getNoOfCaregiversExitedWithoutGraduationServed is "+endDate);
             String nextMonth=DateManager.getNextMonth(endDate, 0);
             //System.err.println("DateManager.getNextMonth(2017-01-31, 0) is "+DateManager.getNextMonth("2017-01-31", 0));
             //System.err.println("endDate is DatimReportGenerator.getNoOfCaregiversExitedWithoutGraduationServed is "+endDate);
             DaoUtility util=new DaoUtility();
-            int count=util.getAdultHouseholdMemberDaoInstance().getNumberOfAdultHouseholdMembersExitedWithoutGraduation(rpt, startDate, endDate, sex);
+            int count=util.getAdultHouseholdMemberDaoInstance().getNumberOfAdultHouseholdMembersExitedWithoutGraduation(rpt, startDate, endDate,startAge,endAge,sex);
                     //getNoOfCaregiversServedByEnrollmentStatus(rpt,AppConstant.EXITED_WITHOUT_GRADUATION_NUM,startDate,endDate,0,17,sex);
             rt.setOvc_servExitedWithoutGraduation(count);
         }
@@ -271,6 +290,15 @@ public class DatimReportGenerator
         {
             ex.printStackTrace();
         }
+        return rt;
+    }
+    public DatimReportTemplate getNoOfOvc18PlusServed(ReportParameterTemplate rpt,String startDate,String endDate,int startAge,int endAge,String sex)
+    {
+        //An active beneficiary must have been served in the last quarter, hence the start date should be the start of the last quarter
+        String startOfLastQuarter=fym.getStartDateOfQuarter(endDate);
+        DatimReportTemplate rt=new DatimReportTemplate();
+        int count=getNoOfOvcServedByEnrollmentStatus(rpt,0,startOfLastQuarter,endDate,startAge,endAge,sex);
+        rt.setOvc_servActive(count);
         return rt;
     }
     public DatimReportTemplate getNoOfActiveOvcServed(ReportParameterTemplate rpt,String startDate,String endDate,int startAge,int endAge,String sex)

@@ -32,5 +32,6 @@
       <property name="recordedBy" column="RECORDEDBY" type="string"/>
       <property name="sex" column="SEX" type="string"/>
       <property name="surname" column="SURNAME" type="string"/>
+      <!--<property name="legacyId" column="LEGACYID" type="string"/>-->
    </class>
 </hibernate-mapping>

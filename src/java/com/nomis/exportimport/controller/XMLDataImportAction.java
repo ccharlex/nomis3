@@ -112,6 +112,7 @@ public class XMLDataImportAction extends org.apache.struts.action.Action {
                     String partnerCode=importForm.getPartnerCode();
                     byte[] buffer = new byte[8 * 1024];
                     int bytesRead;
+                    //Write file to data import folder
                     while ((bytesRead = is.read(buffer)) != -1)
                     {
                         outStream.write(buffer, 0, bytesRead);
@@ -121,6 +122,7 @@ public class XMLDataImportAction extends org.apache.struts.action.Action {
                     File file = new File(appUtil.getImportFilePath()+appUtil.getFileSeperator()+fileName);
                     if(file.exists())
                     {
+                        //save a record in the database for the uploaded file
                         DataImportFileUploadManager difum=new DataImportFileUploadManager();
                         difum.setDateImportCompleted(DateManager.getCurrentDateInstance());
                         difum.setDateOfUpload(DateManager.getDateInstance(currentDate));
@@ -143,7 +145,8 @@ public class XMLDataImportAction extends org.apache.struts.action.Action {
                     //saveData(request,syncRecords,hivBirthRegUpdate);
                     request.setAttribute("dbImportMsg",uploadMsg);
                     //session.setAttribute("syncRecords",syncRecords);
-                }  
+             
+               }  
                 //Return to jsp page which will then call an ajax function to commence the import process
                 return mapping.findForward(SUCCESS);
             }

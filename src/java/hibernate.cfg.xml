@@ -49,5 +49,6 @@
     <mapping resource="com/nomis/ovc/hibernate/DatimReport.hbm.xml"/>
     <mapping resource="com/nomis/ovc/hibernate/DatimReportTemplateTest.hbm.xml"/>
     <mapping resource="com/nomis/ovc/hibernate/NutritionStatus.hbm.xml"/>
+    <mapping resource="com/nomis/ovc/hibernate/Occupation.hbm.xml"/>
   </session-factory>
 </hibernate-configuration>

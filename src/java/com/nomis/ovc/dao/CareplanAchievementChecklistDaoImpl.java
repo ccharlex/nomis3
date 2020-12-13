@@ -6,6 +6,7 @@ package com.nomis.ovc.dao;
 
 import com.nomis.operationsManagement.GraduationManager;
 import com.nomis.ovc.business.CareplanAchievementChecklist;
+import com.nomis.ovc.business.HouseholdEnrollment;
 import com.nomis.ovc.util.AppConstant;
 import com.nomis.reports.utils.ReportParameterTemplate;
 import java.util.ArrayList;
@@ -22,6 +23,45 @@ public class CareplanAchievementChecklistDaoImpl implements CareplanAchievementC
 {
     Session session;
     Transaction tx;
+    public List getCareplanAchievementChecklistRecords(ReportParameterTemplate rpt) throws Exception
+    {
+        List mainList=new ArrayList();
+        try
+        {
+            SubQueryGenerator sqg=new SubQueryGenerator();
+            String additionalOrgUnitQuery="";
+            if(rpt !=null && rpt.getLevel2OuId() !=null && rpt.getLevel2OuId().trim().length()>0 && !rpt.getLevel2OuId().equalsIgnoreCase("select") && !rpt.getLevel2OuId().equalsIgnoreCase("All"))
+            {
+                additionalOrgUnitQuery=sqg.getOrganizationUnitQuery(rpt);
+            }
+            String query=SubQueryGenerator.getHheCareplanAchievementChecklistOrganizationUnitQuery()+additionalOrgUnitQuery+sqg.getCareplanAchievementChecklistLastModifiedDateQuery(rpt.getStartDate(),rpt.getEndDate());
+            System.err.println(query);
+            session = HibernateUtil.getSession();
+            tx = session.beginTransaction();
+            List list = session.createQuery(query).list();
+            tx.commit();
+            closeSession(session);
+            if(list !=null)
+            {
+                HouseholdEnrollment hhe=null;
+                CareplanAchievementChecklist cpa=null;
+                for(Object obj:list)
+                {
+                    Object[] objArray=(Object[])obj;
+                    hhe=(HouseholdEnrollment)objArray[0];
+                    cpa=(CareplanAchievementChecklist)objArray[1];
+                    cpa.setHhe(hhe);
+                    mainList.add(cpa);
+                }
+            }
+        }
+         catch (Exception ex)
+         {
+             closeSession(session);
+            throw new Exception(ex);
+         }
+        return mainList;
+    }
     public List getCareplanAchievementChecklistRecordsForExport(ReportParameterTemplate rpt) throws Exception
     {
         List mainList=new ArrayList();

@@ -375,7 +375,7 @@ public int createXmlScriptForOvcRecordsForDelete(String parentFolderPath,ReportP
                   String sex=getPropertyValue(ovc.getSex()); 
                   String phoneNumber=getPropertyValue(ovc.getPhoneNumber());
                   String currentEnrollmentStatus=getIntegerPropertyValue(ovc.getCurrentEnrollmentStatus()+"");
-                  String dateOfCurrentEnrollmentStatus=getPropertyValue(DateManager.convertDateToString(ovc.getDateOfCurrentStatus(), DateManager.DB_DATE_FORMAT));
+                  String dateOfCurrentEnrollmentStatus=getPropertyValue(DateManager.convertDateToString(ovc.getDateOfCurrentEnrollmentStatus(), DateManager.DB_DATE_FORMAT));
                   String lastModifiedDate=getPropertyValue(DateManager.convertDateToString(ovc.getLastModifiedDate(), DateManager.DB_DATE_FORMAT));
                   String dateCreated=getPropertyValue(DateManager.convertDateToString(ovc.getDateCreated(), DateManager.DB_DATE_FORMAT));
                   String recordedBy=getPropertyValue(ovc.getRecordedBy());

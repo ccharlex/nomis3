@@ -206,6 +206,17 @@
                  <td class="tdLine" style="font-size:16px;" colspan="3"><div>${datimResultForm.transferedToNonPEPFAR} </div></td>
                  <td class="tdLine" style="font-size:16px;" colspan="2"><div>${datimResultForm.ovc_servExitedWithoutGraduation}</div></td> 
              </tr>
+             
+             <tr >
+                 <td class="tdLine" style="font-size:16px;" colspan="8"><div>Addendum </div></td>
+                 
+             </tr>
+             <tr >
+                 <td class="tdLine" style="font-size:16px;" ><div>Male OVC 18+ </div></td>
+                 <td class="tdLine" style="font-size:16px;" colspan="2"><div>${datimResultForm.ovc_servMale18To24} </div></td>
+                 <td class="tdLine" style="font-size:16px;" colspan="3"><div>Female OVC 18+</div></td>
+                 <td class="tdLine" style="font-size:16px;" colspan="2"><div>${datimResultForm.ovc_servFemale18To24}</div></td> 
+             </tr>
                 
         </table>
         

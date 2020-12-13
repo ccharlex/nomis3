@@ -30,6 +30,46 @@ public class AdultHouseholdMemberDaoImpl implements AdultHouseholdMemberDao
     HivOperationsManager hom=new HivOperationsManager();
     SubQueryGenerator sqg=new SubQueryGenerator();
     String markedForDeleteQuery=" and ahm.markedForDelete=0";
+    public List getRecordsWithKnownBaselineHivStatusButUnknownCurrentHivStatus() throws Exception
+    {
+        List list=null;
+        try
+        {
+            session = HibernateUtil.getSession();
+            tx = session.beginTransaction();
+            String query="from AdultHouseholdMember ahm where ahm.baselineHivStatus>0 and (ahm.currentHivStatus=0 or ahm.currentHivStatus="+AppConstant.HIV_UNKNOWN_NUM+" or ahm.currentHivStatus ="+AppConstant.HIV_UNDISCLOSED_NUM+")";
+            System.err.println("query is "+query);
+            list = session.createQuery(query).list();
+            tx.commit();
+            closeSession(session);
+        }
+        catch(Exception ex)
+        {
+            closeSession(session);
+            ex.printStackTrace();
+        }
+        return list;
+    }
+    public List getRecordsWithPositiveHivStatusAtBaselineButOtherStatusCurrently() throws Exception
+    {
+        List list=null;
+        try
+        {
+            session = HibernateUtil.getSession();
+            tx = session.beginTransaction();
+            String query="from AdultHouseholdMember ahm where ahm.baselineHivStatus="+AppConstant.HIV_POSITIVE_NUM+" and ahm.currentHivStatus !="+AppConstant.HIV_POSITIVE_NUM;
+            System.err.println("query is "+query);
+            list = session.createQuery(query).list();
+            tx.commit();
+            closeSession(session);
+        }
+        catch(Exception ex)
+        {
+            closeSession(session);
+            ex.printStackTrace();
+        }
+        return list;
+    }
     public int getNumberOfAdultHouseholdMembersSupportedToAccessARTServicesInReportPeriod(ReportParameterTemplate rpt,String startDate,String endDate,int enrollmentStatus,String sex) throws Exception
     {
         int count=0;
@@ -41,7 +81,7 @@ public class AdultHouseholdMemberDaoImpl implements AdultHouseholdMemberDao
             String currentEnrollmentQuery=SubQueryGenerator.getAdultHouseholdMemberCurrentEnrollmentStatusQuery(enrollmentStatus);
             //ART support value is 1 if given transportation support and 2 when not given
             String artSupportQuery=SubQueryGenerator.getARTSupportQuery(1);
-            String dateOfArtSupportQuery=SubQueryGenerator.getDateOfCareAndSupportAssessmentQuery(startDate,endDate);
+            String dateOfArtSupportQuery=SubQueryGenerator.getCareAndSupportDateOfAssessmentQuery(startDate,endDate);
             if(rpt !=null && rpt.getLevel2OuId() !=null && rpt.getLevel2OuId().trim().length()>0 && !rpt.getLevel2OuId().equalsIgnoreCase("select") && !rpt.getLevel2OuId().equalsIgnoreCase("All"))
             {
                 additionalOrgUnitQuery=sqg.getOrganizationUnitQuery(rpt);
@@ -74,7 +114,7 @@ public class AdultHouseholdMemberDaoImpl implements AdultHouseholdMemberDao
             String ageQuery=sqg.getAdultHouseholdMemberCurrentAgeQuery(rpt.getStartAge(), rpt.getEndAge());
             String currentEnrollmentQuery=SubQueryGenerator.getAdultHouseholdMemberCurrentEnrollmentStatusQuery(enrollmentStatus);
             String artSupportQuery=SubQueryGenerator.getARTSupportQuery(1);
-            String dateOfArtSupportQuery=SubQueryGenerator.getDateOfCareAndSupportAssessmentQuery(startDate,endDate);
+            String dateOfArtSupportQuery=SubQueryGenerator.getCareAndSupportDateOfAssessmentQuery(startDate,endDate);
             String additionalOrgUnitQuery="";
             if(rpt !=null && rpt.getLevel2OuId() !=null && rpt.getLevel2OuId().trim().length()>0 && !rpt.getLevel2OuId().equalsIgnoreCase("select") && !rpt.getLevel2OuId().equalsIgnoreCase("All"))
             {
@@ -317,7 +357,7 @@ public class AdultHouseholdMemberDaoImpl implements AdultHouseholdMemberDao
          }
         return mainList;
     }
-    public int getNumberOfAdultHouseholdMembersExitedWithoutGraduation(ReportParameterTemplate rpt,String startDate,String endDate,String sex) throws Exception
+    public int getNumberOfAdultHouseholdMembersExitedWithoutGraduation(ReportParameterTemplate rpt,String startDate,String endDate,int startAge,int endAge,String sex) throws Exception
     {
         int count=0;
         try
@@ -389,7 +429,7 @@ public class AdultHouseholdMemberDaoImpl implements AdultHouseholdMemberDao
                 ahm=(AdultHouseholdMember)list.get(i);
                 updateAdultHouseholdMember(ahm);
                 count++;
-                System.err.println("Adult household member "+count+" with age: "+ahm.getAgeAtBaseline()+" and current age: "+ahm.getCurrentAge()+" updated");
+                //System.err.println("Adult household member "+count+" with age: "+ahm.getAgeAtBaseline()+" and current age: "+ahm.getCurrentAge()+" updated");
             }
         }
         return count;
@@ -507,38 +547,53 @@ public class AdultHouseholdMemberDaoImpl implements AdultHouseholdMemberDao
     {
         try
         {
-            
+            //System.err.println("ahm.getEnrolledOnTreatment() in  updateAdultHouseholdMember is "+ahm.getEnrolledOnTreatment()+" and ahm.getDateEnrolledOnTreatment() is "+ahm.getDateEnrolledOnTreatment());
             if(ahm !=null && ahm.getDateOfEnrollment() !=null && !AppUtility.isNull(ahm.getBeneficiaryId()))
             {
-                System.err.println("ahm.getDateOfEnrollment() is not null");
+                //System.err.println("ahm.getEnrolledOnTreatment() in  updateAdultHouseholdMember is "+ahm.getEnrolledOnTreatment()+" and ahm.getDateEnrolledOnTreatment() is "+ahm.getDateEnrolledOnTreatment());
                     AdultHouseholdMember ahm2=getAdultHouseholdMember(ahm.getBeneficiaryId());
                     if(ahm2 !=null)
                     {
-                        System.err.println("ahm2 is not null");
+                        //System.err.println("ahm2 is not null");
                         if(ahm2.getLastModifiedDate().before(ahm.getLastModifiedDate()) || ahm2.getLastModifiedDate().equals(ahm.getLastModifiedDate()))
                         {
-                            System.err.println("ahm.getDateOfBirth()3 "+ahm.getDateOfBirth()+" ahm.getDateOfEnrollment() "+ahm.getDateOfEnrollment()+" ahm.getBeneficiaryId() "+ahm.getBeneficiaryId()+" ahm.getEducationLevel(): "+ahm.getEducationLevel());
+                            //System.err.println("ahm.getDateOfBirth()3 "+ahm.getDateOfBirth()+" ahm.getDateOfEnrollment() "+ahm.getDateOfEnrollment()+" ahm.getBeneficiaryId() "+ahm.getBeneficiaryId()+" ahm.getEducationLevel(): "+ahm.getEducationLevel());
                             ahm.setDateCreated(ahm2.getDateCreated());
                             ahm=getPreparedAdultHouseholdMember(ahm);
                             ahm=getAdultHouseholdMemberWithCurrentParameters(ahm,ahm2);
+                            //System.err.println("ahm.getEnrolledOnTreatment()3 in updateAdultHouseholdMember is "+ahm.getEnrolledOnTreatment()+" and ahm.getDateEnrolledOnTreatment() is "+ahm.getDateEnrolledOnTreatment());
                             if(ahm.getEnrollmentId()==null)
                             ahm.setEnrollmentId(ahm.getBeneficiaryId());
-                            if(ahm.getDateOfCurrentHivStatus().before(ahm2.getDateOfCurrentHivStatus()))
+                            if(!ahm.isForUpdateHivStatus() && ahm.getDateOfCurrentHivStatus().before(ahm2.getDateOfCurrentHivStatus()))
                             {
+                                //System.err.println("ahm.getEnrolledOnTreatment()4 in updateAdultHouseholdMember is "+ahm.getEnrolledOnTreatment()+" and ahm.getDateEnrolledOnTreatment() is "+ahm.getDateEnrolledOnTreatment());
                                 ahm.setCurrentHivStatus(ahm2.getCurrentHivStatus());
                                 ahm.setDateOfCurrentHivStatus(ahm2.getDateOfCurrentHivStatus());
-                                //ahm.setEnrolledOnTreatment(ahm2.getEnrolledOnTreatment());
-                                //ahm.setHivTreatmentFacilityId(ahm2.getHivTreatmentFacilityId());
-                                //ahm.setDateEnrolledOntreatment(ahm2.getDateEnrolledOntreatment());
-                                if(ahm.getCurrentHivStatus()==AppConstant.HIV_POSITIVE_NUM && ahm.getEnrolledOnTreatment()==2)
+                                if(ahm.getCurrentHivStatus()==AppConstant.HIV_POSITIVE_NUM && ahm.getEnrolledOnTreatment()==AppConstant.ENROLLED_ON_TREATMENT_NO_NUM)
                                 {
                                     ahm.setEnrolledOnTreatment(ahm2.getEnrolledOnTreatment());
                                     ahm.setHivTreatmentFacilityId(ahm2.getHivTreatmentFacilityId());
                                     ahm.setDateEnrolledOnTreatment(ahm2.getDateEnrolledOnTreatment());
+                                    //System.err.println("ahm.getEnrolledOnTreatment()5 in updateAdultHouseholdMember is "+ahm.getEnrolledOnTreatment()+" and ahm.getDateEnrolledOnTreatment() is "+ahm.getDateEnrolledOnTreatment());
                                 }
                             }
+                            if((ahm.getCurrentHivStatus()==0 && ahm2.getCurrentHivStatus()>0))
+                            {
+                                //System.err.println("ahm.getEnrolledOnTreatment()4 in updateAdultHouseholdMember is "+ahm.getEnrolledOnTreatment()+" and ahm.getDateEnrolledOnTreatment() is "+ahm.getDateEnrolledOnTreatment());
+                                ahm.setCurrentHivStatus(ahm2.getCurrentHivStatus());
+                                ahm.setDateOfCurrentHivStatus(ahm2.getDateOfCurrentHivStatus());
+                                if(ahm.getCurrentHivStatus()==AppConstant.HIV_POSITIVE_NUM && ahm.getEnrolledOnTreatment()==AppConstant.ENROLLED_ON_TREATMENT_NO_NUM)
+                                {
+                                    ahm.setEnrolledOnTreatment(ahm2.getEnrolledOnTreatment());
+                                    ahm.setHivTreatmentFacilityId(ahm2.getHivTreatmentFacilityId());
+                                    ahm.setDateEnrolledOnTreatment(ahm2.getDateEnrolledOnTreatment());
+                                    //System.err.println("ahm.getEnrolledOnTreatment()5 in updateAdultHouseholdMember is "+ahm.getEnrolledOnTreatment()+" and ahm.getDateEnrolledOnTreatment() is "+ahm.getDateEnrolledOnTreatment());
+                                }
+                            }
+                            
                             //System.err.println("ahm.getCurrentHivStatus() is "+ahm.getCurrentHivStatus()+" ahm.getEnrolledOnTreatment() is "+ahm.getEnrolledOnTreatment()+" ahm.getHivTreatmentFacilityId() is "+ahm.getHivTreatmentFacilityId());
                             ahm=(AdultHouseholdMember)hom.processBeneficiaryHivStatus(ahm);
+                            //System.err.println("ahm.getEnrolledOnTreatment()6 in updateAdultHouseholdMember is "+ahm.getEnrolledOnTreatment()+" and ahm.getDateEnrolledOnTreatment() is "+ahm.getDateEnrolledOnTreatment());
                             session = HibernateUtil.getSession();
                             tx = session.beginTransaction();
                             session.update(ahm);
@@ -1254,6 +1309,27 @@ public class AdultHouseholdMemberDaoImpl implements AdultHouseholdMemberDao
             ex.printStackTrace();
         }
         return uniqueId;
+    }
+    public void setAdultHouseholdMemberNewEnrollmentStatus(String hhUniqueId,int enrollmentStatus,Date dateOfNewEnrollmentStatus) throws Exception
+    {
+        List list=this.getAdultHouseholdMembersPerHousehold(hhUniqueId);
+        if(list !=null)
+        {
+            AdultHouseholdMember ahm=null;
+            for(Object obj:list)
+            {
+                ahm=(AdultHouseholdMember)obj;
+                if(ahm.getCurrentEnrollmentStatus()!=AppConstant.DIED_NUM)
+                {
+                    if(ahm !=null && (ahm.getDateOfCurrentEnrollmentStatus().before(dateOfNewEnrollmentStatus) || ahm.getDateOfCurrentEnrollmentStatus().equals(dateOfNewEnrollmentStatus)))
+                    {
+                        ahm.setCurrentEnrollmentStatus(enrollmentStatus);
+                        ahm.setDateOfCurrentEnrollmentStatus(dateOfNewEnrollmentStatus);
+                        updateAdultHouseholdMember(ahm);
+                    }
+                }
+            }
+        }
     }
     private boolean dateOfBirthBeforeDateOfEnrollment(AdultHouseholdMember ahm)
     {

@@ -20,7 +20,7 @@ import com.nomis.ovc.metadata.OrganizationUnit;
 import com.nomis.ovc.util.AppConstant;
 import com.nomis.ovc.util.AppManager;
 import com.nomis.ovc.util.AppUtility;
-import com.nomis.ovc.util.DatabasetManager;
+import com.nomis.ovc.util.DatasetManager;
 import com.nomis.ovc.util.DateManager;
 import com.nomis.ovc.util.HivPropertiesManager;
 import com.nomis.ovc.util.ReferralFacilityManager;
@@ -68,7 +68,7 @@ public class NationalHouseholdEnrollmentAction extends org.apache.struts.action.
         OrganizationUnitAttributesManager ouaManager=new OrganizationUnitAttributesManager();
         AppManager appManager=new AppManager();
         User user=appManager.getCurrentUser(session);
-        DatasetSetting dsts=util.getDatasetSettingDaoInstance().getDatasetSettingByModuleId(DatabasetManager.getHhEnrolmentModuleId());
+        DatasetSetting dsts=util.getDatasetSettingDaoInstance().getDatasetSettingByModuleId(DatasetManager.getHhEnrolmentModuleId());
         if(dsts !=null && dsts.getDatasetId().equalsIgnoreCase("revhhvaform"))
         {
             moduleName="RevisedHouseholdAssessment";

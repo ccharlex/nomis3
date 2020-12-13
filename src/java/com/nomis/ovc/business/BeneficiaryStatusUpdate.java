@@ -64,6 +64,13 @@ public class BeneficiaryStatusUpdate implements Serializable
     private int updateChildHivStatus;
     private int updateCaregiverHivStatus;
     
+    private int childExitedFromProgram;
+    private int childExitStatus;
+    private int caregiverExitedFromProgram;
+    private int caregiverExitStatus;
+    private Date dateChildExitedFromProgram;
+    private Date dateCaregiverExitedFromProgram;
+    
     int serialNo=0;
     String rowColor="#FFFFFF";
     private HivStatus baselineHivStatus;
@@ -465,6 +472,54 @@ public class BeneficiaryStatusUpdate implements Serializable
 
     public void setUpdateChildHivStatus(int updateChildHivStatus) {
         this.updateChildHivStatus = updateChildHivStatus;
+    }
+
+    public int getCaregiverExitStatus() {
+        return caregiverExitStatus;
+    }
+
+    public void setCaregiverExitStatus(int caregiverExitStatus) {
+        this.caregiverExitStatus = caregiverExitStatus;
+    }
+
+    public int getCaregiverExitedFromProgram() {
+        return caregiverExitedFromProgram;
+    }
+
+    public void setCaregiverExitedFromProgram(int caregiverExitedFromProgram) {
+        this.caregiverExitedFromProgram = caregiverExitedFromProgram;
+    }
+
+    public int getChildExitStatus() {
+        return childExitStatus;
+    }
+
+    public void setChildExitStatus(int childExitStatus) {
+        this.childExitStatus = childExitStatus;
+    }
+
+    public int getChildExitedFromProgram() {
+        return childExitedFromProgram;
+    }
+
+    public void setChildExitedFromProgram(int childExitedFromProgram) {
+        this.childExitedFromProgram = childExitedFromProgram;
+    }
+
+    public Date getDateCaregiverExitedFromProgram() {
+        return dateCaregiverExitedFromProgram;
+    }
+
+    public void setDateCaregiverExitedFromProgram(Date dateCaregiverExitedFromProgram) {
+        this.dateCaregiverExitedFromProgram = dateCaregiverExitedFromProgram;
+    }
+
+    public Date getDateChildExitedFromProgram() {
+        return dateChildExitedFromProgram;
+    }
+
+    public void setDateChildExitedFromProgram(Date dateChildExitedFromProgram) {
+        this.dateChildExitedFromProgram = dateChildExitedFromProgram;
     }
 
 }

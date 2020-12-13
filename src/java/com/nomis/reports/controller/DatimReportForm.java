@@ -26,6 +26,7 @@ public class DatimReportForm extends org.apache.struts.action.ActionForm {
     private String startDate;
     private String endDate;
     private String reportType;
+    private String reportPeriod;
     
     public DatimReportForm() {
         super();
@@ -110,6 +111,14 @@ public class DatimReportForm extends org.apache.struts.action.ActionForm {
 
     public void setReportType(String reportType) {
         this.reportType = reportType;
+    }
+
+    public String getReportPeriod() {
+        return reportPeriod;
+    }
+
+    public void setReportPeriod(String reportPeriod) {
+        this.reportPeriod = reportPeriod;
     }
 
     @Override

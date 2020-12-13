@@ -770,7 +770,8 @@ public List importVulnerabilityStatusRecordsFromXml(String xmlFileLocation)
                                 vs.setDateCreated(DateManager.getDateInstance(getNodeValue("dateCreated",s,listOfObjects)));
                                 vs.setLastModifiedDate(DateManager.getDateInstance(getNodeValue("lastModifiedDate",s,listOfObjects)));
                                 vs.setRecordedBy(getNodeValue("recordedBy",s,listOfObjects));
-                                
+                                if(getNodeName("vsCategory",s,listOfObjects) !=null)
+                                vs.setVsEnabled(Integer.parseInt(getNodeValue("vsCategory",s,listOfObjects)));
                                 existingVs=vsdao.getVulnerabilityStatus(vs.getVulnerabilityStatusId());
                                 if(existingVs==null)
                                 {

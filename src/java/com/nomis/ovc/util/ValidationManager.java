@@ -140,6 +140,40 @@ public class ValidationManager
       }
       return false;//DateManager.compareDates(DateManager.processMthDayYearToMysqlFormat(mthDayYear), DateManager.getCurrentDate());
   }
+  public static boolean dateAfterEnrollmentDate(String beneficiaryId,String mthDayYear)
+  {
+      try
+      {
+          DaoUtility util=new DaoUtility();
+          
+          HouseholdEnrollment hhe=util.getHouseholdEnrollmentDaoInstance().getHouseholdEnrollment(beneficiaryId);
+          if(hhe !=null)
+          {
+              return DateManager.compareDates(DateManager.convertDateToString(hhe.getDateOfAssessment(), DateManager.DB_DATE_FORMAT),DateManager.processMthDayYearToMysqlFormat(mthDayYear));
+          }
+          else
+          {
+              AdultHouseholdMember ahm=util.getAdultHouseholdMemberDaoInstance().getAdultHouseholdMember(beneficiaryId);
+              if(ahm !=null)
+              {
+                  return DateManager.compareDates(DateManager.convertDateToString(ahm.getDateOfEnrollment(), DateManager.DB_DATE_FORMAT),DateManager.processMthDayYearToMysqlFormat(mthDayYear));
+              }
+              else
+              {
+                  Ovc ovc=util.getChildEnrollmentDaoInstance().getOvc(beneficiaryId);
+                  if(ovc !=null)
+                  {
+                      return DateManager.compareDates(DateManager.convertDateToString(ovc.getDateOfEnrollment(), DateManager.DB_DATE_FORMAT),DateManager.processMthDayYearToMysqlFormat(mthDayYear));
+                  }
+              }
+          }
+      }
+      catch(Exception ex)
+      {
+          ex.printStackTrace();
+      }
+      return false;//DateManager.compareDates(DateManager.processMthDayYearToMysqlFormat(mthDayYear), DateManager.getCurrentDate());
+  }
   /*public static boolean gbvBeneficiaryExist(String beneficiaryId)
   {
       try

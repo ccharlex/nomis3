@@ -17,5 +17,6 @@
     <property name="level2OuId" column="LEVEL2OUID" type="string"/>
     <property name="assignedLevel3OuIds" column="ASSIGNEDLEVEL3OUIDS" type="string"/>
     <property name="services" column="SERVICES" type="string"/>
+    <property name="legacyId" column="LEGACYID" type="string"/>
   </class>
 </hibernate-mapping>

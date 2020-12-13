@@ -396,8 +396,14 @@ function setActionName(val)
                                 <html:hidden property="beneficiaryId" styleId="beneficiaryId" />
                                 <html:hidden property="hhName" styleId="hhName" />
                             <center>
-                                <table>
-                                    <tr><td colspan="4" align="center"><logic:present name="accessErrorMsg">${accessErrorMsg}</logic:present></td></tr>
+                                <table> 
+                                    <tr><td colspan="4" align="center">
+                                            <logic:present name="accessErrorMsg">${accessErrorMsg}</logic:present>
+                                            
+                                        </td></tr>
+                                    <tr><td colspan="4" align="center" style="font-size: 14px; font-weight: bold; color: red">
+                                            <logic:present name="ahmWithdrawnMessage">${ahmWithdrawnMessage}</logic:present>
+                                        </td></tr>
                                     <tr><td colspan="4" align="center">Caregivers and other adult members of household </td></tr>
                                       <jsp:include page="../includes/OrganizationUnitHeader.jsp" />                                  
                                     <tr><td colspan="4" align="center" style="color:red"><html:errors/></td></tr>
@@ -472,13 +478,18 @@ function setActionName(val)
                                             <td align="right">Marital status</td>
                                         <td>
                                             <html:select property="maritalStatus" styleId="maritalStatus">
-                                                <html:option value="0">select...</html:option>
+                                                <logic:present name="maritalStatusList">
+                                                    <logic:iterate name="maritalStatusList" id="maritalStatus">
+                                                        <html:option value="${maritalStatus.value}">${maritalStatus.name}</html:option>
+                                                    </logic:iterate>
+                                                </logic:present>
+                                                <%--<html:option value="0">select...</html:option>
                                                 <html:option value="1">Single/Never married</html:option>
                                                 <html:option value="2">Separated</html:option>
                                                 <html:option value="3">Married</html:option>
                                                 <html:option value="4">Widowed</html:option>
                                                 <html:option value="5">Divorced</html:option>
-                                                
+                                                --%>
                                             </html:select>
                                         </td>
                                      </tr>
@@ -550,12 +561,17 @@ function setActionName(val)
                                         <td>
                                             <html:select property="occupation" styleId="occupation">
                                                 <html:option value="0">select...</html:option>
-                                                <html:option value="1">Formally employed</html:option>
+                                                <logic:present name="occupationList">
+                                                    <logic:iterate name="occupationList" id="occupation">
+                                                        <html:option value="${occupation.value}">${occupation.name}</html:option>
+                                                    </logic:iterate>
+                                                </logic:present>
+                                                <%--<html:option value="1">Formally employed</html:option>
                                                 <html:option value="2">Informally employed</html:option>
                                                 <html:option value="3">Self employed</html:option>
                                                 <html:option value="4">Retired pensioner</html:option>
                                                 <html:option value="5">Retired non-pensioner</html:option>
-                                                <html:option value="6">Unemployed</html:option>
+                                                <html:option value="6">Unemployed</html:option>--%>
                                             </html:select>
                                         </td>
                                      </tr>

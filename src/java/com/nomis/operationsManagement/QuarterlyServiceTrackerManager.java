@@ -156,7 +156,7 @@ public class QuarterlyServiceTrackerManager
            ex.printStackTrace();
        }
    }*/
-   private int setBeneficiaryStatus(QuarterlyServiceTracker qst,String userName)
+   /*private int setBeneficiaryStatus(QuarterlyServiceTracker qst,String userName)
    {
        int result=0;
        try
@@ -170,18 +170,7 @@ public class QuarterlyServiceTrackerManager
                    Ovc ovc=util.getChildEnrollmentDaoInstance().getOvc(qst.getBeneficiaryId());
                    if(ovc !=null)
                    {
-                       //If this beneficiary is active, update the date of current status only
-                       /*if(ovc.getCurrentEnrollmentStatus()==AppConstant.ACTIVE_NUM)
-                       {
-                           ovc.setDateOfCurrentStatus(qst.getServiceDate());
-                           if(ovc.getDateOfCurrentStatus().before(qst.getServiceDate()))
-                           {//Update current status only if this is more recent than the current enrollment status of the child
-                             util.getChildEnrollmentDaoInstance().updateOvc(ovc, false, false);
-                           }
-                           esm.saveOvcEnrollmentStatusHistory(ovc, 3,userName);
-                       }
-                       else
-                       {*/
+                       
                            //get the new status and set it
                            int newStatus=getNewBeneficiaryStatus(qst,ovc.getDateOfEnrollment());
                            if(newStatus>0)
@@ -190,10 +179,10 @@ public class QuarterlyServiceTrackerManager
                                //
                                if(ovc.getDateOfCurrentStatus().before(qst.getServiceDate()))
                                {//Update current status only if this is more recent than the current enrollment status of the child
-                                   ovc.setDateOfCurrentStatus(qst.getServiceDate());
+                                   ovc.setDateOfCurrentEnrollmentStatus(qst.getServiceDate());
                                    util.getChildEnrollmentDaoInstance().updateOvc(ovc,false,false);
                                }
-                               ovc.setDateOfCurrentStatus(qst.getServiceDate());
+                               ovc.setDateOfCurrentEnrollmentStatus(qst.getServiceDate());
                                esm.saveOvcEnrollmentStatusHistory(ovc, 3,userName);
                            }
                        //}
@@ -204,16 +193,7 @@ public class QuarterlyServiceTrackerManager
                    AdultHouseholdMember ahm=util.getAdultHouseholdMemberDaoInstance().getAdultHouseholdMember(qst.getBeneficiaryId());
                    if(ahm !=null)
                    {
-                       //If this beneficiary is active, update the date of current status only and save
-                       /*if(ahm.getCurrentEnrollmentStatus()==AppConstant.ACTIVE_NUM)
-                       {
-                           ahm.setDateOfCurrentEnrollmentStatus(qst.getServiceDate());
-                           if(ahm.getDateOfCurrentEnrollmentStatus().before(qst.getServiceDate()))
-                           util.getAdultHouseholdMemberDaoInstance().updateAdultHouseholdMember(ahm);
-                           esm.saveAdultHouseholdMemberEnrollmentStatusHistory(ahm, 3,userName);
-                       }
-                       else
-                       {*/
+                       
                            //get the new status and set it
                            int newStatus=getNewBeneficiaryStatus(qst,ahm.getDateOfEnrollment());
                            if(newStatus>0)
@@ -238,7 +218,7 @@ public class QuarterlyServiceTrackerManager
            ex.printStackTrace();
        }
        return result;
-   }
+   }*/
    private int getNewBeneficiaryStatus(QuarterlyServiceTracker qst,Date dateOfEnrollment)
    {
        int status=0;
@@ -559,7 +539,7 @@ public class QuarterlyServiceTrackerManager
                    qst=(QuarterlyServiceTracker)objArray[1];
                    totalScore=getTotalQuarterlyServiceScore(qst,previousQuarter);
                    ovc.setCurrentEnrollmentStatus(AppConstant.INACTIVE_NUM);
-                   ovc.setDateOfCurrentStatus(DateManager.getCurrentDateInstance());
+                   ovc.setDateOfCurrentEnrollmentStatus(DateManager.getCurrentDateInstance());
                    if(totalScore==1)
                    {
                        yearOfEnrollment=DateManager.getYear(ovc.getDateOfEnrollment());

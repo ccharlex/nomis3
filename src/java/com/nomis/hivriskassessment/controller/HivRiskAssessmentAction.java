@@ -6,9 +6,9 @@ package com.nomis.hivriskassessment.controller;
 
 import com.nomis.operationsManagement.AccessManager;
 import com.nomis.operationsManagement.CommunityWorkerRecordsManager;
-import com.nomis.operationsManagement.HivRiskAssessmentManager;
 import com.nomis.operationsManagement.OrganizationUnitAttributesManager;
 import com.nomis.operationsManagement.UserActivityManager;
+import com.nomis.ovc.business.Beneficiary;
 import com.nomis.ovc.business.DatasetSetting;
 import com.nomis.ovc.business.HivRiskAssessment;
 import com.nomis.ovc.business.HouseholdEnrollment;
@@ -18,7 +18,8 @@ import com.nomis.ovc.dao.DaoUtility;
 import com.nomis.ovc.metadata.OrganizationUnit;
 import com.nomis.ovc.util.AppConstant;
 import com.nomis.ovc.util.AppManager;
-import com.nomis.ovc.util.DatabasetManager;
+import com.nomis.ovc.util.AppUtility;
+import com.nomis.ovc.util.DatasetManager;
 import com.nomis.ovc.util.DateManager;
 import com.nomis.ovc.util.HivPropertiesManager;
 import com.nomis.ovc.util.UniqueIdManager;
@@ -64,8 +65,8 @@ public class HivRiskAssessmentAction extends org.apache.struts.action.Action {
         OrganizationUnitAttributesManager ouaManager=new OrganizationUnitAttributesManager();
         AppManager appManager=new AppManager();
         User user=appManager.getCurrentUser(session);
-        DatasetSetting dsts=util.getDatasetSettingDaoInstance().getDatasetSettingByModuleId(DatabasetManager.getHivRiskAsmtModuleId());
-        if(dsts !=null && dsts.getDatasetId().equalsIgnoreCase(DatabasetManager.getNatHivRiskAsmtDatasetId()))
+        DatasetSetting dsts=util.getDatasetSettingDaoInstance().getDatasetSettingByModuleId(DatasetManager.getHivRiskAsmtModuleId());
+        if(dsts !=null && dsts.getDatasetId().equalsIgnoreCase(DatasetManager.getNatHivRiskAsmtDatasetId()))
         {
             return mapping.findForward("NationalHivRiskAssessmentForm");
         }
@@ -96,6 +97,8 @@ public class HivRiskAssessmentAction extends org.apache.struts.action.Action {
         
         if(requiredAction==null)
         {
+            //beneficiaryid is set to null in the setWithdrawalStatusMessage method to reset the session and button to initial values
+            setWithdrawalStatusMessage(session,null,AppConstant.FALSEVALUE,AppConstant.TRUEVALUE);
             hracform.reset(mapping, request);
             setButtonState(session,"false","true");
             return mapping.findForward(SUCCESS);
@@ -216,7 +219,7 @@ public class HivRiskAssessmentAction extends org.apache.struts.action.Action {
                     if(ovc.getCurrentHivStatus()==AppConstant.HIV_POSITIVE_NUM)
                     {
                         if(ovc.getDateOfCurrentHivStatus().before(dateOfAssessment))
-                        setOvcDetails(hracform,session);
+                        //setOvcDetails(hracform,session);
                         hracform.setDateOfAssessment(hracformDateOfAssessment);
                         disableChildTestedControl(session,"true");
                         disableAdolescentControls(session,ovcId);
@@ -225,7 +228,7 @@ public class HivRiskAssessmentAction extends org.apache.struts.action.Action {
                     }
                     else
                     {
-                        setOvcDetails(hracform,session);
+                        //setOvcDetails(hracform,session);
                         hracform.setDateOfAssessment(hracformDateOfAssessment);
                         disableChildTestedControl(session,"false");
                         disableAdolescentControls(session,ovcId);
@@ -235,6 +238,7 @@ public class HivRiskAssessmentAction extends org.apache.struts.action.Action {
                 }
                 
             }
+            setOvcDetails(hracform,session);
             return mapping.findForward(SUCCESS);
         }
         else if(requiredAction.equalsIgnoreCase("save"))
@@ -275,6 +279,39 @@ public class HivRiskAssessmentAction extends org.apache.struts.action.Action {
             setButtonState(session,"false","true");
         }
         return mapping.findForward(SUCCESS);
+    }
+    private void setWithdrawalStatusMessage(HttpSession session,String beneficiaryId,String saveBtnDisabledValue,String modifyBtnDisabledValue) throws Exception
+    {
+        AppUtility appUtil=new AppUtility();
+        String attributeName="hraWithdrawnMessage";
+        if(beneficiaryId !=null)
+        {
+            DaoUtility util=new DaoUtility();
+            Beneficiary beneficiary=util.getChildEnrollmentDaoInstance().getOvc(beneficiaryId);
+            if(beneficiary !=null)
+            {
+                if(appUtil.getBeneficiaryWithrawnMessage(beneficiary.getCurrentEnrollmentStatus()) !=null)
+                {
+                    setButtonState(session,AppConstant.TRUEVALUE,AppConstant.TRUEVALUE);
+                    session.setAttribute(attributeName, appUtil.getBeneficiaryWithrawnMessage(beneficiary.getCurrentEnrollmentStatus()));
+                }
+                else
+                {
+                    session.removeAttribute(attributeName);
+                    setButtonState(session,saveBtnDisabledValue,modifyBtnDisabledValue);
+                }
+            }
+            else
+            {
+                session.removeAttribute(attributeName);
+                setButtonState(session,saveBtnDisabledValue,modifyBtnDisabledValue);
+            }
+        }
+        else
+        {
+            session.removeAttribute(attributeName);
+            setButtonState(session,saveBtnDisabledValue,modifyBtnDisabledValue);
+        }
     }
     private void saveUserActivity(String userName,String userAction,String description)
     {
@@ -384,6 +421,12 @@ public class HivRiskAssessmentAction extends org.apache.struts.action.Action {
                         disableFieldset1Controls(session,"false");
                     }
                 }
+                setWithdrawalStatusMessage(session,hracform.getOvcId(),AppConstant.TRUEVALUE,AppConstant.FALSEVALUE);
+                //setButtonState(session,"true","false");
+            }
+            else
+            {
+                setWithdrawalStatusMessage(session,hracform.getOvcId(),AppConstant.FALSEVALUE,AppConstant.TRUEVALUE);
             }
         }
         catch(Exception ex)

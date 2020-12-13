@@ -4,6 +4,7 @@
  */
 package com.nomis.ovc.dao;
 
+import com.nomis.ovc.business.HouseholdEnrollment;
 import com.nomis.ovc.business.NutritionAssessment;
 import com.nomis.ovc.business.NutritionStatus;
 import com.nomis.ovc.business.Ovc;
@@ -28,6 +29,48 @@ public class NutritionAssessmentDaoImpl implements NutritionAssessmentDao
     Session session;
     Transaction tx;
     SessionFactory sessions;
+    public List getNutritionAssessmentRecords(ReportParameterTemplate rpt) throws Exception
+    {
+        List mainList=new ArrayList();
+        try
+        {
+            SubQueryGenerator sqg=new SubQueryGenerator();
+            String additionalOrgUnitQuery="";
+            if(rpt !=null && rpt.getLevel2OuId() !=null && rpt.getLevel2OuId().trim().length()>0 && !rpt.getLevel2OuId().equalsIgnoreCase("select") && !rpt.getLevel2OuId().equalsIgnoreCase("All"))
+            {
+                additionalOrgUnitQuery=sqg.getOrganizationUnitQuery(rpt);
+            }
+            String query=SubQueryGenerator.getHheOvcNutritionAssessmentOrganizationUnitQuery()+additionalOrgUnitQuery+sqg.getNutritionAssessmentLastModifiedDateQuery(rpt.getStartDate(),rpt.getEndDate());
+            System.err.println(query);
+            session = HibernateUtil.getSession();
+            tx = session.beginTransaction();
+            List list = session.createQuery(query).list();
+            tx.commit();
+            closeSession();
+            if(list !=null)
+            {
+                HouseholdEnrollment hhe=null;
+                Ovc ovc=null;
+                NutritionAssessment na=null;
+                for(Object obj:list)
+                {
+                    Object[] objArray=(Object[])obj;
+                    hhe=(HouseholdEnrollment)objArray[0];
+                    na=(NutritionAssessment)objArray[2];
+                    ovc=(Ovc)objArray[1];
+                    ovc.setHhe(hhe);
+                    na.setOvc(ovc);
+                    mainList.add(na);
+                }
+            }
+        }
+         catch (Exception ex)
+         {
+             closeSession();
+            throw new Exception(ex);
+         }
+        return mainList;
+    }
     public List getNutritionAssessmentRecordsForExport(ReportParameterTemplate rpt) throws Exception
     {
         List mainList=new ArrayList();

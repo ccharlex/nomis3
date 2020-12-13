@@ -25,5 +25,19 @@
     <property name="stableAdultInHousehold" column="STABLEADULTINHOUSEHOLD" type="int"/>
     <property name="violenceIncidenceReport" column="VIOLENCEINCIDENCEREPORT" type="int"/>
     <property name="volunteerName" column="VOLUNTEERNAME" type="string"/>
+    
+    <property name="adolescentInVoctraining" column="ADOLINVOCTRAINING" type="int"/>
+    <property name="caregiverDisclosedHivStatus" column="CAREGIVERDISCLOSEDHIVSTATUS" type="int"/>
+    <property name="cgiversCompletedParentingCourse" column="CAREGIVERSCOMPLETEDPARENTINGCOURSE" type="int"/>
+    <property name="childHeadedHhLinkedToServices" column="CHILDHEADEDHHLINKEDTOSERVICES" type="int"/>
+    <property name="childWithdrawnOrSad" column="CHILDWITHDRAWNORSAD" type="int"/>
+    <property name="childrenEnrolledInEarlyChildCare" column="CHILDRENENROLLEDINEARLYCHILDCARE" type="int"/>
+    <property name="childrenInHhHaveAdequateHousingAndSpace" column="CHILDRENINHHHAVEADEQUATEHOUSINGANDSPACE" type="int"/>
+    <property name="childrenInNeeedOfHltProvidedHltServices" column="CHILDRENINNEEDOFHLTPROVIDEDHLTSERVICES" type="int"/>
+    <!--<property name="childrenReferredForHivTesting" column="CHILDRENREFERREDFORHIVTESTING" type="int"/>-->
+    <property name="childrenReferredReceivedTestingServices" column="CHILDRENREFERREDRECEIVEDTESTINGSERVICES" type="int"/>
+    <property name="hhDemonstratedAbilityToMeetGoals" column="HHDEMONSTRATEDABILITYTOMEETGOALS" type="int"/>
+    <property name="hhGraduated" column="HHGRADUATED" type="int"/>
+    <property name="vcAtRiskReferredForChildProtection" column="VCATRISKREFERREDFORCHILDPROTECTION" type="int"/>
   </class>
 </hibernate-mapping>

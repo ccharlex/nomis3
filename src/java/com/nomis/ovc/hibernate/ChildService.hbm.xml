@@ -21,5 +21,8 @@
     <property column="RECORDEDBY" name="recordedBy" type="string"/>
     <property column="COMMUNITYWORKER" name="communityWorker" type="string"/>
     <property name="markedForDelete" column="MARKEDFORDELETE" type="int"/>
+    <property name="childAbused" column="CHILDABUSED" type="int"/>
+    <property name="abusedChildLinkedToGovt" column="ABUSEDCHILDLINKEDTOGOVT" type="int"/>
+    <property name="childMissedSchool" column="CHILDMISSEDSCHOOL" type="int"/>
   </class>
 </hibernate-mapping>

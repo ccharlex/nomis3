@@ -128,14 +128,17 @@ public class OrganizationUnitAction extends org.apache.struts.action.Action {
         }
         else if(requiredAction.equalsIgnoreCase("delete"))
         {
-            String uid=request.getParameter("id");
-            OrganizationUnit ou=getOrganizationUnit(ousform);
-            ou.setUid(uid);
-            System.err.println("uid is "+uid);
-            util.getOrganizationUnitDaoInstance().deleteOrganizationUnit(ou);
-            saveUserActivity(userName,moduleName,"Requested Organization unit record with name "+ou.getName()+" be deleted");
-            ousform.reset(mapping, request);
-            generateOrgUnitList(session);
+            if(AppUtility.isMetadataAccessEnabled())
+            {
+                String uid=request.getParameter("id");
+                OrganizationUnit ou=getOrganizationUnit(ousform);
+                ou.setUid(uid);
+                System.err.println("uid is "+uid);
+                util.getOrganizationUnitDaoInstance().deleteOrganizationUnit(ou);
+                saveUserActivity(userName,moduleName,"Requested Organization unit record with name "+ou.getName()+" be deleted");
+                ousform.reset(mapping, request);
+                generateOrgUnitList(session);
+            }
             return mapping.findForward(SUCCESS);
         }
         return mapping.findForward(SUCCESS);

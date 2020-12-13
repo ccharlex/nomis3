@@ -5,8 +5,12 @@
 package com.nomis.operationsManagement;
 
 
+import com.nomis.ovc.dao.DaoUtility;
 import com.nomis.ovc.util.DateManager;
+import com.nomis.ovc.util.DateParamenterTemplate;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  *
@@ -319,5 +323,159 @@ public class FinancialYearManager
         else if(month>6 && month<10)
         previousQuarter=3;
         return previousQuarter;
+    }
+    public List getListOfDateParameterTemplatesForQuarterlyReport()
+    {
+        List list=new ArrayList();
+        try
+        {
+            DaoUtility util=new DaoUtility();
+            List yearList=util.getHouseholdEnrollmentDaoInstance().getDistinctYearOfAssessment();
+            if(yearList !=null && !yearList.isEmpty())
+            {
+                String startOfQuarter1=null;
+                String startOfQuarter2=null;
+                String startOfQuarter3=null;
+                String startOfQuarter4=null;
+                String endOfQuarter1=null;
+                String endOfQuarter2=null;
+                String endOfQuarter3=null;
+                String endOfQuarter4=null;
+                String quarter1Display=null;
+                String quarter2Display=null;
+                String quarter3Display=null;
+                String quarter4Display=null;
+                
+                int firstYearOfAssessment=Integer.parseInt(yearList.get(0).toString());
+                String currentDate=DateManager.getCurrentDate();
+                int currentYear=Integer.parseInt(currentDate.substring(0, 4));
+                if(firstYearOfAssessment <= currentYear)
+                {
+                    DateParamenterTemplate dpt=new DateParamenterTemplate();
+                    for(int i=currentYear; i>=firstYearOfAssessment; i--)
+                    {
+                        startOfQuarter2=i+"-01"+"-01";
+                        startOfQuarter3=i+"-04"+"-01";
+                        startOfQuarter4=i+"-07"+"-01";
+                        startOfQuarter1=i+"-10"+"-01";
+                        
+                        endOfQuarter2=DateManager.convertDateToString(getEndDateOfQuarter(DateManager.getDateInstance(startOfQuarter2)),DateManager.DB_DATE_FORMAT);
+                        endOfQuarter3=DateManager.convertDateToString(getEndDateOfQuarter(DateManager.getDateInstance(startOfQuarter3)),DateManager.DB_DATE_FORMAT);
+                        endOfQuarter4=DateManager.convertDateToString(getEndDateOfQuarter(DateManager.getDateInstance(startOfQuarter4)),DateManager.DB_DATE_FORMAT);
+                        endOfQuarter1=DateManager.convertDateToString(getEndDateOfQuarter(DateManager.getDateInstance(startOfQuarter1)),DateManager.DB_DATE_FORMAT);
+                        
+                        quarter1Display=getReportQuarter(DateManager.getDateInstance(startOfQuarter1));
+                        quarter2Display=getReportQuarter(DateManager.getDateInstance(startOfQuarter2));
+                        quarter3Display=getReportQuarter(DateManager.getDateInstance(startOfQuarter3));
+                        quarter4Display=getReportQuarter(DateManager.getDateInstance(startOfQuarter4));
+                        
+                        dpt=new DateParamenterTemplate();
+                        dpt.setDisplayName(quarter4Display);
+                        dpt.setValue(startOfQuarter4+":"+endOfQuarter4);
+                        list.add(dpt);
+                        
+                        dpt=new DateParamenterTemplate();
+                        dpt.setDisplayName(quarter3Display);
+                        dpt.setValue(startOfQuarter3+":"+endOfQuarter3);
+                        list.add(dpt);
+                        
+                        dpt=new DateParamenterTemplate();
+                        dpt.setDisplayName(quarter2Display);
+                        dpt.setValue(startOfQuarter2+":"+endOfQuarter2);
+                        list.add(dpt);
+                        
+                        dpt=new DateParamenterTemplate();
+                        dpt.setDisplayName(quarter1Display);
+                        dpt.setValue(startOfQuarter1+":"+endOfQuarter1);
+                        list.add(dpt);
+                        
+                        System.err.println("Display value is "+dpt.getDisplayName()+" Value is "+dpt.getValue());
+                    }
+                }
+            }
+            /*System.err.println("date is "+date);
+            System.err.println("getReportQuarter(DateManager.getDateInstance(date)) is "+getReportQuarter(DateManager.getDateInstance(date)));
+            System.err.println("getStartDateOfQuarter(DateManager.getDateInstance(date)) is "+DateManager.convertDateToString(getStartDateOfQuarter(DateManager.getDateInstance(date)),DateManager.DB_DATE_FORMAT));
+            System.err.println("getEndDateOfQuarter(DateManager.getDateInstance(date)) is "+DateManager.convertDateToString(getEndDateOfQuarter(DateManager.getDateInstance(date)),DateManager.DB_DATE_FORMAT));
+            */
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        return list;
+    }
+    public List getListOfDateParameterTemplatesForSemiAnnualReport()
+    {
+        List list=new ArrayList();
+        try
+        {
+            DaoUtility util=new DaoUtility();
+            List yearList=util.getHouseholdEnrollmentDaoInstance().getDistinctYearOfAssessment();
+            if(yearList !=null && !yearList.isEmpty())
+            {
+                String startOfQuarter1=null;
+                String startOfQuarter2=null;
+                String startOfQuarter3=null;
+                String startOfQuarter4=null;
+                String endOfQuarter1=null;
+                String endOfQuarter2=null;
+                String endOfQuarter3=null;
+                String endOfQuarter4=null;
+                String quarter1Display=null;
+                String quarter2Display=null;
+                String quarter3Display=null;
+                String quarter4Display=null;
+                
+                int firstYearOfAssessment=Integer.parseInt(yearList.get(0).toString());
+                String currentDate=DateManager.getCurrentDate();
+                int currentYear=Integer.parseInt(currentDate.substring(0, 4));
+                if(firstYearOfAssessment <= currentYear)
+                {
+                    DateParamenterTemplate dpt=new DateParamenterTemplate();
+                    for(int i=currentYear; i>=firstYearOfAssessment; i--)
+                    {
+                        startOfQuarter2=i+"-01"+"-01";
+                        startOfQuarter3=i+"-04"+"-01";
+                        startOfQuarter4=i+"-07"+"-01";
+                        startOfQuarter1=(i-1)+"-10"+"-01";
+                        
+                        endOfQuarter2=DateManager.convertDateToString(getEndDateOfQuarter(DateManager.getDateInstance(startOfQuarter2)),DateManager.DB_DATE_FORMAT);
+                        endOfQuarter3=DateManager.convertDateToString(getEndDateOfQuarter(DateManager.getDateInstance(startOfQuarter3)),DateManager.DB_DATE_FORMAT);
+                        endOfQuarter4=DateManager.convertDateToString(getEndDateOfQuarter(DateManager.getDateInstance(startOfQuarter4)),DateManager.DB_DATE_FORMAT);
+                        endOfQuarter1=DateManager.convertDateToString(getEndDateOfQuarter(DateManager.getDateInstance(startOfQuarter1)),DateManager.DB_DATE_FORMAT);
+                        
+                        quarter1Display=getReportQuarter(DateManager.getDateInstance(startOfQuarter1));
+                        quarter2Display=getReportQuarter(DateManager.getDateInstance(startOfQuarter2));
+                        quarter3Display=getReportQuarter(DateManager.getDateInstance(startOfQuarter3));
+                        quarter4Display=getReportQuarter(DateManager.getDateInstance(startOfQuarter4));
+                        
+                        dpt=new DateParamenterTemplate();
+                        dpt.setDisplayName("APR"+i);
+                        dpt.setValue(startOfQuarter3+":"+endOfQuarter4);
+                        list.add(dpt);
+                        //System.err.println("Display value is "+dpt.getDisplayName()+" Value is "+dpt.getValue());
+                                                
+                        dpt=new DateParamenterTemplate();
+                        dpt.setDisplayName("SAPR"+i);
+                        dpt.setValue(startOfQuarter1+":"+endOfQuarter2);
+                        list.add(dpt);
+                        
+                                                
+                        //System.err.println("Display value is "+dpt.getDisplayName()+" Value is "+dpt.getValue());
+                    }
+                }
+            }
+            /*System.err.println("date is "+date);
+            System.err.println("getReportQuarter(DateManager.getDateInstance(date)) is "+getReportQuarter(DateManager.getDateInstance(date)));
+            System.err.println("getStartDateOfQuarter(DateManager.getDateInstance(date)) is "+DateManager.convertDateToString(getStartDateOfQuarter(DateManager.getDateInstance(date)),DateManager.DB_DATE_FORMAT));
+            System.err.println("getEndDateOfQuarter(DateManager.getDateInstance(date)) is "+DateManager.convertDateToString(getEndDateOfQuarter(DateManager.getDateInstance(date)),DateManager.DB_DATE_FORMAT));
+            */
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        return list;
     }
 }

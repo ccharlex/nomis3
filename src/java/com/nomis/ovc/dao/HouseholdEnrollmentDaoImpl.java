@@ -28,6 +28,36 @@ public class HouseholdEnrollmentDaoImpl implements HouseholdEnrollmentDao
     SessionFactory sessions;
     SubQueryGenerator sqg=new SubQueryGenerator();
     String markedForDeleteQuery=" and hhe.markedForDelete=0";
+    public List getDistinctYearOfAssessment() throws Exception
+    {
+        List list=new ArrayList();
+        try
+        {
+            
+            String query="select distinct YEAR(hhe.dateOfAssessment) from HouseholdEnrollment hhe order by YEAR(hhe.dateOfAssessment) asc";
+            System.err.println("query in getDistinctYearOfEnrollment() is "+query);
+            session = HibernateUtil.getSession();
+            tx = session.beginTransaction();
+            list = session.createQuery(query).list();
+            tx.commit();
+            closeSession(session);
+            if(list !=null && !list.isEmpty())
+            {
+                int i=0;
+                for(Object obj:list)
+                {
+                    System.err.println("Year at index "+i+" is "+obj);
+                    i++;
+                }
+            }
+        }
+         catch (Exception ex)
+         {
+             closeSession(session);
+            throw new Exception(ex);
+         }
+        return list;
+    }
     public int getNumberOfHouseholdsEnrolled(ReportParameterTemplate rpt,String startDate,String endDate,int enrollmentStatus) throws Exception
     {
         int count=0;
@@ -40,9 +70,12 @@ public class HouseholdEnrollmentDaoImpl implements HouseholdEnrollmentDao
                 additionalOrgUnitQuery=sqg.getOrganizationUnitQuery(rpt);
             }
             String enrollmentStatusQuery=SubQueryGenerator.getHouseholdEnrollmentStatusQuery(enrollmentStatus);
+            
+            String query="select count(distinct hhe.hhUniqueId) "+SubQueryGenerator.getHheAdultHouseholdMemberOrganizationUnitQuery()+enrollmentStatusQuery+additionalOrgUnitQuery+SubQueryGenerator.getHheAssessmentDateQuery(startDate,endDate);
+            System.err.println("query in getNumberOfHouseholdsEnrolled is "+query);
             session = HibernateUtil.getSession();
             tx = session.beginTransaction();
-            List list= session.createQuery("select count(distinct hhe.hhUniqueId) "+SubQueryGenerator.getHheAdultHouseholdMemberOrganizationUnitQuery()+enrollmentStatusQuery+additionalOrgUnitQuery+SubQueryGenerator.getHheAssessmentDateQuery(startDate,endDate)).list();
+            List list= session.createQuery(query).list();
             tx.commit();
             closeSession(session);
             if(list !=null && !list.isEmpty())
@@ -493,7 +526,7 @@ public class HouseholdEnrollmentDaoImpl implements HouseholdEnrollmentDao
         {
             session = HibernateUtil.getSession();
             tx = session.beginTransaction();
-            list = session.createQuery("select distinct hhe.dateOfEnrollment from HouseholdEnrollment hhe order by hhe.dateOfEnrollment asc").list();
+            list = session.createQuery("select distinct hhe.dateOfAssessment from HouseholdEnrollment hhe order by hhe.dateOfAssessment asc").list();
             tx.commit();
             closeSession(session);
          }

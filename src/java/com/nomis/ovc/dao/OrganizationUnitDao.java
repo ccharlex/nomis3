@@ -22,7 +22,9 @@ public interface OrganizationUnitDao
     public List getOrganizationUnitsByOuLevel(int oulevel) throws Exception;
     public List getOrganizationUnityByParentId(String pid) throws Exception;
     public OrganizationUnit getOrganizationUnitByNameAndLevel(String ouname,int level) throws Exception;
-    public OrganizationUnit createWard(OrganizationUnit parentOu,String wardName) throws Exception;
+    public OrganizationUnit createWard(OrganizationUnit parentOu,String wardName,String ouCode,String legacyId) throws Exception;
     public OrganizationUnit getOrganizationUnitByParentIdAndChildName(String pid,String ouname) throws Exception;
     public List getParentOuList(List ouList) throws Exception;
+    public OrganizationUnit getOrganizationUnitByOuCodeAndOuLevel(String oucode,int ouLevel) throws Exception;
+    public OrganizationUnit getOrganizationUnitByLegacyId(String legacyId) throws Exception;
 }

@@ -57,6 +57,24 @@ public class SingleOptionManager implements Serializable
         }
         return scopt;
     }
+    public static SingleChoiceOption getSingleChoiceOption(String name)
+    {//InStringFormat
+        SingleChoiceOption scopt=new SingleChoiceOption();
+        if(name !=null)
+        {
+            if(name.equalsIgnoreCase("Yes"))
+            {
+               scopt.setName(name);
+               scopt.setValue(AppConstant.YES_OPTION_NUM);
+            }
+            else if(name.equalsIgnoreCase("No"))
+            {
+               scopt.setName(name);
+               scopt.setValue(AppConstant.NO_OPTION_NUM);
+            }
+        }
+        return scopt;
+    }
     public SingleChoiceOption getChildAtRiskOption(int value)
     {
         SingleChoiceOption scopt=new SingleChoiceOption();

@@ -55,7 +55,7 @@ public class CareAndSupportForm extends org.apache.struts.action.ActionForm {
     private int missedARVsRecently;
     private String[] reasonsPeopleSkipARV;
     private int viralLoadTestDone;
-    private String dateOfViralLoadTest;
+    private String dateOfViralLoadSampleCollection;
     private int viralLoadResultKnown;
     private int viralLoadResult;
     private String reasonViralLoadNotDone;
@@ -64,6 +64,9 @@ public class CareAndSupportForm extends org.apache.struts.action.ActionForm {
     private int soresRashPainExperience;
     private String dateOfNextAppointment;
     private String dateOfAssessment;
+    private String dateOfLastPickup;
+    private int numberOfDaysOfRefill;
+    
     
     public CareAndSupportForm() {
         super();
@@ -174,12 +177,28 @@ public class CareAndSupportForm extends org.apache.struts.action.ActionForm {
         this.dateOfNextAppointment = dateOfNextAppointment;
     }
 
-    public String getDateOfViralLoadTest() {
-        return dateOfViralLoadTest;
+    public String getDateOfLastPickup() {
+        return dateOfLastPickup;
     }
 
-    public void setDateOfViralLoadTest(String dateOfViralLoadTest) {
-        this.dateOfViralLoadTest = dateOfViralLoadTest;
+    public void setDateOfLastPickup(String dateOfLastPickup) {
+        this.dateOfLastPickup = dateOfLastPickup;
+    }
+
+    public String getDateOfViralLoadSampleCollection() {
+        return dateOfViralLoadSampleCollection;
+    }
+
+    public void setDateOfViralLoadSampleCollection(String dateOfViralLoadSampleCollection) {
+        this.dateOfViralLoadSampleCollection = dateOfViralLoadSampleCollection;
+    }
+
+    public int getNumberOfDaysOfRefill() {
+        return numberOfDaysOfRefill;
+    }
+
+    public void setNumberOfDaysOfRefill(int numberOfDaysOfRefill) {
+        this.numberOfDaysOfRefill = numberOfDaysOfRefill;
     }
 
     public int getEnrolledOnTreatment() {
@@ -407,7 +426,9 @@ public void reset(ActionMapping mapping, HttpServletRequest request)
     volunteerName=null;
     facilityId=null;
     reasonsPeopleSkipARV=null;
-    dateOfViralLoadTest=null;
+    dateOfLastPickup=null;
+    numberOfDaysOfRefill=0;
+    dateOfViralLoadSampleCollection=null;
     reasonViralLoadNotDone=null;
     dateOfNextAppointment=null;
     dateOfAssessment=null;
@@ -494,12 +515,12 @@ public void reset(ActionMapping mapping, HttpServletRequest request)
             errors.add("viralLoadTestDone", new ActionMessage("errors.viralLoadTestDone.required"));
             else if(this.getViralLoadTestDone()==1)
             {
-                if(this.getDateOfViralLoadTest()==null || this.getDateOfViralLoadTest().indexOf("/") ==-1)
-                errors.add("dateOfViralLoadTest", new ActionMessage("errors.dateOfViralLoadTest.required"));
+                if(this.getDateOfViralLoadSampleCollection()==null || this.getDateOfViralLoadSampleCollection().indexOf("/") ==-1)
+                errors.add("dateOfViralLoadSampleCollection", new ActionMessage("errors.dateOfViralLoadSampleCollection.required"));
                 else if(beneficiary !=null && beneficiary.getDateEnrolledOnTreatment() !=null && beneficiary.getDateEnrolledOnTreatment().equals(DateManager.getDateInstance(DateManager.DEFAULT_DATE)))
-                errors.add("dateOfViralLoadTest", new ActionMessage("errors.dateEnrolledOnTreatment.incorrect"));
-                else if(beneficiary !=null && beneficiary.getDateEnrolledOnTreatment() !=null && beneficiary.getDateEnrolledOnTreatment().after(DateManager.getDateInstance(getDateOfViralLoadTest())))
-                errors.add("dateOfViralLoadTest", new ActionMessage("errors.dateOfViralLoadTest.beforeDateEnrolledOnTreatment"));
+                errors.add("dateOfViralLoadSampleCollection", new ActionMessage("errors.dateEnrolledOnTreatment.incorrect"));
+                else if(beneficiary !=null && beneficiary.getDateEnrolledOnTreatment() !=null && beneficiary.getDateEnrolledOnTreatment().after(DateManager.getDateInstance(this.getDateOfViralLoadSampleCollection())))
+                errors.add("dateOfViralLoadSampleCollection", new ActionMessage("errors.dateOfViralLoadSampleCollection.beforeDateEnrolledOnTreatment"));
                 else if(this.getViralLoadResultKnown()==0)
                 errors.add("viralLoadResultKnown", new ActionMessage("errors.viralLoadResultKnown.required"));
             }

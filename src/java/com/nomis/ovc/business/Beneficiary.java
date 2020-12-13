@@ -5,6 +5,9 @@
 package com.nomis.ovc.business;
 
 import com.nomis.operationsManagement.BeneficiaryType;
+import com.nomis.ovc.util.EnrollmentStatus;
+import com.nomis.ovc.util.EnrolledOnTreatment;
+import com.nomis.ovc.util.HivStatus;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -56,6 +59,18 @@ public interface Beneficiary extends Serializable
     public int getViralLoad();
     public void setViralLoad(int viralLoad);
     public HouseholdEnrollment getHhe();
-    public void setHhe(HouseholdEnrollment hhe);        
-    public CommunityWorker getCommunityWorker();    
+    public void setHhe(HouseholdEnrollment hhe);
+    public CommunityWorker getCommunityWorker();   
+    public int getCurrentEnrollmentStatus();
+    public void setCurrentEnrollmentStatus(int currentEnrollmentStatus); 
+    public Date getDateOfCurrentEnrollmentStatus();
+    public void setDateOfCurrentEnrollmentStatus(Date dateOfCurrentEnrollmentStatus);
+    public ReferralFacility getReferralFacility();
+    public EnrolledOnTreatment getEnrolledOnTreatmentObject();
+    public EnrollmentStatus getCurrentEnrollmentStatusObj();
+    public HivStatus getCurrentHivStatusObject();
+    public HivStatus getBaselineHivStatusObject();
+    public String getBaselineAgeUnitName();
+    public String getCurrentAgeUnitName();
+    public String getBeneficiaryTypeName();
 }

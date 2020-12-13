@@ -21,6 +21,616 @@ public class DatabaseUtilities
    {
        DatabaseUtilities.connectionParameters=connectionParameters;
    }
+   //ALTER TABLE [table] ALTER COLUMN [column] SET DATA TYPE [type];
+   public boolean updateCurrentHivStatusForChildAndAdultHouseholdMemberTables()
+    {
+        boolean executed=false;
+        String tableName="CHILDENROLLMENT";
+        String tableName1="ADULTHOUSEHOLDMEMBER";
+        String columnName="MONTHSOFTRANSPORTATIONSUPPORTCONTROL";
+        String columnName1="MONTHSOFTRANSPORTATIONSUPPORT";
+        String query="";
+        int updateSuccess=0;
+        try
+        {
+            DaoUtility util=new DaoUtility();
+            if(tableExists(tableName))
+            {                   
+                query="UPDATE APP."+tableName+" SET CURRENTHIVSTATUS=BASELINEHIVSTATUS,DATEOFCURRENTHIVSTATUS=DATEOFBASELINEHIVSTATUS WHERE CURRENTHIVSTATUS=0 AND BASELINEHIVSTATUS>0";
+                updateSuccess=util.updateDatabase(query);
+                query="UPDATE APP."+tableName+" SET CURRENTHIVSTATUS=BASELINEHIVSTATUS,DATEOFCURRENTHIVSTATUS=DATEOFBASELINEHIVSTATUS WHERE (CURRENTHIVSTATUS=3 OR CURRENTHIVSTATUS=4) AND (BASELINEHIVSTATUS=1 OR BASELINEHIVSTATUS=2)";
+                updateSuccess=util.updateDatabase(query);
+            }
+            if(tableExists(tableName1))
+            {                   
+                query="UPDATE APP."+tableName1+" SET CURRENTHIVSTATUS=BASELINEHIVSTATUS,DATEOFCURRENTHIVSTATUS=DATEOFBASELINEHIVSTATUS WHERE CURRENTHIVSTATUS=0 AND BASELINEHIVSTATUS>0";
+                updateSuccess=util.updateDatabase(query);
+                query="UPDATE APP."+tableName1+" SET CURRENTHIVSTATUS=BASELINEHIVSTATUS,DATEOFCURRENTHIVSTATUS=DATEOFBASELINEHIVSTATUS WHERE (CURRENTHIVSTATUS=3 OR CURRENTHIVSTATUS=4) AND (BASELINEHIVSTATUS=1 OR BASELINEHIVSTATUS=2)";
+                updateSuccess=util.updateDatabase(query);
+            }
+        }       
+        catch(Exception ex)
+        {
+            System.err.println("Error updating "+tableName+" table "+ex.getMessage());
+            NomisLogManager.logStackTrace(ex);
+            return false;
+        }
+        return executed;
+    }
+   public boolean alterSizeOfMonthsOfTransportationSupportInCareAndSupportTable()
+    {
+        boolean executed=false;
+        String tableName="CAREANDSUPPORTCHECKLIST";
+        String columnName="MONTHSOFTRANSPORTATIONSUPPORTCONTROL";
+        String columnName1="MONTHSOFTRANSPORTATIONSUPPORT";
+        String query="";
+        int updateSuccess=0;
+        try
+        {
+            DaoUtility util=new DaoUtility();
+            if(tableExists(tableName))
+            {   
+                if(!columnExists(tableName,columnName))
+                {
+                    query="ALTER TABLE APP."+tableName+" ADD COLUMN "+columnName+" NUMERIC(2) NOT NULL DEFAULT 0";
+                    updateSuccess=util.updateDatabase(query);
+                    query="UPDATE APP."+tableName+" SET "+columnName+"="+columnName1;
+                    updateSuccess=util.updateDatabase(query);
+                    
+                    query="ALTER TABLE APP."+tableName+" DROP COLUMN "+columnName1;
+                    updateSuccess=util.updateDatabase(query);
+                    query="ALTER TABLE APP."+tableName+" ADD COLUMN "+columnName1+" NUMERIC(2) NOT NULL DEFAULT 0";
+                    updateSuccess=util.updateDatabase(query);
+                    query="UPDATE APP."+tableName+" SET "+columnName1+"="+columnName;
+                    updateSuccess=util.updateDatabase(query);
+                }
+            }
+        }       
+        catch(Exception ex)
+        {
+            System.err.println("Error creating "+columnName+" on "+tableName+" table "+ex.getMessage());
+            NomisLogManager.logStackTrace(ex);
+            return false;
+        }
+        return executed;
+    }
+   public boolean addLastDrugPickupAndNumberOfDaysOfRefillToCareAndSupportTable()
+    {
+        boolean executed=false;
+        String tableName="CAREANDSUPPORTCHECKLIST";
+        String columnName="DATEOFLASTDRUGPICKUP";
+        String columnName1="NUMBEROFDAYSOFREFILL";
+        String query="";
+        int updateSuccess=0;
+        try
+        {
+            DaoUtility util=new DaoUtility();
+            if(tableExists(tableName))
+            {   
+                if(!columnExists(tableName,columnName))
+                {
+                    query="ALTER TABLE APP."+tableName+" ADD COLUMN "+columnName+" DATE NOT NULL DEFAULT '1900-01-01'";
+                    updateSuccess=util.updateDatabase(query);   
+                    query="ALTER TABLE APP."+tableName+" ADD COLUMN "+columnName1+" NUMERIC(3) NOT NULL DEFAULT 0";
+                    updateSuccess=util.updateDatabase(query);
+                }
+            }
+        }       
+        catch(Exception ex)
+        {
+            System.err.println("Error creating "+columnName+" on "+tableName+" table "+ex.getMessage());
+            NomisLogManager.logStackTrace(ex);
+            return false;
+        }
+        return executed;
+    }
+   public boolean addVsCategpryToVulnerabilityStatusTable()
+    {
+        boolean executed=false;
+        String tableName="VULNERABILITYSTATUS";
+        String columnName="VSCATEGORY";
+        
+        String query="";
+        int updateSuccess=0;
+        try
+        {
+            DaoUtility util=new DaoUtility();
+            if(tableExists(tableName))
+            {   
+                if(!columnExists(tableName,columnName))
+                {
+                    query="ALTER TABLE APP."+tableName+" ADD COLUMN "+columnName+" NUMERIC(1) NOT NULL DEFAULT 0";
+                    updateSuccess=util.updateDatabase(query);
+                    query="UPDATE APP."+tableName+" SET VSCATEGORY=1 WHERE VSENABLED =1";
+                    updateSuccess=util.updateDatabase(query);
+                    query="UPDATE APP."+tableName+" SET VSCATEGORY=2 WHERE VSENABLED =3";
+                    updateSuccess=util.updateDatabase(query);
+                    query="UPDATE APP."+tableName+" SET VSENABLED=1 WHERE VSENABLED =3";
+                    updateSuccess=util.updateDatabase(query);
+                }
+            }
+        }       
+        catch(Exception ex)
+        {
+            System.err.println("Error creating "+columnName+" on "+tableName+" table "+ex.getMessage());
+            NomisLogManager.logStackTrace(ex);
+            return false;
+        }
+        return executed;
+    }
+   public boolean addReasonsChildMissedSchoolToEduPerfAssessmentTable()
+    {
+        boolean executed=false;
+        String tableName="CHILDEDUCATIONPERFORMANCEASSESSMENT";
+        String columnName="REASONSCHILDMISSEDSCHOOLORVOCTRAINING";
+        
+        String query="";
+        int updateSuccess=0;
+        try
+        {
+            DaoUtility util=new DaoUtility();
+            if(tableExists(tableName))
+            {   
+                if(!columnExists(tableName,columnName))
+                {
+                    query="ALTER TABLE APP."+tableName+" ADD COLUMN "+columnName+" VARCHAR(500)";
+                    updateSuccess=util.updateDatabase(query);   
+                }
+            }
+        }       
+        catch(Exception ex)
+        {
+            System.err.println("Error creating "+columnName+" on "+tableName+" table "+ex.getMessage());
+            NomisLogManager.logStackTrace(ex);
+            return false;
+        }
+        return executed;
+    }
+   public boolean addFieldsFromNomis2ToCareplanAchievementChecklistTable()
+    {
+        boolean executed=false;
+        String tableName="CAREPLANACHIEVEMENTCHECKLIST";
+        String columnName="ADOLINVOCTRAINING";
+        String columnName2="CHILDRENENROLLEDINEARLYCHILDCARE";
+        String columnName3="CAREGIVERDISCLOSEDHIVSTATUS";
+        String columnName4="CHILDRENINNEEDOFHLTPROVIDEDHLTSERVICES";
+        String columnName5="HHDEMONSTRATEDABILITYTOMEETGOALS";
+        String columnName6="VCATRISKREFERREDFORCHILDPROTECTION";
+        String columnName7="CHILDRENINHHHAVEADEQUATEHOUSINGANDSPACE";
+        String columnName8="CAREGIVERSCOMPLETEDPARENTINGCOURSE";
+        String columnName9="CHILDHEADEDHHLINKEDTOSERVICES";
+        String columnName10="HHGRADUATED";
+        String columnName11="CHILDRENREFERREDFORHIVTESTING";
+        String columnName12="CHILDRENREFERREDRECEIVEDTESTINGSERVICES";
+        String columnName13="CHILDWITHDRAWNORSAD";
+        String columnName14="SCORE";
+        String query="";
+        int updateSuccess=0;
+        
+        try
+        {
+            DaoUtility util=new DaoUtility();
+            if(tableExists(tableName))
+            {   
+                if(!columnExists(tableName,columnName))
+                {
+                    query="ALTER TABLE APP."+tableName+" ADD COLUMN "+columnName+" NUMERIC(1) NOT NULL DEFAULT 0";
+                    updateSuccess=util.updateDatabase(query);  
+                    query="ALTER TABLE APP."+tableName+" ADD COLUMN "+columnName2+" NUMERIC(1) NOT NULL DEFAULT 0";
+                    updateSuccess=util.updateDatabase(query);  
+                    query="ALTER TABLE APP."+tableName+" ADD COLUMN "+columnName3+" NUMERIC(1) NOT NULL DEFAULT 0";
+                    updateSuccess=util.updateDatabase(query);
+                    
+                    query="ALTER TABLE APP."+tableName+" ADD COLUMN "+columnName4+" NUMERIC(1) NOT NULL DEFAULT 0";
+                    updateSuccess=util.updateDatabase(query);  
+                    query="ALTER TABLE APP."+tableName+" ADD COLUMN "+columnName5+" NUMERIC(1) NOT NULL DEFAULT 0";
+                    updateSuccess=util.updateDatabase(query);  
+                    query="ALTER TABLE APP."+tableName+" ADD COLUMN "+columnName6+" NUMERIC(1) NOT NULL DEFAULT 0";
+                    updateSuccess=util.updateDatabase(query);
+                    query="ALTER TABLE APP."+tableName+" ADD COLUMN "+columnName7+" NUMERIC(1) NOT NULL DEFAULT 0";
+                    updateSuccess=util.updateDatabase(query);  
+                    query="ALTER TABLE APP."+tableName+" ADD COLUMN "+columnName8+" NUMERIC(1) NOT NULL DEFAULT 0";
+                    updateSuccess=util.updateDatabase(query);  
+                    query="ALTER TABLE APP."+tableName+" ADD COLUMN "+columnName9+" NUMERIC(1) NOT NULL DEFAULT 0";
+                    updateSuccess=util.updateDatabase(query);
+                    query="ALTER TABLE APP."+tableName+" ADD COLUMN "+columnName10+" NUMERIC(1) NOT NULL DEFAULT 0";
+                    updateSuccess=util.updateDatabase(query);
+                    query="ALTER TABLE APP."+tableName+" ADD COLUMN "+columnName11+" NUMERIC(1) NOT NULL DEFAULT 0";
+                    updateSuccess=util.updateDatabase(query);
+                    query="ALTER TABLE APP."+tableName+" ADD COLUMN "+columnName12+" NUMERIC(1) NOT NULL DEFAULT 0";
+                    updateSuccess=util.updateDatabase(query);
+                    query="ALTER TABLE APP."+tableName+" ADD COLUMN "+columnName13+" NUMERIC(1) NOT NULL DEFAULT 0";
+                    updateSuccess=util.updateDatabase(query);
+                    //query="ALTER TABLE APP."+tableName+" ADD COLUMN "+columnName14+" NUMERIC(1) NOT NULL DEFAULT 0";
+                    //updateSuccess=util.updateDatabase(query);
+                }
+            }
+        }       
+        catch(Exception ex)
+        {
+            System.err.println("Error creating "+columnName+" on "+tableName+" table "+ex.getMessage());
+            NomisLogManager.logStackTrace(ex);
+            return false;
+        }
+        return executed;
+    }
+   public boolean addCustomIndicatorsFieldsToChildServiceTable()
+    {
+        boolean executed=false;
+        String tableName="CHILDSERVICE";
+        String columnName="CHILDABUSED";
+        String columnName2="ABUSEDCHILDLINKEDTOGOVT";
+        String columnName3="CHILDMISSEDSCHOOL";
+        String query="";
+        int updateSuccess=0;
+        try
+        {
+            DaoUtility util=new DaoUtility();
+            if(tableExists(tableName))
+            {   
+                if(!columnExists(tableName,columnName))
+                {
+                    query="ALTER TABLE APP."+tableName+" ADD COLUMN "+columnName+" NUMERIC(1) NOT NULL DEFAULT 0";
+                    updateSuccess=util.updateDatabase(query);  
+                    query="ALTER TABLE APP."+tableName+" ADD COLUMN "+columnName2+" NUMERIC(1) NOT NULL DEFAULT 0";
+                    updateSuccess=util.updateDatabase(query);  
+                    query="ALTER TABLE APP."+tableName+" ADD COLUMN "+columnName3+" NUMERIC(1) NOT NULL DEFAULT 0";
+                    updateSuccess=util.updateDatabase(query);   
+                }
+            }
+        }       
+        catch(Exception ex)
+        {
+            System.err.println("Error creating "+columnName+" on "+tableName+" table "+ex.getMessage());
+            NomisLogManager.logStackTrace(ex);
+            return false;
+        }
+        return executed;
+    }
+   public String createOccupationTable()
+    {
+        String tableName="OCCUPATION";
+        String schemaAndTableName="APP."+tableName;
+        String message="";
+        
+        try
+        {
+            DaoUtility util=new DaoUtility();
+            if(!tableExists(tableName))
+            {
+                OccupationManager om=new OccupationManager();
+                String query="CREATE TABLE "+schemaAndTableName+"("
+                + "RECORDID INTEGER GENERATED ALWAYS AS IDENTITY(start with 1, increment by 1) NOT NULL PRIMARY KEY,"
+                + "OCCUPATIONNAME VARCHAR(200) NOT NULL,"
+                + "OCCUPATIONVALUE NUMERIC(2) NOT NULL DEFAULT 0)";
+                                                     
+                int response=updateDatabase(query);
+                if(response==1)
+                {
+                    util.updateDatabase("INSERT INTO "+schemaAndTableName+" (OCCUPATIONNAME,OCCUPATIONVALUE) VALUES ("+om.getOccupation(AppConstant.OCCUPATION_FORMALLYEMPLOYED_NUM).getValue()+",'"+om.getOccupation(AppConstant.OCCUPATION_FORMALLYEMPLOYED_NUM).getName()+"')");
+                    util.updateDatabase("INSERT INTO "+schemaAndTableName+" (OCCUPATIONNAME,OCCUPATIONVALUE) VALUES ("+om.getOccupation(AppConstant.OCCUPATION_INFORMALLYEMPLOYED_NUM).getValue()+",'"+om.getOccupation(AppConstant.OCCUPATION_INFORMALLYEMPLOYED_NUM).getName()+"')");
+                    util.updateDatabase("INSERT INTO "+schemaAndTableName+" (OCCUPATIONNAME,OCCUPATIONVALUE) VALUES ("+om.getOccupation(AppConstant.OCCUPATION_RETIREDNONPENSIONER_NUM).getValue()+",'"+om.getOccupation(AppConstant.OCCUPATION_RETIREDNONPENSIONER_NUM).getName()+"')");
+                    util.updateDatabase("INSERT INTO "+schemaAndTableName+" (OCCUPATIONNAME,OCCUPATIONVALUE) VALUES ("+om.getOccupation(AppConstant.OCCUPATION_RETIREDPENSIONER_NUM).getValue()+",'"+om.getOccupation(AppConstant.OCCUPATION_RETIREDPENSIONER_NUM).getName()+"')");
+                    util.updateDatabase("INSERT INTO "+schemaAndTableName+" (OCCUPATIONNAME,OCCUPATIONVALUE) VALUES ("+om.getOccupation(AppConstant.OCCUPATION_SELFEMPLOYED_NUM).getValue()+",'"+om.getOccupation(AppConstant.OCCUPATION_SELFEMPLOYED_NUM).getName()+"')");
+                    util.updateDatabase("INSERT INTO "+schemaAndTableName+" (OCCUPATIONNAME,OCCUPATIONVALUE) VALUES ("+om.getOccupation(AppConstant.OCCUPATION_UNEMPLOYED_NUM).getValue()+",'"+om.getOccupation(AppConstant.OCCUPATION_UNEMPLOYED_NUM).getName()+"')");
+                }   
+                message=getMessage(tableName,response);
+                System.err.println(message);
+            }  
+        }       
+        catch(Exception ex)
+        {
+            System.err.println("Error creating "+tableName+" table "+ex.getMessage());
+            //return false;
+        }
+        return message;
+    }
+   public boolean addDatimIdToReferralDirectoryTable()
+    {
+        boolean executed=false;
+        String tableName="REFERRALDIRECTORY";
+        String columnName="DATIMID";
+        
+        String query="";
+        int updateSuccess=0;
+        try
+        {
+            DaoUtility util=new DaoUtility();
+            if(tableExists(tableName))
+            {   
+                if(!columnExists(tableName,columnName))
+                {
+                    query="ALTER TABLE APP."+tableName+" ADD COLUMN "+columnName+" VARCHAR(11)";
+                    updateSuccess=util.updateDatabase(query);  
+                    if(updateSuccess==1)
+                    executed=true;
+                }
+                
+            }
+        }       
+        catch(Exception ex)
+        {
+            System.err.println("Error creating "+columnName+" on "+tableName+" table "+ex.getMessage());
+            NomisLogManager.logStackTrace(ex);
+            return false;
+        }
+        return executed;
+    }
+   public boolean addLegacyIdToChildEnrollmentTable()
+    {
+        boolean executed=false;
+        String tableName="CHILDENROLLMENT";
+        String columnName="LEGACYID";
+        String query="";
+        int updateSuccess=0;
+        try
+        {
+            DaoUtility util=new DaoUtility();
+            if(tableExists(tableName))
+            {   
+                if(!columnExists(tableName,columnName))
+                {
+                    query="ALTER TABLE APP."+tableName+" ADD COLUMN "+columnName+" VARCHAR(50)";
+                    updateSuccess=util.updateDatabase(query);  
+                    createIndexQuery("APP."+tableName,columnName,"idx_ovc_lid");                    
+                }
+                
+            }
+        }       
+        catch(Exception ex)
+        {
+            System.err.println("Error creating "+columnName+" on "+tableName+" table "+ex.getMessage());
+            NomisLogManager.logStackTrace(ex);
+            return false;
+        }
+        return executed;
+    }
+   public boolean addLegacyIdToAdultHouseholdMemberTable()
+    {
+        boolean executed=false;
+        String tableName="ADULTHOUSEHOLDMEMBER";
+        String columnName="LEGACYID";
+        String query="";
+        int updateSuccess=0;
+        try
+        {
+            DaoUtility util=new DaoUtility();
+            if(tableExists(tableName))
+            {   
+                if(!columnExists(tableName,columnName))
+                {
+                    query="ALTER TABLE APP."+tableName+" ADD COLUMN "+columnName+" VARCHAR(50)";
+                    updateSuccess=util.updateDatabase(query);  
+                    createIndexQuery("APP."+tableName,columnName,"idx_ahm_lid");                    
+                }   
+            }
+        }       
+        catch(Exception ex)
+        {
+            System.err.println("Error creating "+columnName+" on "+tableName+" table "+ex.getMessage());
+            NomisLogManager.logStackTrace(ex);
+            return false;
+        }
+        return executed;
+    }
+   public boolean addLegacyIdToHouseholdEnrollmentTable()
+    {       
+        boolean executed=false;
+        String tableName="HOUSEHOLDENROLLMENT";
+        String columnName="LEGACYID";
+        String query="";
+        int updateSuccess=0;
+        try
+        {
+            DaoUtility util=new DaoUtility();
+            if(tableExists(tableName))
+            {   
+                if(!columnExists(tableName,columnName))
+                {
+                    query="ALTER TABLE APP."+tableName+" ADD COLUMN "+columnName+" VARCHAR(50)";
+                    updateSuccess=util.updateDatabase(query);  
+                    createIndexQuery("APP."+tableName,columnName,"idx_hhe_lid");                    
+                }
+                
+            }
+        }       
+        catch(Exception ex)
+        {
+            System.err.println("Error creating "+columnName+" on "+tableName+" table "+ex.getMessage());
+            NomisLogManager.logStackTrace(ex);
+            return false;
+        }
+        return executed;
+    }
+   public boolean addLegacyIdToCommunityBasedOrganizationTable()
+    {
+        boolean executed=false;
+        String tableName="COMMUNITYBASEDORGANIZATION";
+        String columnName="LEGACYID";
+        String query="";
+        int updateSuccess=0;
+        try
+        {
+            DaoUtility util=new DaoUtility();
+            if(tableExists(tableName))
+            {   
+                if(!columnExists(tableName,columnName))
+                {
+                    query="ALTER TABLE APP."+tableName+" ADD COLUMN "+columnName+" VARCHAR(50)";
+                    updateSuccess=util.updateDatabase(query);  
+                    createIndexQuery("APP."+tableName,columnName,"idx_cbo_lid");                    
+                }  
+            }
+        }       
+        catch(Exception ex)
+        {
+            System.err.println("Error creating "+columnName+" on "+tableName+" table "+ex.getMessage());
+            NomisLogManager.logStackTrace(ex);
+            return false;
+        }
+        return executed;
+    }
+   public boolean addLegacyIdToOrganizationUnitTable()
+    {
+        boolean executed=false;
+        String tableName="ORGANIZATIONUNIT";
+        String columnName="LEGACYID";
+        String query="";
+        int updateSuccess=0;
+        try
+        {
+            DaoUtility util=new DaoUtility();
+            if(tableExists(tableName))
+            {   
+                if(!columnExists(tableName,columnName))
+                {
+                    query="ALTER TABLE APP."+tableName+" ADD COLUMN "+columnName+" VARCHAR(50)";
+                    updateSuccess=util.updateDatabase(query);  
+                    createIndexQuery("APP."+tableName,columnName,"idx_ou_lid");                    
+                }  
+            }
+        }       
+        catch(Exception ex)
+        {
+            System.err.println("Error creating "+columnName+" on "+tableName+" table "+ex.getMessage());
+            NomisLogManager.logStackTrace(ex);
+            return false;
+        }
+        return executed;
+    }
+   public boolean addNumberOfChildrenAndPeopleFieldsToHouseholdEnrollmentTable()
+    {
+        boolean executed=false;
+        String tableName="HOUSEHOLDENROLLMENT";
+        String columnName="NUMBEROFCHILDRENINHOUSEHOLD";
+        String columnName2="NUMBEROFPEOPLEINHOUSEHOLD";
+        String columnName3="LEGACYID";
+        String query="";
+        int updateSuccess=0;
+        try
+        {
+            DaoUtility util=new DaoUtility();
+            if(tableExists(tableName))
+            {   
+                if(!columnExists(tableName,columnName))
+                {
+                    query="ALTER TABLE APP."+tableName+" ADD COLUMN "+columnName+" NUMERIC(3) NOT NULL DEFAULT 0";
+                    updateSuccess=util.updateDatabase(query);  
+                    query="ALTER TABLE APP."+tableName+" ADD COLUMN "+columnName2+" NUMERIC(3) NOT NULL DEFAULT 0";
+                    updateSuccess=util.updateDatabase(query);  
+                    query="ALTER TABLE APP."+tableName+" ADD COLUMN "+columnName3+" VARCHAR(50)";
+                    updateSuccess=util.updateDatabase(query);  
+                    
+                }
+                
+            }
+        }       
+        catch(Exception ex)
+        {
+            System.err.println("Error creating "+columnName+" on "+tableName+" table "+ex.getMessage());
+            NomisLogManager.logStackTrace(ex);
+            return false;
+        }
+        return executed;
+    }
+   public boolean addLegacyAssessmentFieldsToRevisedHouseholdAssessmentTable()
+    {
+        boolean executed=false;
+        String tableName="REVISEDHOUSEHOLDASSESSMENT";
+        String columnName="HHHEADSHIP";
+        String columnName2="HEALTH";
+        String columnName3="EDUCATIONLEVEL";
+        String columnName4="SHELTERANDHOUSING";
+        String columnName5="FOODSECURITYANDNUTRITION";
+        String columnName6="MEANSOFLIVELIHOOD";
+        String columnName7="HHINCOME";
+        String columnName8="VULNERABILITYSCORE";
+        String query="";
+        int updateSuccess=0;
+        try
+        {
+            DaoUtility util=new DaoUtility();
+            if(tableExists(tableName))
+            {   
+                if(!columnExists(tableName,columnName))
+                {
+                    query="ALTER TABLE APP."+tableName+" ADD COLUMN "+columnName+" NUMERIC(1) NOT NULL DEFAULT 0";
+                    updateSuccess=util.updateDatabase(query);  
+                    query="ALTER TABLE APP."+tableName+" ADD COLUMN "+columnName2+" NUMERIC(1) NOT NULL DEFAULT 0";
+                    updateSuccess=util.updateDatabase(query);  
+                    query="ALTER TABLE APP."+tableName+" ADD COLUMN "+columnName3+" NUMERIC(1) NOT NULL DEFAULT 0";
+                    updateSuccess=util.updateDatabase(query);
+                    query="ALTER TABLE APP."+tableName+" ADD COLUMN "+columnName4+" NUMERIC(1) NOT NULL DEFAULT 0";
+                    updateSuccess=util.updateDatabase(query);  
+                    query="ALTER TABLE APP."+tableName+" ADD COLUMN "+columnName5+" NUMERIC(1) NOT NULL DEFAULT 0";
+                    updateSuccess=util.updateDatabase(query);  
+                    query="ALTER TABLE APP."+tableName+" ADD COLUMN "+columnName6+" NUMERIC(1) NOT NULL DEFAULT 0";
+                    updateSuccess=util.updateDatabase(query);
+                    query="ALTER TABLE APP."+tableName+" ADD COLUMN "+columnName7+" NUMERIC(1) NOT NULL DEFAULT 0";
+                    updateSuccess=util.updateDatabase(query);
+                    query="ALTER TABLE APP."+tableName+" ADD COLUMN "+columnName8+" NUMERIC(2) NOT NULL DEFAULT 0";
+                    updateSuccess=util.updateDatabase(query);
+                    
+                    //createIndexQuery("APP."+tableName,columnName,"idx_na_age");
+                    //createIndexQuery("APP."+tableName,columnName2,"idx_na_ageu");
+                }
+                
+            }
+        }       
+        catch(Exception ex)
+        {
+            System.err.println("Error creating "+columnName+" on "+tableName+" table "+ex.getMessage());
+            NomisLogManager.logStackTrace(ex);
+            return false;
+        }
+        return executed;
+    }
+   public boolean addEnrolmentStatusFieldsToBeneficiaryStatusUpdateTable()
+    {
+        boolean executed=false;
+        String tableName="BENEFICIARYSTATUSUPDATE";
+        String columnName="CHILDEXITEDFROMPROGRAM";
+        String columnName2="CHILDEXITSTATUS";
+        String columnName3="DATECHILDEXITEDFROMPROGRAM";
+        String columnName4="CAREGIVEREXITEDFROMPROGRAM";
+        String columnName5="CAREGIVEREXITSTATUS";
+        String columnName6="DATECAREGIVEREXITEDFROMPROGRAM";
+        String query="";
+        int updateSuccess=0;
+        try
+        {
+            DaoUtility util=new DaoUtility();
+            if(tableExists(tableName))
+            {   
+                if(!columnExists(tableName,columnName))
+                {
+                    query="ALTER TABLE APP."+tableName+" ADD COLUMN "+columnName+" NUMERIC(1) NOT NULL DEFAULT 0";
+                    updateSuccess=util.updateDatabase(query);  
+                    query="ALTER TABLE APP."+tableName+" ADD COLUMN "+columnName2+" NUMERIC(1) NOT NULL DEFAULT 0";
+                    updateSuccess=util.updateDatabase(query);  
+                    query="ALTER TABLE APP."+tableName+" ADD COLUMN "+columnName3+" DATE NOT NULL DEFAULT '1900-01-01'";
+                    updateSuccess=util.updateDatabase(query);  
+                    query="ALTER TABLE APP."+tableName+" ADD COLUMN "+columnName4+" NUMERIC(1) NOT NULL DEFAULT 0";
+                    updateSuccess=util.updateDatabase(query);  
+                    query="ALTER TABLE APP."+tableName+" ADD COLUMN "+columnName5+" NUMERIC(1) NOT NULL DEFAULT 0";
+                    updateSuccess=util.updateDatabase(query);  
+                    query="ALTER TABLE APP."+tableName+" ADD COLUMN "+columnName6+" DATE NOT NULL DEFAULT '1900-01-01'";
+                    updateSuccess=util.updateDatabase(query);  
+                    
+                    //createIndexQuery("APP."+tableName,columnName,"idx_na_age");
+                    //createIndexQuery("APP."+tableName,columnName2,"idx_na_ageu");
+                }
+                
+            }
+        }       
+        catch(Exception ex)
+        {
+            System.err.println("Error creating "+columnName+" on "+tableName+" table "+ex.getMessage());
+            NomisLogManager.logStackTrace(ex);
+            return false;
+        }
+        return executed;
+    }
    public boolean revertHivUnknownDueToRiskAssessmentToBaselineHivStatusInChildEnrollment()
     {
         boolean executed=false;
@@ -215,6 +825,95 @@ public class DatabaseUtilities
         }
         return message;
     }
+   public String createIndexesOnCaregiverExpenditureTable()
+   {
+       String message="";
+       message=createIndexQuery("APP.CHILDEDUCATIONPERFORMANCEASSESSMENT","DATEOFASSESSMENT","idx_cepa_dta");
+       message=createIndexQuery("APP.CHILDEDUCATIONPERFORMANCEASSESSMENT","OVCID","idx_cepa_cid");
+       message=createIndexQuery("APP.HOUSEHOLDENROLLMENT","MARKEDFORDELETE","idx_hhe_mfd");
+       message=createIndexQuery("APP.HOUSEHOLDENROLLMENT","CBOID","idx_hhe_cbo");
+       message=createIndexQuery("APP.HOUSEHOLDENROLLMENT","PARTNERCODE","idx_hhe_ptc");
+       message=createIndexQuery("APP.HOUSEHOLDENROLLMENT","ENROLLMENTID","idx_hhe_enid");
+       message=createIndexQuery("APP.HOUSEHOLDENROLLMENT","CURRENTENROLLMENTSTATUS","idx_hhe_cens");
+       message=createIndexQuery("APP.HOUSEHOLDENROLLMENT","DATEOFCURRENTSTATUS","idx_hhe_cend");
+        return message;
+   }
+   public String createIndexesOnNutritionAssessmentTable()
+   {
+       String message="";
+       message=createIndexQuery("APP.NUTRITIONASSESSMENT","DATEOFASSESSMENT","idx_na_dta");
+       message=createIndexQuery("APP.NUTRITIONASSESSMENT","OVCID","idx_na_vcid");
+       message=createIndexQuery("APP.NUTRITIONASSESSMENT","MARKEDFORDELETE","idx_na_mfd");
+       return message;
+   }
+   public String createIndexesOnSchoolTable()
+   {
+       String message="";
+       message=createIndexQuery("APP.SCHOOL","SCHOOLNAME","idx_sch_dta");
+       message=createIndexQuery("APP.SCHOOL","MARKEDFORDELETE","idx_sch_mfd");
+       return message;
+   }
+   public String createIndexesOnHouseholdReferralTable()
+   {
+       String message="";
+       message=createIndexQuery("APP.HOUSEHOLDREFERRAL","DATEOFREFERRAL","idx_hhr_dtr");
+       message=createIndexQuery("APP.HOUSEHOLDREFERRAL","BENEFICIARYID","idx_hhr_bid");
+       message=createIndexQuery("APP.HOUSEHOLDREFERRAL","MARKEDFORDELETE","idx_hhr_mfd");
+       return message;
+   }
+   public String createIndexesOnCareAndSupportTable()
+   {
+       String message="";
+       message=createIndexQuery("APP.CAREANDSUPPORTCHECKLIST","DATEOFASSESSMENT","idx_cas_dta");
+       message=createIndexQuery("APP.CAREANDSUPPORTCHECKLIST","BENEFICIARYID","idx_cas_bid");
+       message=createIndexQuery("APP.CAREANDSUPPORTCHECKLIST","MARKEDFORDELETE","idx_cas_mfd");
+       return message;
+   }
+   public String createIndexesOnCommunityBasedOrganizationTable()
+   {
+       String message="";
+       message=createIndexQuery("APP.COMMUNITYBASEDORGANIZATION","CBOCODE","idx_cbo_code");
+       message=createIndexQuery("APP.COMMUNITYBASEDORGANIZATION","CBONAME","idx_cbo_name");
+       return message;
+   }
+   public String createIndexesOnBeneficiaryStatusUpdateTable()
+   {
+       String message="";
+       message=createIndexQuery("APP.BENEFICIARYSTATUSUPDATE","NEWHIVSTATUS","idx_bsu_nhs");
+       message=createIndexQuery("APP.BENEFICIARYSTATUSUPDATE","DATEOFNEWSTATUS","idx_bsu_dnhs");
+       return message;
+   }
+   public String createIndexesOnCaregiverAccessToEmergencyFundTable()
+   {
+       String message="";
+       message=createIndexQuery("APP.CAREGIVERACCESSTOEMERGENCYFUND","DATEOFASSESSMENT","idx_caef_dta");
+       message=createIndexQuery("APP.CAREGIVERACCESSTOEMERGENCYFUND","BENEFICIARYID","idx_caef_bid");
+       message=createIndexQuery("APP.CAREGIVERACCESSTOEMERGENCYFUND","MARKEDFORDELETE","idx_caef_mfd");
+       return message;
+   }
+   public String createIndexesOnChildEducationalPerformanceTable()
+   {
+       String message="";
+       message=createIndexQuery("APP.CHILDEDUCATIONPERFORMANCEASSESSMENT","DATEOFASSESSMENT","idx_cepa_dta");
+       message=createIndexQuery("APP.CHILDEDUCATIONPERFORMANCEASSESSMENT","OVCID","idx_cepa_cid");
+       message=createIndexQuery("APP.CHILDEDUCATIONPERFORMANCEASSESSMENT","MARKEDFORDELETE","idx_cepa_mfd");
+       return message;
+   }
+   public String createIndexesOnCareplanAchievementChecklistTable()
+   {
+       String message="";
+       message=createIndexQuery("APP.CAREPLANACHIEVEMENTCHECKLIST","DATEOFASSESSMENT","idx_cpa_dta");
+       message=createIndexQuery("APP.CAREPLANACHIEVEMENTCHECKLIST","HHUNIQUEID","idx_cpa_bid");
+       message=createIndexQuery("APP.CAREPLANACHIEVEMENTCHECKLIST","MARKEDFORDELETE","idx_cpa_mfd");
+       return message;
+   }
+   public String createIndexesOnHhVulnerabilityAssessmentTable()
+   {
+       String message="";
+       message=createIndexQuery("APP.HHVULNERABILITYASSESSMENT","DATEOFASSESSMENT","idx_hhva_dta");
+       message=createIndexQuery("APP.HHVULNERABILITYASSESSMENT","HHUNIQUEID","idx_hhva_hid");
+       return message;
+   }
    public String createIndexesOnHouseholdEnrollmentTable()
    {
        String message="";
@@ -447,6 +1146,32 @@ public class DatabaseUtilities
         System.err.println(message);
         return message;
     }
+    public String changeAgeUnitTableInEnrollmentStatusHistory()
+    {
+        int result=0;
+        String message="";
+        if(!columnExists("ENROLLMENTSTATUSHISTORY","CURRENTAGEUNIT_FLAG"))
+        {
+            String query="ALTER TABLE APP.ENROLLMENTSTATUSHISTORY ADD COLUMN CURRENTAGEUNIT_FLAG NUMERIC(1) DEFAULT 0";
+            result=updateDatabase(query);
+            query="update APP.ENROLLMENTSTATUSHISTORY SET CURRENTAGEUNIT_FLAG=1 where CURRENTAGEUNIT='1'";
+            result=updateDatabase(query);
+            query="update APP.ENROLLMENTSTATUSHISTORY SET CURRENTAGEUNIT_FLAG=2 where CURRENTAGEUNIT='2'";
+            result=updateDatabase(query);
+            query="ALTER TABLE APP.ENROLLMENTSTATUSHISTORY DROP COLUMN CURRENTAGEUNIT";
+            result=updateDatabase(query);
+
+            query="ALTER TABLE APP.ENROLLMENTSTATUSHISTORY ADD COLUMN CURRENTAGEUNIT NUMERIC(1) NOT NULL DEFAULT 0";
+            result=updateDatabase(query);
+            query="update APP.ENROLLMENTSTATUSHISTORY SET CURRENTAGEUNIT=CURRENTAGEUNIT_FLAG";
+            result=updateDatabase(query);
+
+            createIndexQuery("APP.ENROLLMENTSTATUSHISTORY","CURRENTAGEUNIT","idx_esh_ageu");
+            message=result+"Current age unit updated in enrollment status history. ";
+            System.err.println(message);
+        }
+        return message;
+    }
     public String updateEnrollmentStatusHistory()
     {
         String query="update APP.ENROLLMENTSTATUSHISTORY SET CURRENTAGEUNIT=2 WHERE CURRENTAGEUNIT=0";
@@ -516,7 +1241,7 @@ public class DatabaseUtilities
                 +"RECORDID INTEGER GENERATED ALWAYS AS IDENTITY(start with 1, increment by 1)  NOT NULL PRIMARY KEY,"
                 +"BENEFICIARYID VARCHAR(25) NOT NULL, ENROLLMENTSTATUS NUMERIC(2) DEFAULT 0  NOT NULL, DATEOFENROLLMENTSTATUS DATE NOT NULL, "
                 +"HIVSTATUS NUMERIC(1) DEFAULT 0  NOT NULL, DATEOFHIVSTATUS DATE NOT NULL, ENROLLEDONTREATMENT NUMERIC(1) DEFAULT 0  NOT NULL, FACILITYID VARCHAR(11), DATECREATED DATE NOT NULL,"
-                +"CURRENTAGE NUMERIC(3) DEFAULT 0  NOT NULL,CURRENTAGEUNIT VARCHAR(1) NOT NULL, LASTMODIFIEDDATE DATE NOT NULL, RECORDEDBY VARCHAR(25) NOT NULL, BENEFICIARYTYPE NUMERIC(1) DEFAULT 0  NOT NULL,"
+                +"CURRENTAGE NUMERIC(3) DEFAULT 0  NOT NULL,CURRENTAGEUNIT NUMERIC(1) NOT NULL DEFAULT 0, LASTMODIFIEDDATE DATE NOT NULL, RECORDEDBY VARCHAR(25) NOT NULL, BENEFICIARYTYPE NUMERIC(1) DEFAULT 0  NOT NULL,"
                 +"POINTOFUPDATE NUMERIC(1) DEFAULT 0  NOT NULL)";
 
                 int response=updateDatabase(query);
@@ -807,6 +1532,7 @@ public class DatabaseUtilities
    }
     public boolean executeDatabaseUpdate()
     {
+        changeAgeUnitTableInEnrollmentStatusHistory();
         boolean executed=createDatasetSettingTable();
         addDateOfCurrentSchoolStatusToChildEnrollment();
         addTreatmentIdToChildEnrollment();
@@ -826,6 +1552,33 @@ public class DatabaseUtilities
         createNutritionalStatusTable();
         addAgeAtAssessmentToNutritionalAssessmentTable();
         addReferralCompletedToHouseholdReferral();
+        addEnrolmentStatusFieldsToBeneficiaryStatusUpdateTable();
+        addDatimIdToReferralDirectoryTable();
+        addLegacyAssessmentFieldsToRevisedHouseholdAssessmentTable();
+        addNumberOfChildrenAndPeopleFieldsToHouseholdEnrollmentTable();
+        createOccupationTable();
+        addLegacyIdToHouseholdEnrollmentTable();
+        addLegacyIdToAdultHouseholdMemberTable();
+        addLegacyIdToChildEnrollmentTable();
+        addLegacyIdToCommunityBasedOrganizationTable();
+        addLegacyIdToOrganizationUnitTable();
+        addCustomIndicatorsFieldsToChildServiceTable();
+        addFieldsFromNomis2ToCareplanAchievementChecklistTable();
+        addReasonsChildMissedSchoolToEduPerfAssessmentTable();
+        addLastDrugPickupAndNumberOfDaysOfRefillToCareAndSupportTable();
+        alterSizeOfMonthsOfTransportationSupportInCareAndSupportTable();
+        updateCurrentHivStatusForChildAndAdultHouseholdMemberTables();
+        addVsCategpryToVulnerabilityStatusTable();
+        createIndexesOnBeneficiaryStatusUpdateTable();
+        createIndexesOnCaregiverAccessToEmergencyFundTable();
+        createIndexesOnChildEducationalPerformanceTable();
+        createIndexesOnCareplanAchievementChecklistTable();
+        createIndexesOnHhVulnerabilityAssessmentTable();
+        createIndexesOnCommunityBasedOrganizationTable();
+        createIndexesOnCareAndSupportTable();
+        createIndexesOnHouseholdReferralTable();
+        createIndexesOnNutritionAssessmentTable();
+        createIndexesOnSchoolTable();
         //addDateOfStatusToChildEnrollment();
         //createAccessPrivilegeTable();
         return executed;

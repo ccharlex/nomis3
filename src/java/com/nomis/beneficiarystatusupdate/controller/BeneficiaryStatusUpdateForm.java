@@ -65,7 +65,12 @@ public class BeneficiaryStatusUpdateForm extends org.apache.struts.action.Action
     private int updateChildHivStatus;
     private int updateCaregiverHivStatus;
     private String volunteerName;
-    
+    private int childExitedFromProgram=0;
+    private int childExitStatus;
+    private int caregiverExitedFromProgram;
+    private int caregiverExitStatus;
+    private String dateChildExitedFromProgram;
+    private String dateCaregiverExitedFromProgram;
     
     public BeneficiaryStatusUpdateForm() {
         super();
@@ -425,6 +430,55 @@ public class BeneficiaryStatusUpdateForm extends org.apache.struts.action.Action
         this.updateChildHivStatus = updateChildHivStatus;
     }
 
+    public int getCaregiverExitStatus() {
+        return caregiverExitStatus;
+    }
+
+    public void setCaregiverExitStatus(int caregiverExitStatus) {
+        this.caregiverExitStatus = caregiverExitStatus;
+    }
+
+    public int getCaregiverExitedFromProgram() {
+        return caregiverExitedFromProgram;
+    }
+
+    public void setCaregiverExitedFromProgram(int caregiverExitedFromProgram) {
+        this.caregiverExitedFromProgram = caregiverExitedFromProgram;
+    }
+
+    public int getChildExitStatus() {
+        return childExitStatus;
+    }
+
+    public void setChildExitStatus(int childExitStatus) {
+        this.childExitStatus = childExitStatus;
+    }
+
+    public int getChildExitedFromProgram() {
+        return childExitedFromProgram;
+    }
+
+    public void setChildExitedFromProgram(int childExitedFromProgram) {
+        this.childExitedFromProgram = childExitedFromProgram;
+    }
+
+    public String getDateCaregiverExitedFromProgram() {
+        return dateCaregiverExitedFromProgram;
+    }
+
+    public void setDateCaregiverExitedFromProgram(String dateCaregiverExitedFromProgram) {
+        this.dateCaregiverExitedFromProgram = dateCaregiverExitedFromProgram;
+    }
+
+    public String getDateChildExitedFromProgram() {
+        return dateChildExitedFromProgram;
+    }
+
+    public void setDateChildExitedFromProgram(String dateChildExitedFromProgram) {
+        this.dateChildExitedFromProgram = dateChildExitedFromProgram;
+    }
+
+    
 @Override
 public void reset(ActionMapping mapping, HttpServletRequest request)
 {
@@ -466,6 +520,12 @@ public void reset(ActionMapping mapping, HttpServletRequest request)
     updateChildBirthRegAndSchoolStatus=2;
     updateCaregiverHivStatus=2;
     updateChildBirthRegStatus=2;
+    caregiverExitedFromProgram=0;
+    caregiverExitStatus=0;
+    childExitStatus=0;
+    childExitedFromProgram=0;
+    dateChildExitedFromProgram=null;
+    dateCaregiverExitedFromProgram=null;
 }
     /**
      * This is the action called from the Struts framework.
@@ -487,16 +547,23 @@ public void reset(ActionMapping mapping, HttpServletRequest request)
             {//if request is to update HIV status, then validate HIV status
                 Date dateOfBirth=DateManager.getPreviousDate(DateManager.getCurrentDateInstance(), childCurrentAge);
                 Date dDateOfBaselineHivStatus=child.getDateOfBaselineHivStatus();//DateManager.getDateInstance(DateManager.processMthDayYearToMysqlFormat(this.getDateOfBaselineHivStatus()));
+                Date dateOfNewHivStatus=null;
+                if(getDateOfNewHivStatus() !=null && getDateOfNewHivStatus().indexOf("/") !=-1)
+                {
+                    dateOfNewHivStatus=DateManager.getDateInstance(DateManager.processMthDayYearToMysqlFormat(getDateOfNewHivStatus()));
+                }
                 if(this.getChildNewHivStatus()==0)
                 errors.add("childNewHivStatus", new ActionMessage("errors.childNewHivStatus.required"));
                 else if(child.getBaselineHivStatus()==AppConstant.HIV_NEGATIVE_NUM && this.getChildNewHivStatus()>AppConstant.HIV_NEGATIVE_NUM)
                 errors.add("childNewHivStatus", new ActionMessage("errors.vcBaselineHivStatusNegativeAndNewStatusUnknown"));
                 else if(child.getBaselineHivStatus()==AppConstant.HIV_POSITIVE_NUM && this.getChildNewHivStatus()>AppConstant.HIV_POSITIVE_NUM)
                 errors.add("childNewHivStatus", new ActionMessage("errors.vcBaselineHivStatusPositiveAndNewStatusUnknownOrNegative"));
+                
                 else if((getChildNewHivStatus()==AppConstant.HIV_POSITIVE_NUM || getChildNewHivStatus()==AppConstant.HIV_NEGATIVE_NUM) && (this.getDateOfNewHivStatus()==null || this.getDateOfNewHivStatus().indexOf("/")==-1))
                 errors.add("dateOfNewHivStatus", new ActionMessage("errors.dateOfBaselineHivStatus.required"));
-                else if(dateOfBirth !=null && dDateOfBaselineHivStatus !=null && dateOfBirth.after(dDateOfBaselineHivStatus))
-                errors.add("dateOfBaselineHivStatus", new ActionMessage("errors.dateOfBaselineHivStatus.beforeDateOfBirth"));
+                
+                else if(dateOfBirth !=null && dDateOfBaselineHivStatus !=null && dateOfNewHivStatus !=null && dateOfBirth.after(dateOfNewHivStatus))
+                errors.add("dateOfBaselineHivStatus", new ActionMessage("errors.dateOfNewHivStatus.beforeDateOfBirth"));
                 else if(this.getChildNewHivStatus()==AppConstant.HIV_POSITIVE_NUM)
                 {
                     if(this.getEnrolledOnTreatment()==0)
@@ -537,6 +604,11 @@ public void reset(ActionMapping mapping, HttpServletRequest request)
                 int caregiverCurrentAge=adultHouseholdMember.getCurrentAge();
                 Date dateOfBirth=DateManager.getPreviousDate(DateManager.getCurrentDateInstance(), caregiverCurrentAge);
                 Date dDateOfBaselineHivStatus=adultHouseholdMember.getDateOfBaselineHivStatus();//DateManager.getDateInstance(DateManager.processMthDayYearToMysqlFormat(this.getDateOfBaselineHivStatus()));
+                Date cgDateOfNewHivStatus=null;
+                if(getDateOfNewHivStatus() !=null && getDateOfNewHivStatus().indexOf("/") !=-1)
+                {
+                    cgDateOfNewHivStatus=DateManager.getDateInstance(DateManager.processMthDayYearToMysqlFormat(this.getDateOfCaregiverHivStatus()));
+                }
                 if(this.getCaregiverHivStatus()==0)
                 errors.add("caregiverHivStatus", new ActionMessage("errors.caregiverHivStatus.required"));
                 else if(adultHouseholdMember.getBaselineHivStatus()==AppConstant.HIV_NEGATIVE_NUM && getCaregiverHivStatus()>AppConstant.HIV_NEGATIVE_NUM)
@@ -546,8 +618,8 @@ public void reset(ActionMapping mapping, HttpServletRequest request)
                 
                 else if((getChildNewHivStatus()==AppConstant.HIV_POSITIVE_NUM || getChildNewHivStatus()==AppConstant.HIV_NEGATIVE_NUM) && (this.getDateOfNewHivStatus()==null || this.getDateOfNewHivStatus().indexOf("/")==-1))
                 errors.add("dateOfNewHivStatus", new ActionMessage("errors.dateOfBaselineHivStatus.required"));
-                else if(dateOfBirth !=null && dDateOfBaselineHivStatus !=null && dateOfBirth.after(dDateOfBaselineHivStatus))
-                errors.add("dateOfBaselineHivStatus", new ActionMessage("errors.dateOfBaselineHivStatus.beforeDateOfBirth"));
+                else if(dateOfBirth !=null && dDateOfBaselineHivStatus !=null && cgDateOfNewHivStatus !=null && dateOfBirth.after(cgDateOfNewHivStatus))
+                errors.add("dateOfBaselineHivStatus", new ActionMessage("errors.dateOfNewHivStatus.beforeDateOfBirth"));
                 else if(this.getCaregiverHivStatus()==AppConstant.HIV_POSITIVE_NUM)
                 {
                     if(this.getCaregiverEnrolledOnTreatment()==0)

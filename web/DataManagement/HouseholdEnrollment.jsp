@@ -385,7 +385,7 @@ function setActionName(val)
                                     <jsp:include page="../includes/OrganizationUnitHeader.jsp"/>
                                     
                                     <tr><td colspan="4" align="center" style="color:red"><html:errors/></td></tr>
-                                    
+                                    <tr><td colspan="4" align="center" style="font-size: 14px; font-weight: bold; color: red"><logic:present name="hhWithdrawnMessage">${hhWithdrawnMessage}</logic:present></td></tr>
                                     <tr>
                                         <td colspan="4">
                                           <fieldset><legend >Household information</legend>  

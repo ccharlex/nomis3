@@ -91,6 +91,8 @@ a:active {
         $("#dateEnrolledOnTreatment").datepicker();
         $("#dateOfCaregiverHivStatus").datepicker();
         $("#dateCaregiverEnrolledOnTreatment").datepicker();
+        $("#dateChildExitedFromProgram").datepicker();
+        $("#dateCaregiverExitedFromProgram").datepicker();
     });
 function stateChanged()
 {
@@ -220,15 +222,18 @@ function activateCaregiverReferralList(value)
 {
     if(value == "1") 
     {
-        document.getElementById("hivTreatmentFacilityId").disabled = false;
-        document.getElementById("childTreatmentId").disabled = false;
+        document.getElementById("facilityCaregiverEnrolled").disabled = false;
+        document.getElementById("caregiverTreatmentId").disabled = false;
+        document.getElementById("dateCaregiverEnrolledOnTreatment").disabled = false;
     }
     else 
     {
-        document.getElementById("hivTreatmentFacilityId").value="select"
-        document.getElementById("hivTreatmentFacilityId").disabled = true;
-        document.getElementById("childTreatmentId").value = "";
-        document.getElementById("childTreatmentId").disabled = true;
+        document.getElementById("facilityCaregiverEnrolled").value="select"
+        document.getElementById("facilityCaregiverEnrolled").disabled = true;
+        document.getElementById("caregiverTreatmentId").value = "";
+        document.getElementById("caregiverTreatmentId").disabled = true;
+        document.getElementById("dateCaregiverEnrolledOnTreatment").value = "";
+        document.getElementById("dateCaregiverEnrolledOnTreatment").disabled = true;
     }
 }
 function submitForm(requiredAction,formId)
@@ -388,6 +393,7 @@ function setActionName(val)
                                     <tr><td colspan="4" align="center">OVC status update</td></tr>
                                       <jsp:include page="../includes/OrganizationUnitHeader.jsp" />                                  
                                     <tr><td colspan="4" align="center" style="color:red"><html:errors/></td></tr>
+                                    <tr><td style="font-size: 14px; font-weight: bold; color: red" colspan="4"><logic:present name="bsuWithdrawnMessage">${bsuWithdrawnMessage}</logic:present></td></tr>
                                     <tr>
                                         <td align="right" > HH Serial number </td>
                                         <td colspan="3"><html:text property="hhSerialNo" styleId="hhSerialNo" onkeyup="generateUniqueId(1)" onblur="setActionName('beneficiaryList'); forms[0].submit()" style="width:30px;" /> 
@@ -685,7 +691,7 @@ function setActionName(val)
                          <tr> 
                              <td align="right">Enrolled on treatment?</td>
                             <td>
-                                <html:select property="caregiverEnrolledOnTreatment" styleClass="fieldcellinput" styleId="caregiverEnrolledOnTreatment" style="width:100px;">
+                                <html:select property="caregiverEnrolledOnTreatment" styleClass="fieldcellinput" styleId="caregiverEnrolledOnTreatment" style="width:100px;" onchange="activateCaregiverReferralList(this.value)">
                                     <html:option value="0">N/A</html:option>
                                     <html:option value="2">No</html:option>
                                   <html:option value="1">Yes</html:option>
@@ -717,10 +723,57 @@ function setActionName(val)
                             </td>
                                 
                             </tr>
+                            
                          </table>
                                 </fieldset>
                          </td>
-                         </tr>                 
+                         </tr>   
+                         <tr><td colspan="4">
+                                 <fieldset><legend style="font-weight: bolder;">BENEFICIARY EXIT STATUS</legend>
+                                     <table>
+                                         <tr> 
+                             <td align="right">Child Exited from program?</td>
+                            <td colspan="3"> 
+                                <html:select property="childExitedFromProgram" styleId="childExitedFromProgram" styleClass="fieldcellinput" style="width:70px;">
+                                    <html:option value="0">select...</html:option>
+                                      <html:option value="1">Yes</html:option>
+                                      <html:option value="2">No</html:option>  
+                                </html:select> 
+                                      Exit status <html:select property="childExitStatus" styleId="childExitStatus" styleClass="fieldcellinput" style="width:220px;">
+                                    <html:option value="0">select...</html:option>
+                                    <logic:present name="beneficiaryStatusList">
+                                        <logic:iterate name="beneficiaryStatusList" id="bs">
+                                            <html:option value="${bs.statusCode}">${bs.statusName}</html:option>
+                                        </logic:iterate>
+                                    </logic:present>
+                                      
+                                </html:select> 
+                                Date <html:text property="dateChildExitedFromProgram" styleId="dateChildExitedFromProgram" styleClass="fieldcellinput" style="width:100px;" readonly="true"/>
+                                </td>
+                         </tr>
+                         <tr> 
+                             <td align="right">Caregiver Exited from program?</td>
+                            <td colspan="3"> 
+                                <html:select property="caregiverExitedFromProgram" styleId="caregiverExitedFromProgram" styleClass="fieldcellinput" style="width:70px;">
+                                    <html:option value="0">select...</html:option>
+                                      <html:option value="1">Yes</html:option>
+                                      <html:option value="2">No</html:option>  
+                                </html:select> 
+                                Exit status <html:select property="caregiverExitStatus" styleId="caregiverExitStatus" styleClass="fieldcellinput" style="width:220px;">
+                                    <html:option value="0">select...</html:option>
+                                      <logic:present name="beneficiaryStatusList">
+                                        <logic:iterate name="beneficiaryStatusList" id="bs">
+                                            <html:option value="${bs.statusCode}">${bs.statusName}</html:option>
+                                        </logic:iterate>
+                                    </logic:present>
+                                </html:select>
+                                Date <html:text property="dateCaregiverExitedFromProgram" styleId="dateCaregiverExitedFromProgram" styleClass="fieldcellinput" readonly="true" style="width:100px;"/>
+                                </td>
+                         </tr>
+                                     </table>  
+                                 </fieldset>
+                                     
+                             </td></tr>
               <tr>
                   <td>Completed by </td>
                 <td > 

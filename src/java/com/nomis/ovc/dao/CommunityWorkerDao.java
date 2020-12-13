@@ -18,4 +18,5 @@ public interface CommunityWorkerDao
     public void deleteCommunityWorker(CommunityWorker cw) throws Exception;
     public CommunityWorker getCommunityWorker(String communityWorkerId) throws Exception;
     public List getAllCommunityWorkers() throws Exception;
+    public CommunityWorker getCommunityWorkerByName(String firstName,String surname) throws Exception;
 }

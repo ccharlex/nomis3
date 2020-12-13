@@ -46,6 +46,7 @@ private String dateOfBaselineHivStatus;
 private int ageAtBaseline;
 private int ageUnitAtBaseline;
 private String[] vulnerabilityStatus;
+private String[] otherVulnerabilityStatus;
 private int birthCertificate;
 private int schoolStatus;
 private String schoolName;
@@ -566,6 +567,14 @@ private int beneficiaryType;
         this.treatmentId = treatmentId;
     }
 
+    public String[] getOtherVulnerabilityStatus() {
+        return otherVulnerabilityStatus;
+    }
+
+    public void setOtherVulnerabilityStatus(String[] otherVulnerabilityStatus) {
+        this.otherVulnerabilityStatus = otherVulnerabilityStatus;
+    }
+
 
 @Override
 public void reset(ActionMapping mapping, HttpServletRequest request)
@@ -588,6 +597,7 @@ public void reset(ActionMapping mapping, HttpServletRequest request)
     ageAtBaseline=0;
     ageUnitAtBaseline=0;
     vulnerabilityStatus=null;
+    otherVulnerabilityStatus=null;
     birthCertificate=0;
     schoolStatus=0;
     schoolName=null;

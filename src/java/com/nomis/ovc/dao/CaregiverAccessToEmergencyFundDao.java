@@ -20,7 +20,8 @@ public interface CaregiverAccessToEmergencyFundDao
     public void markForDelete(CaregiverAccessToEmergencyFund ceaf) throws Exception;
     public void deleteCaregiverAccessToEmergencyFund(CaregiverAccessToEmergencyFund ceaf) throws Exception;
     public CaregiverAccessToEmergencyFund getCaregiverAccessToEmergencyFund(int recordId) throws Exception;
-    public CaregiverAccessToEmergencyFund getCaregiverAccessToEmergencyFund(String ovcId,Date dateOfAssessment) throws Exception;
-    public List getCaregiverAccessToEmergencyFund(String ovcId) throws Exception;
+    public CaregiverAccessToEmergencyFund getCaregiverAccessToEmergencyFund(String beneficiaryId,Date dateOfAssessment) throws Exception;
+    public List getCaregiverAccessToEmergencyFund(String beneficiaryId) throws Exception;
     public List getCaregiverAccessToEmergencyFundRecordsForExport(ReportParameterTemplate rpt) throws Exception;
+    public List getCaregiverAccessToEmergencyFundRecords(ReportParameterTemplate rpt) throws Exception;
 }

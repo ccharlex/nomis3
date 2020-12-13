@@ -11,5 +11,6 @@
     <property name="oulevel" column="OULEVEL" type="int"/>
     <property name="ouPath" column="OUPATH" type="string" />
     <property name="parentId" column="PARENTID" type="string" />
+    <property name="legacyId" column="LEGACYID" type="string"/>
   </class>
 </hibernate-mapping>

@@ -26,7 +26,7 @@
     <property name="dateOfBaselineHivStatus" column="DATEOFBASELINEHIVSTATUS" type="date"/>
     <property name="dateOfCurrentBirthRegStatus" column="DATEOFCURRENTBIRTHREGSTATUS" type="date"/>
     <property name="dateOfCurrentHivStatus" column="DATEOFCURRENTHIVSTATUS" type="date"/>
-    <property name="dateOfCurrentStatus" column="DATEOFCURRENTSTATUS" type="date"/>
+    <property name="dateOfCurrentEnrollmentStatus" column="DATEOFCURRENTSTATUS" type="date"/>
     <property name="dateOfEnrollment" column="DATEOFENROLLMENT" type="date"/>
     <property name="enrolledOnTreatment" column="CHILDENROLLEDONTREATMENT" type="int"/>
     <property name="enrollmentId" column="ENROLLMENTID" type="string"/>
@@ -44,6 +44,7 @@
     <property name="sourceOfInfo" column="SOURCEOFINFO" type="int"/>
     <property name="surname" column="SURNAME" type="string"/>
     <property name="vulnerabilityStatusCode" column="VULNERABILITYSTATUS" type="string"/>
+    <property name="legacyId" column="LEGACYID" type="string"/>
     
     <!--<property name="abuseAndExploitation" column="ABUSEANDEXPLOITATION" type="int"/>
     <property name="care" column="CARE" type="int"/>

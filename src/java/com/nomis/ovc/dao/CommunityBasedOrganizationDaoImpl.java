@@ -5,7 +5,9 @@
 package com.nomis.ovc.dao;
 
 import com.nomis.ovc.business.CommunityBasedOrganization;
+import com.nomis.ovc.util.AppConstant;
 import com.nomis.ovc.util.AppUtility;
+import com.nomis.ovc.util.DateManager;
 import java.util.List;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -155,6 +157,28 @@ public class CommunityBasedOrganizationDaoImpl implements CommunityBasedOrganiza
          }
         return setup;
     }
+    public CommunityBasedOrganization getCommunityBasedOrganizationByLevel2OuIdAndCboName(String level2OuId,String cboName) throws Exception
+    {
+        CommunityBasedOrganization setup=null;
+        try
+        {
+            session = HibernateUtil.getSession();
+            tx = session.beginTransaction();
+            List list = session.createQuery("from CommunityBasedOrganization setup where setup.level2OuId=:l2Id and setup.cboName=:nm").setString("l2Id", level2OuId).setString("nm", cboName).list();
+            tx.commit();
+            closeSession(session);
+            if(list !=null && !list.isEmpty())
+            {
+                setup=(CommunityBasedOrganization)list.get(0);
+            }
+        }
+         catch (Exception ex)
+         {
+             closeSession(session);
+            throw new Exception(ex);
+         }
+        return setup;
+    }
     public List getCommunityBasedOrganizationByLevel2OrgUnit(String level2OuId) throws Exception
     {
         List list=null;
@@ -224,6 +248,55 @@ public class CommunityBasedOrganizationDaoImpl implements CommunityBasedOrganiza
             ex.printStackTrace();
         }
         return uniqueId;
+    }
+    public CommunityBasedOrganization getCommunityBasedOrganizationByLegacyId(String legacyId) throws Exception
+    {
+       CommunityBasedOrganization cbo=null;
+        try
+        {
+            session = HibernateUtil.getSession();
+            tx = session.beginTransaction();
+            List list = session.createQuery("from CommunityBasedOrganization cbo where cbo.legacyId=:lid").setString("lid", legacyId).list();
+            tx.commit();
+            closeSession(session);
+            if(list !=null && !list.isEmpty())
+            {
+                cbo=(CommunityBasedOrganization)list.get(0);
+            }
+        }
+         catch (Exception ex)
+         {
+             closeSession(session);
+            throw new Exception(ex);
+         }
+        return cbo;
+    }
+    public CommunityBasedOrganization createCommunityBasedOrganization(String level2OuId,String cboCode,String cboName,String userName,String legacyId) throws Exception
+    {
+        CommunityBasedOrganization cbo=null;
+        if(level2OuId !=null && cboName !=null)
+        {
+            //System.err.println("Parent name is "+parentOu.getName()+" and ward name "+wardName);
+                cbo=this.getCommunityBasedOrganizationByLevel2OuIdAndCboName(level2OuId,cboName);
+                if(cbo==null)
+                {
+                    cbo=new CommunityBasedOrganization();
+                    cbo.setUniqueId(getUniqueRecordId());
+                    cbo.setDateCreated(DateManager.getCurrentDateInstance());
+                    cbo.setLastModifiedDate(DateManager.getCurrentDateInstance());
+                    cbo.setCboCode(cboCode);
+                    cbo.setCboName(cboName);
+                    cbo.setLevel2OuId(level2OuId); 
+                    cbo.setRecordedBy(cboName);
+                    cbo.setContactPersonName(AppConstant.DEFAULTUID);
+                    cbo.setContactPersonEmail(AppConstant.DEFAULTUID);
+                    cbo.setContactPersonPhone(AppConstant.DEFAULTUID);
+                    cbo.setLegacyId(legacyId);
+                    saveCommunityBasedOrganization(cbo);
+                }
+            
+        }
+        return cbo;
     }
     public void closeSession(Session session)
     {

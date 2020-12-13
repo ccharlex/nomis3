@@ -4,7 +4,9 @@
  */
 package com.nomis.ovc.dao;
 
+import com.nomis.ovc.business.AdultHouseholdMember;
 import com.nomis.ovc.business.CaregiverAccessToEmergencyFund;
+import com.nomis.ovc.business.HouseholdEnrollment;
 import com.nomis.ovc.util.AppConstant;
 import com.nomis.reports.utils.ReportParameterTemplate;
 import java.util.ArrayList;
@@ -25,6 +27,48 @@ public class CaregiverAccessToEmergencyFundDaoImpl implements CaregiverAccessToE
     SessionFactory sessions;
     SubQueryGenerator sqg=new SubQueryGenerator();
     String markedForDeleteQuery=" and ceaf.markedForDelete=0";
+    public List getCaregiverAccessToEmergencyFundRecords(ReportParameterTemplate rpt) throws Exception
+    {
+        List mainList=new ArrayList();
+        try
+        {
+            SubQueryGenerator sqg=new SubQueryGenerator();
+            String additionalOrgUnitQuery="";
+            if(rpt !=null && rpt.getLevel2OuId() !=null && rpt.getLevel2OuId().trim().length()>0 && !rpt.getLevel2OuId().equalsIgnoreCase("select") && !rpt.getLevel2OuId().equalsIgnoreCase("All"))
+            {
+                additionalOrgUnitQuery=sqg.getOrganizationUnitQuery(rpt);
+            }
+            String query=SubQueryGenerator.getHheAdultHouseholdMemberCaregiverAccessToEmergencyFundOrganizationUnitQuery()+additionalOrgUnitQuery+sqg.getCaregiverAccessToEmergencyFundLastModifiedDateQuery(rpt.getStartDate(),rpt.getEndDate());
+            System.err.println(query);
+            session = HibernateUtil.getSession();
+            tx = session.beginTransaction();
+            List list = session.createQuery(query).list();
+            tx.commit();
+            closeSession(session);
+            if(list !=null)
+            {
+                HouseholdEnrollment hhe=null;
+                AdultHouseholdMember ahm=null;
+                CaregiverAccessToEmergencyFund caef=null;
+                for(Object obj:list)
+                {
+                    Object[] objArray=(Object[])obj;
+                    hhe=(HouseholdEnrollment)objArray[0];
+                    ahm=(AdultHouseholdMember)objArray[1];
+                    caef=(CaregiverAccessToEmergencyFund)objArray[2];
+                    ahm.setHhe(hhe);
+                    caef.setAdultHouseholdMember(ahm);
+                    mainList.add(caef);
+                }
+            }
+        }
+         catch (Exception ex)
+         {
+             closeSession(session);
+            throw new Exception(ex);
+         }
+        return mainList;
+    }
     public List getCaregiverAccessToEmergencyFundRecordsForExport(ReportParameterTemplate rpt) throws Exception
     {
         List mainList=new ArrayList();
@@ -36,7 +80,7 @@ public class CaregiverAccessToEmergencyFundDaoImpl implements CaregiverAccessToE
             {
                 additionalOrgUnitQuery=sqg.getOrganizationUnitQuery(rpt);
             }
-            String query=SubQueryGenerator.getHheCaregiverAccessToEmergencyFundOrganizationUnitQuery()+additionalOrgUnitQuery+sqg.getCaregiverAccessToEmergencyFundLastModifiedDateQuery(rpt.getStartDate(),rpt.getEndDate());
+            String query=SubQueryGenerator.getHheAdultHouseholdMemberCaregiverAccessToEmergencyFundOrganizationUnitQuery()+additionalOrgUnitQuery+sqg.getCaregiverAccessToEmergencyFundLastModifiedDateQuery(rpt.getStartDate(),rpt.getEndDate());
             System.err.println(query);
             session = HibernateUtil.getSession();
             tx = session.beginTransaction();

@@ -22,5 +22,11 @@
       <property name="updateCaregiverHivStatus" column="UPDATECAREGIVERHIVSTATUS" type="int"/>
       <property name="updateChildBirthRegStatus" column="UPDATECHILDBIRTHREGSTATUS" type="int"/>
       <property name="updateChildHivStatus" column="UPDATECHILDHIVSTATUS" type="int"/>
+      <property name="childExitedFromProgram" column="CHILDEXITEDFROMPROGRAM" type="int"/>
+      <property name="childExitStatus" column="CHILDEXITSTATUS" type="int"/>
+      <property name="caregiverExitStatus" column="CAREGIVEREXITSTATUS" type="int"/>
+      <property name="caregiverExitedFromProgram" column="CAREGIVEREXITEDFROMPROGRAM" type="int"/>
+      <property name="dateChildExitedFromProgram" column="DATECHILDEXITEDFROMPROGRAM" type="date"/>
+      <property name="dateCaregiverExitedFromProgram" column="DATECAREGIVEREXITEDFROMPROGRAM" type="date"/>
   </class>
 </hibernate-mapping>

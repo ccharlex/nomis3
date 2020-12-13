@@ -469,6 +469,46 @@ public class OvcServiceAttributesManager implements Serializable
         service.setBeneficiaryType(AppConstant.OVC_TYPE_NUM);
         return service;
     }
+    public static Service getHealthEducationService()
+    {
+        Service service=new Service();
+        service.setDomainName("Health");
+        service.setServiceName("Health education");
+        service.setServiceValue("Health education");
+        service.setServiceCode("1he");
+        service.setBeneficiaryType(AppConstant.OVC_TYPE_NUM);
+        return service;
+    }
+    public static Service getWaterTreatmentService()
+    {
+        Service service=new Service();
+        service.setDomainName("Health");
+        service.setServiceName("Water treatment");
+        service.setServiceValue("Water treatment");
+        service.setServiceCode("5he");
+        service.setBeneficiaryType(AppConstant.OVC_TYPE_NUM);
+        return service;
+    }
+    public static Service getPmtctHctCommunityHIVService()
+    {
+        Service service=new Service();
+        service.setDomainName("Health");
+        service.setServiceName("Community HIV services (HTC/PMTCT)");
+        service.setServiceValue("Community HIV services (HTC/PMTCT)");
+        service.setServiceCode("7he");
+        service.setBeneficiaryType(AppConstant.OVC_TYPE_NUM);
+        return service;
+    }
+    public static Service getAccessForHIVCareService()
+    {
+        Service service=new Service();
+        service.setDomainName("Health");
+        service.setServiceName("Access for HIV care");//HIV care and support
+        service.setServiceValue("Access for HIV care");
+        service.setServiceCode("9he");
+        service.setBeneficiaryType(AppConstant.OVC_TYPE_NUM);
+        return service;
+    }
    //
     public static Service getChildRightsSession()
     {
@@ -915,7 +955,7 @@ public class OvcServiceAttributesManager implements Serializable
         service.setServiceCode("12t");
         service.setBeneficiaryType(AppConstant.HOUSEHOLD_TYPE_NUM);
         return service;
-    }//
+    }
     
     
     
@@ -1649,6 +1689,14 @@ public class OvcServiceAttributesManager implements Serializable
             service=getHealthReferralService();
             else if(serviceCodeOrName.equalsIgnoreCase(getWashMessagingService().getServiceName()) || serviceCodeOrName.equalsIgnoreCase(getWashMessagingService().getServiceCode()))
             service=getWashMessagingService();
+            else if(serviceCodeOrName.equalsIgnoreCase(getHealthEducationService().getServiceName()) || serviceCodeOrName.equalsIgnoreCase(getHealthEducationService().getServiceCode()))
+            service=getHealthEducationService();
+            else if(serviceCodeOrName.equalsIgnoreCase(getPmtctHctCommunityHIVService().getServiceName()) || serviceCodeOrName.equalsIgnoreCase(getPmtctHctCommunityHIVService().getServiceCode()))
+            service=getPmtctHctCommunityHIVService();
+            else if(serviceCodeOrName.equalsIgnoreCase(getAccessForHIVCareService().getServiceName()) || serviceCodeOrName.equalsIgnoreCase(getAccessForHIVCareService().getServiceCode()))
+            service=getAccessForHIVCareService();
+            else if(serviceCodeOrName.equalsIgnoreCase(getWaterTreatmentService().getServiceName()) || serviceCodeOrName.equalsIgnoreCase(getWaterTreatmentService().getServiceCode()))
+            service=getWaterTreatmentService();
             else if(serviceCodeOrName.equalsIgnoreCase("Completed a referral for or was facilitated to obtain HIV related testing") || serviceCodeOrName.equalsIgnoreCase("5h") || serviceCodeOrName.equalsIgnoreCase("20h"))
             service=getReferralForHIVRelatedTestingService();
             else if(serviceCodeOrName.equalsIgnoreCase("Completed a referral or was facilitated to obtain HIV (or related opportunistic infections) treatment and care") || serviceCodeOrName.equalsIgnoreCase("6h"))
@@ -1768,7 +1816,13 @@ public class OvcServiceAttributesManager implements Serializable
             service=getLinkagesToFinancialInstitutionsAndPrivateSector();
             else if(serviceCodeOrName.equalsIgnoreCase(getProvisionOfAgriculturalInput().getServiceName()) || serviceCodeOrName.equalsIgnoreCase(getProvisionOfAgriculturalInput().getServiceCode()))
             service=getProvisionOfAgriculturalInput();
-            //
+            else if(serviceCodeOrName.equalsIgnoreCase(getShortTermEmergencyCashSupport().getServiceName()) || serviceCodeOrName.equalsIgnoreCase(getShortTermEmergencyCashSupport().getServiceCode()))
+            service=getShortTermEmergencyCashSupport();
+            else if(serviceCodeOrName.equalsIgnoreCase(getHomeGardeningSupportServices().getServiceName()) || serviceCodeOrName.equalsIgnoreCase(getHomeGardeningSupportServices().getServiceCode()))
+            service=getHomeGardeningSupportServices();
+            else if(serviceCodeOrName.equalsIgnoreCase(getSafeShelterRelatedRepair().getServiceName()) || serviceCodeOrName.equalsIgnoreCase(getSafeShelterRelatedRepair().getServiceCode()))
+            service=getSafeShelterRelatedRepair();
+            //getSafeShelterRelatedRepair()
             else if(serviceCodeOrName.equalsIgnoreCase(getInseticideTreatedBedNetServices().getServiceName()) || serviceCodeOrName.equalsIgnoreCase(getInseticideTreatedBedNetServices().getServiceCode()))
             service=getInseticideTreatedBedNetServices();
             else if(serviceCodeOrName.equalsIgnoreCase(getAdolescentHivPreventionServices().getServiceName()) || serviceCodeOrName.equalsIgnoreCase(getAdolescentHivPreventionServices().getServiceCode()))

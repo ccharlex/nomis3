@@ -7,6 +7,10 @@
 
 <struts-config>
     <form-beans>
+        <form-bean name="EnrollmentStreamMergeForm" type="com.nomis.maintenance.controller.EnrollmentStreamMergeForm"/>
+        <form-bean name="EnrollmentStatusUpdateForm" type="com.nomis.maintenance.controller.EnrollmentStatusUpdateForm"/>
+        <form-bean name="EnrollmentStatusManagementForm" type="com.nomis.enrollmentstatus.controller.EnrollmentStatusManagementForm"/>
+        <!--<form-bean name="EnrollmentStatusManagementForm" type="com.nomis.maintenance.controller.EnrollmentStatusManagementForm"/>-->
         <form-bean name="CustomIndicatorReportForm" type="com.nomis.reports.controller.CustomIndicatorReportForm"/>
         <form-bean name="OvcRegisterForm" type="com.nomis.reports.controller.OvcRegisterForm"/>
         <form-bean name="DatimDataGenerationForm" type="com.nomis.reports.controller.DatimDataGenerationForm"/>
@@ -257,9 +261,24 @@
             <forward name="householdServiceRegister" path="/Reports/Registers/HouseholdServiceRegister.jsp"/>
             <forward name="hraRegister" path="/Reports/Registers/HIVRiskAssessmentRegister.jsp"/>
             <forward name="careAndSupportRegister" path="/Reports/Registers/CareAndSupportRegister.jsp"/>
+            <forward name="nutritionAssessmentRegister" path="/Reports/Registers/NutritionAssessmentRegister.jsp"/>
+            <forward name="caregiverAccessToEmergencyFundRegister" path="/Reports/Registers/CaregiverAccessToEmergencyFundRegister.jsp"/>
+            <forward name="careplanAchievementRegister" path="/Reports/Registers/CareplanAchievementRegister.jsp"/>
         </action>
         <action input="/Reports/StatisticalReports/CustomIndicatorsReport.jsp" name="CustomIndicatorReportForm" path="/customIndicatorsreport" scope="session" type="com.nomis.reports.controller.CustomIndicatorsReportAction">
             <forward name="paramPage" path="/Reports/StatisticalReports/CustomIndicatorsReport.jsp"/>
+        </action>
+        <!--<action input="/Maintainance/EnrollmentStatusUpdateManager.jsp" name="EnrollmentStatusManagementForm" path="/enrollmentstatusupdate" scope="session" type="com.nomis.maintenance.controller.EnrollmentStatusManagementAction">
+            <forward name="success" path="/Maintainance/EnrollmentStatusUpdateManager.jsp"/>
+        </action>-->
+        <action input="/DataManagement/EnrollmentStatusManagement.jsp" name="EnrollmentStatusManagementForm" path="/enrollmentstatusmanagement" scope="session" type="com.nomis.enrollmentstatus.controller.EnrollmentStatusManagementAction">
+            <forward name="success" path="/DataManagement/EnrollmentStatusManagement.jsp"/>
+        </action>
+        <action input="/Maintainance/EnrollmentStatusUpdateManager.jsp" name="EnrollmentStatusUpdateForm" path="/enrollmentstatusupdate" scope="session" type="com.nomis.maintenance.controller.EnrollmentStatusUpdateAction">
+            <forward name="success" path="/Maintainance/EnrollmentStatusUpdateManager.jsp"/>
+        </action>
+        <action input="/Maintainance/EnrollmentStreamMerger.jsp" name="EnrollmentStreamMergeForm" path="/enrollmentstreammerge" scope="session" type="com.nomis.maintenance.controller.EnrollmentStreamMergeAction">
+            <forward name="success" path="/Maintainance/EnrollmentStreamMerger.jsp"/>
         </action>
         <action path="/ajaxaction" type="com.nomis.ajax.controller.StrutsAjaxAction"/>
     </action-mappings>

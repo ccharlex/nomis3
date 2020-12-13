@@ -25,6 +25,8 @@ public class DataImportFileUploadManager implements Serializable
     private Date dateImportCompleted;
     private String timeImportCompleted;
     private String selectedTableCodes;
+    private int totalNumberOfTablesSelected;
+    private int numberOfTablesProcessed;
     
     public Date getDateImportCompleted() {
         return dateImportCompleted;
@@ -120,6 +122,22 @@ public class DataImportFileUploadManager implements Serializable
 
     public void setLastProcessedTableIndex(int lastProcessedTableIndex) {
         this.lastProcessedTableIndex = lastProcessedTableIndex;
+    }
+
+    public int getNumberOfTablesProcessed() {
+        return numberOfTablesProcessed;
+    }
+
+    public void setNumberOfTablesProcessed(int numberOfTablesProcessed) {
+        this.numberOfTablesProcessed = numberOfTablesProcessed;
+    }
+
+    public int getTotalNumberOfTablesSelected() {
+        return totalNumberOfTablesSelected;
+    }
+
+    public void setTotalNumberOfTablesSelected(int totalNumberOfTablesSelected) {
+        this.totalNumberOfTablesSelected = totalNumberOfTablesSelected;
     }
     
 }

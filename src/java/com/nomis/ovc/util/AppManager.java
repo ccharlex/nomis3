@@ -35,7 +35,7 @@ public class AppManager
         }
         return userName;
     }
-    /*public Ovc getOvcWithCurrentAgeAge(Ovc ovc)
+    /*public Ovc getOvcWithCurrentAge(Ovc ovc)
     {
         String dateOfBirth=DateManager.convertDateToString(ovc.getDateOfBirth(), DateManager.DB_DATE_FORMAT);
         String currentDate=DateManager.getCurrentDate();

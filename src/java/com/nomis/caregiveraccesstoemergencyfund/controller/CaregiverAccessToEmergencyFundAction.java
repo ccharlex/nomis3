@@ -9,6 +9,7 @@ import com.nomis.operationsManagement.CommunityWorkerRecordsManager;
 import com.nomis.operationsManagement.OrganizationUnitAttributesManager;
 import com.nomis.operationsManagement.UserActivityManager;
 import com.nomis.ovc.business.AdultHouseholdMember;
+import com.nomis.ovc.business.Beneficiary;
 import com.nomis.ovc.business.CaregiverAccessToEmergencyFund;
 import com.nomis.ovc.business.HouseholdEnrollment;
 import com.nomis.ovc.business.User;
@@ -72,24 +73,28 @@ public class CaregiverAccessToEmergencyFundAction extends org.apache.struts.acti
         }
         String userName=appManager.getCurrentUserName(session);
         String level3OuId=caefform.getLevel3OuId();
+        String cboId=caefform.getCboId();
         int hhSerialNo=caefform.getHhSerialNo();
         String hhUniqueId=caefform.getHhUniqueId();
         String beneficiaryId=caefform.getBeneficiaryId();
         String dateOfAssessment=caefform.getDateOfAssessment();
-        ouaManager.setOrganizationUnitAttributes(session, level3OuId,userName,caefform.getCboId());
+        ouaManager.setOrganizationUnitAttributes(session, level3OuId,userName,cboId);
         session.setAttribute("hivStatusForRiskAssessment", HivPropertiesManager.getHivStatusWithoutPositive());
         setHouseholdMemberListPerHousehold(session, caefform.getHhUniqueId());
-        setButtonState(session,"false","true");
+        //setButtonState(session,"false","true");
         getAdultHouseholdMemberFormWithDetails(session,caefform);
         CommunityWorkerRecordsManager.setEnumeratorsRegistrationList(session);
         HivPropertiesManager.setHivStatusList(session, HivPropertiesManager.getThreeMainHivStatus());
+        //setWithdrawalStatusMessage(session,caefform.getBeneficiaryId(),AppConstant.TRUEVALUE,AppConstant.TRUEVALUE);
         AccessManager acm=new AccessManager();
         requiredAction=acm.getActionName(requiredAction, user);
         
         if(requiredAction==null)
         {
+            //set null beneficiaryid to the setWithdrawalStatusMessage method to reset the session and button to initial values
+            setWithdrawalStatusMessage(session,null,AppConstant.FALSEVALUE,AppConstant.TRUEVALUE);
             caefform.reset(mapping, request);
-            setButtonState(session,"false","true");
+            //setButtonState(session,"false","true");
             return mapping.findForward(SUCCESS);
         }
         else if(requiredAction.equalsIgnoreCase("level3OuList"))
@@ -105,20 +110,22 @@ public class CaregiverAccessToEmergencyFundAction extends org.apache.struts.acti
         }
         else if(requiredAction.equalsIgnoreCase("householdDetails"))
         {
+            caefform.reset(mapping, request);
             String hhName=null;
             setHouseholdMemberListPerHousehold(session, hhUniqueId);
             request.setAttribute("hhName", hhName);
-            caefform.reset(mapping, request);
             caefform.setHhUniqueId(hhUniqueId);
             caefform.setHhSerialNo(hhSerialNo);
-            //caefform.setHhName(hhName);
+            caefform.setCboId(cboId);
             caefform=setOrganizationUnitProperties(session, hhUniqueId,caefform,userName);
+            //setWithdrawalStatusMessage(session,caefform.getBeneficiaryId(),AppConstant.TRUEVALUE,AppConstant.FALSEVALUE);
             return mapping.findForward(SUCCESS);
         }
         else if(requiredAction.equalsIgnoreCase("assessmentDetails"))
         {
             CaregiverAccessToEmergencyFund caef=util.getCaregiverAccessToEmergencyFundDaoInstance().getCaregiverAccessToEmergencyFund(caefform.getBeneficiaryId(), DateManager.getDateInstance(DateManager.processMthDayYearToMysqlFormat(dateOfAssessment)));
             caefform.reset(mapping, request);
+            caefform.setCboId(cboId);
             caefform.setHhSerialNo(hhSerialNo);
             caefform.setHhUniqueId(hhUniqueId);
             caefform.setBeneficiaryId(beneficiaryId);
@@ -133,7 +140,12 @@ public class CaregiverAccessToEmergencyFundAction extends org.apache.struts.acti
                 caefform.setSourceOfMoney(appUtil.splitString(caef.getSourceOfMoney(), ","));
                 caefform.setUrgentHhNeeds(appUtil.splitString(caef.getUrgentHhNeeds(), ","));
                 caefform.setVolunteerName(caef.getVolunteerName());
-                setButtonState(session,"true","false");
+                setWithdrawalStatusMessage(session,caefform.getBeneficiaryId(),AppConstant.TRUEVALUE,AppConstant.FALSEVALUE);
+                //setButtonState(session,"true","false");
+            }
+            else
+            {
+                setWithdrawalStatusMessage(session,caefform.getBeneficiaryId(),AppConstant.FALSEVALUE,AppConstant.TRUEVALUE);
             }
         }
         else if(requiredAction.equalsIgnoreCase("save"))
@@ -162,6 +174,39 @@ public class CaregiverAccessToEmergencyFundAction extends org.apache.struts.acti
         }
         
         return mapping.findForward(SUCCESS);
+    }
+    private void setWithdrawalStatusMessage(HttpSession session,String beneficiaryId,String saveBtnDisabledValue,String modifyBtnDisabledValue) throws Exception
+    {
+        AppUtility appUtil=new AppUtility();
+        String attributeName="caefWithdrawnMessage";
+        if(beneficiaryId !=null)
+        {
+            DaoUtility util=new DaoUtility();
+            Beneficiary beneficiary=util.getAdultHouseholdMemberDaoInstance().getAdultHouseholdMember(beneficiaryId);
+            if(beneficiary !=null)
+            {
+                if(appUtil.getBeneficiaryWithrawnMessage(beneficiary.getCurrentEnrollmentStatus()) !=null)
+                {
+                    setButtonState(session,AppConstant.TRUEVALUE,AppConstant.TRUEVALUE);
+                    session.setAttribute(attributeName, appUtil.getBeneficiaryWithrawnMessage(beneficiary.getCurrentEnrollmentStatus()));
+                }
+                else
+                {
+                    session.removeAttribute(attributeName);
+                    setButtonState(session,saveBtnDisabledValue,modifyBtnDisabledValue);
+                }
+            }
+            else
+            {
+                session.removeAttribute(attributeName);
+                setButtonState(session,saveBtnDisabledValue,modifyBtnDisabledValue);
+            }
+        }
+        else
+        {
+            session.removeAttribute(attributeName);
+            setButtonState(session,saveBtnDisabledValue,modifyBtnDisabledValue);
+        }
     }
     private CaregiverAccessToEmergencyFund getCaregiverAccessToEmergencyFund(CaregiverAccessToEmergencyFundForm form, String userName)
     {

@@ -142,7 +142,8 @@ public class SchoolDaoImpl implements SchoolDao
         try
         {
             System.err.println("Inside SchoolDao savedSchool 1");
-            if(school !=null && school.getSchoolName() !=null)
+            if(school !=null && school.getSchoolName() !=null && school.getOrgUnitId() !=null
+                    && school.getDateCreated()  !=null && school.getLastModifiedDate() !=null)
             {
                 System.err.println("Inside SchoolDao savedSchool 2");
                 if(getSchool(school.getId()) ==null && getSchoolsBySchoolName(school.getSchoolName())==null)
@@ -173,12 +174,15 @@ public class SchoolDaoImpl implements SchoolDao
                     School schoolByName=this.getSchoolsBySchoolName(school.getSchoolName());
                     if(schoolByName ==null || schoolByName.getId().equalsIgnoreCase(school.getId()))
                     {
-                        session=HibernateUtil.getSession();
-                        tx=session.beginTransaction();
-                        session.update(school);
-                        tx.commit();
-                        closeSession(session);
-                        System.err.println("School info updated");
+                        if(school.getOrgUnitId() !=null && school.getDateCreated()  !=null && school.getLastModifiedDate() !=null)
+                        {
+                            session=HibernateUtil.getSession();
+                            tx=session.beginTransaction();
+                            session.update(school);
+                            tx.commit();
+                            closeSession(session);
+                            System.err.println("School info updated");
+                        }
                     }
                 }
             }

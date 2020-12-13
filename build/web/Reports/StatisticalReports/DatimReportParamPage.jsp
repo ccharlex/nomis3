@@ -113,11 +113,11 @@ function setActionName(val)
                         ${datimpdfmsg}
                     </logic:present></td></tr>
             </table>
-        <jsp:include page="/includes/ReportOrganizationUnitParameter.jsp" />
+        <jsp:include page="/includes/DatimReportOrganizationUnitParameter.jsp" />
                
 <table>
                           
-            <tr><td align="left">Type </td>
+            <tr><td align="right">Type</td>
                 <td colspan="3">
                     <html:select property="reportType" styleId="reportType" style="width: 290px; margin-left:10px;" >
                         <html:option value="datim2017">Datim report form</html:option>

@@ -21,7 +21,7 @@ import com.nomis.ovc.metadata.OrganizationUnit;
 import com.nomis.ovc.util.AppConstant;
 import com.nomis.ovc.util.AppManager;
 import com.nomis.ovc.util.AppUtility;
-import com.nomis.ovc.util.DatabasetManager;
+import com.nomis.ovc.util.DatasetManager;
 import com.nomis.ovc.util.DateManager;
 import com.nomis.ovc.util.HivPropertiesManager;
 import java.util.ArrayList;
@@ -66,8 +66,8 @@ public class NationalHouseholdServiceAction extends org.apache.struts.action.Act
         AppManager appManager=new AppManager();
         User user=appManager.getCurrentUser(session);
         
-        DatasetSetting dsts=util.getDatasetSettingDaoInstance().getDatasetSettingByModuleId(DatabasetManager.getHouseholdServiceModuleId());
-        if(dsts !=null && dsts.getDatasetId().equalsIgnoreCase(DatabasetManager.getRevHouseholdServiceDatasetId()))
+        DatasetSetting dsts=util.getDatasetSettingDaoInstance().getDatasetSettingByModuleId(DatasetManager.getHouseholdServiceModuleId());
+        if(dsts !=null && dsts.getDatasetId().equalsIgnoreCase(DatasetManager.getRevHouseholdServiceDatasetId()))
         {
             //System.err.println("dsts.getDatasetId() is "+dsts.getDatasetId());
             return mapping.findForward("RevisedHouseholdServiceForm");

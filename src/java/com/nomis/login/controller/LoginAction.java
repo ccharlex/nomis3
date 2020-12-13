@@ -106,7 +106,7 @@ if(!hibernateFile.exists())
         //dbUtils.runDatabaseUpdateForVersion21();
         System.err.println("Hibernate file created");
     }
-    if(created==1)
+    else if(created==1)
     {
         System.err.println("Hibernate file not created but directory created");
     }
@@ -132,6 +132,7 @@ dbutils.executeDatabaseUpdate();
             User user=null;
             if(userName !=null && password !=null && (userName.trim().equalsIgnoreCase("admin") && password.trim().equalsIgnoreCase("admin")))
             {
+                //if use of default account is allowed as indicated in the loginconfig file, then proceed to ask the user to create new account
                 if(appUtil.isDefaultAccountEnabled())
                 {
                     user=new User();
@@ -140,6 +141,7 @@ dbutils.executeDatabaseUpdate();
                     user.setAccountStatus(userName);
                     user.setAccessPrivileges("createusers,norolexxxxx");
                     appUtil.disableDefaultAccount();
+                    //redirect to account creation page to create a new user account
                     //return (mapping.findForward("useraccount"));
                 }
             }

@@ -29,4 +29,5 @@ public interface CareplanAchievementChecklistDao
     public void updateCareplanAchievementChecklistForImport(CareplanAchievementChecklist cpa) throws Exception;
     public List getCareplanAchievementChecklistsNotGraduated(String additionalQueryCriteria) throws Exception;
     public List getCareplanAchievementChecklistRecordsForExport(ReportParameterTemplate rpt) throws Exception;
+    public List getCareplanAchievementChecklistRecords(ReportParameterTemplate rpt) throws Exception;
 }

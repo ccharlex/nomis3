@@ -29,6 +29,7 @@ public class CommunityBasedOrganization implements Serializable
     private Date dateCreated;
     private Date lastModifiedDate;
     private String recordedBy;
+    private String legacyId;
 
     public String getAddress() {
         return address;
@@ -156,6 +157,14 @@ public class CommunityBasedOrganization implements Serializable
 
     public void setCboCode(String cboCode) {
         this.cboCode = cboCode;
+    }
+
+    public String getLegacyId() {
+        return legacyId;
+    }
+
+    public void setLegacyId(String legacyId) {
+        this.legacyId = legacyId;
     }
     
 }

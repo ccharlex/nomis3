@@ -9,7 +9,6 @@ import com.nomis.ovc.business.HivRiskAssessment;
 import com.nomis.ovc.business.HivStatusManager;
 import com.nomis.ovc.business.Ovc;
 import com.nomis.ovc.util.AppConstant;
-import com.nomis.ovc.util.AppManager;
 import com.nomis.ovc.util.DateManager;
 import com.nomis.reports.utils.ReportParameterTemplate;
 import java.util.ArrayList;

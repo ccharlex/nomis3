@@ -11,6 +11,7 @@ import com.nomis.ovc.business.CaregiverAccessToEmergencyFund;
 import com.nomis.ovc.business.CareplanAchievementChecklist;
 import com.nomis.ovc.business.ChildEducationPerformanceAssessment;
 import com.nomis.ovc.business.ChildService;
+import com.nomis.ovc.business.CommunityBasedOrganization;
 import com.nomis.ovc.business.HivRiskAssessment;
 import com.nomis.ovc.business.HouseholdCareplan;
 import com.nomis.ovc.business.HouseholdEnrollment;
@@ -35,6 +36,7 @@ import com.nomis.ovc.dao.HouseholdReferralDao;
 import com.nomis.ovc.dao.HouseholdServiceDao;
 import com.nomis.ovc.dao.HouseholdVulnerabilityAssessmentDao;
 import com.nomis.ovc.dao.RevisedHouseholdVulnerabilityAssessmentDao;
+import com.nomis.ovc.metadata.OrganizationUnit;
 import com.nomis.ovc.util.AppConstant;
 import com.nomis.ovc.util.AppUtility;
 import com.nomis.ovc.util.DateManager;
@@ -118,6 +120,7 @@ public List importHouseholdEnrollmentRecordsFromXML(String destinationDirectory,
                     HouseholdEnrollmentDao hhedao=util.getHouseholdEnrollmentDaoInstance();
                     HouseholdEnrollment hhe=null;
                     HouseholdEnrollment existinghhe=null;
+                    
                     for(int i=0; i<files.size(); i++)
                     {
                         //System.err.println(filePath+files.get(i).toString());
@@ -140,6 +143,7 @@ public List importHouseholdEnrollmentRecordsFromXML(String destinationDirectory,
                              {
                                 String hhUniqueId=getNodeValue("hhUniqueId",s,listOfObjects);
                                 hhe.setHhUniqueId(hhUniqueId);
+                                
                                 hhe.setEnrollmentId(getNodeValue("enrollmentId",s,listOfObjects));
                                 hhe.setDateOfAssessment(DateManager.getDateInstance(getNodeValue("dateOfAssessment",s,listOfObjects)));
                                 hhe.setAddress(getNodeValue("address",s,listOfObjects));
@@ -156,35 +160,36 @@ public List importHouseholdEnrollmentRecordsFromXML(String destinationDirectory,
                                 hhe.setHhHasCasePlan(getIntegerNodeValue(getNodeValue("hhHasCasePlan",s,listOfObjects)));
                                 hhe.setDateCasePlanDeveloped(DateManager.getDateInstance(getNodeValue("dateCasePlanDeveloped",s,listOfObjects)));
                                 
-                                                                
-                                existinghhe=hhedao.getHouseholdEnrollment(hhe.getHhUniqueId());
-                                if(existinghhe==null)
+                                if(hhe.getHhUniqueId() !=null && hhe.getHhUniqueId().indexOf("/") !=-1 && hhe.getDateOfAssessment() !=null)    
                                 {
-                                    if(hheOption==2 || hheOption==3)
+                                    existinghhe=hhedao.getHouseholdEnrollment(hhe.getHhUniqueId());
+                                    if(existinghhe==null)
                                     {
-                                        count++;
-                                        hhedao.saveHouseholdEnrollment(hhe);
-                                        numberSaved++;
-                                        AppUtility.setCurrentImportRecordName("Household enrollment record: "+count+" saved");
-                                    }
-                                }
-                                else
-                                {
-                                    if(hheOption==1 || hheOption==3)
-                                    {
-                                        if(existinghhe.getLastModifiedDate().before(hhe.getLastModifiedDate()) || existinghhe.getLastModifiedDate().equals(hhe.getLastModifiedDate()))
+                                        if(hheOption==2 || hheOption==3)
                                         {
-                                            hhe.setCboId(existinghhe.getCboId());
-                                            if(hhe.getAddress()==null)
-                                            hhe.setAddress(existinghhe.getAddress());
                                             count++;
-                                            hhedao.updateHouseholdEnrollment(hhe);
-                                            numberUpdated++;
+                                            hhedao.saveHouseholdEnrollment(hhe);
+                                            numberSaved++;
                                             AppUtility.setCurrentImportRecordName("Household enrollment record: "+count+" saved");
                                         }
                                     }
-                                }
-                                
+                                    else
+                                    {
+                                        if(hheOption==1 || hheOption==3)
+                                        {
+                                            if(existinghhe.getLastModifiedDate().before(hhe.getLastModifiedDate()) || existinghhe.getLastModifiedDate().equals(hhe.getLastModifiedDate()))
+                                            {
+                                                hhe.setCboId(existinghhe.getCboId());
+                                                if(hhe.getAddress()==null)
+                                                hhe.setAddress(existinghhe.getAddress());
+                                                count++;
+                                                hhedao.updateHouseholdEnrollment(hhe);
+                                                numberUpdated++;
+                                                AppUtility.setCurrentImportRecordName("Household enrollment record: "+count+" saved");
+                                            }
+                                        }
+                                    }
+                                }             
                              }
                         }
                     }
@@ -711,7 +716,7 @@ public List importOvcRecordsFromXML(String destinationDirectory,int ovcOption)
                                 ovc.setWeight(Double.parseDouble(getNodeValue("weight",s,listOfObjects)));
                                 ovc.setCommunityWorkerName(getNodeValue("communityWorkerName",s,listOfObjects));
                                 ovc.setCurrentEnrollmentStatus(getIntegerNodeValue(getNodeValue("currentEnrollmentStatus",s,listOfObjects)));
-                                ovc.setDateOfCurrentStatus(DateManager.getDateInstance(getNodeValue("dateOfCurrentEnrollmentStatus",s,listOfObjects)));
+                                ovc.setDateOfCurrentEnrollmentStatus(DateManager.getDateInstance(getNodeValue("dateOfCurrentEnrollmentStatus",s,listOfObjects)));
                                 ovc.setDateCreated(DateManager.getDateInstance(getNodeValue("dateCreated",s,listOfObjects)));
                                 ovc.setLastModifiedDate(DateManager.getDateInstance(getNodeValue("lastModifiedDate",s,listOfObjects)));
                                 ovc.setRecordedBy(getNodeValue("recordedBy",s,listOfObjects));
@@ -1308,7 +1313,7 @@ public List importCareAndSupportRecordsFromXML(String destinationDirectory)
                                 casc.setCoughSymptom(getIntegerNodeValue(getNodeValue("coughSymptom",s,listOfObjects)));
                                 casc.setDateOfAssessment(DateManager.getDateInstance(getNodeValue("dateOfAssessment",s,listOfObjects)));
                                 casc.setDateOfNextAppointment(DateManager.getDateInstance(getNodeValue("dateOfNextAppointment",s,listOfObjects)));
-                                casc.setDateOfViralLoadTest(DateManager.getDateInstance(getNodeValue("dateOfViralLoadTest",s,listOfObjects)));
+                                casc.setDateOfViralLoadSampleCollection(DateManager.getDateInstance(getNodeValue("dateOfViralLoadTest",s,listOfObjects)));
                                 casc.setEnrolledOnTreatment(getIntegerNodeValue(getNodeValue("enrolledOnTreatment",s,listOfObjects)));
                                 casc.setFacilityId(getNodeValue("facilityId",s,listOfObjects));
                                 casc.setMissedARVsRecently(getIntegerNodeValue(getNodeValue("missedARVsRecently",s,listOfObjects)));
@@ -1321,7 +1326,12 @@ public List importCareAndSupportRecordsFromXML(String destinationDirectory)
                                 casc.setViralLoadResult(getIntegerNodeValue(getNodeValue("viralLoadResult",s,listOfObjects)));
                                 casc.setViralLoadResultKnown(getIntegerNodeValue(getNodeValue("viralLoadResultKnown",s,listOfObjects)));
                                 casc.setViralLoadTestDone(getIntegerNodeValue(getNodeValue("viralLoadTestDone",s,listOfObjects)));
-                                
+                                casc.setDateOfLastDrugPickup(DateManager.getDefaultStartDateInstance());
+                                if(getNodeName("dateOfLastDrugPickup",s,listOfObjects) !=null)
+                                {
+                                    casc.setDateOfLastDrugPickup(DateManager.getDateInstance(getNodeValue("dateOfLastDrugPickup",s,listOfObjects)));
+                                    casc.setNumberOfDaysOfRefill(getIntegerNodeValue(getNodeValue("numberOfDaysOfRefill",s,listOfObjects)));
+                                }
                                 casc.setDateCreated(DateManager.getDateInstance(getNodeValue("dateCreated",s,listOfObjects)));
                                 casc.setLastModifiedDate(DateManager.getDateInstance(getNodeValue("lastModifiedDate",s,listOfObjects)));
                                 casc.setRecordedBy(getNodeValue("recordedBy",s,listOfObjects));
@@ -1662,7 +1672,8 @@ public List importChildEducationPerformanceAssessmentRecordsFromXML(String desti
                                 cepa.setRecordedBy(getNodeValue("recordedBy",s,listOfObjects));
                                 cepa.setMarkedForDelete(getIntegerNodeValue(getNodeValue("markedForDelete",s,listOfObjects)));
                                 cepa.setVolunteerName(getNodeValue("volunteerName",s,listOfObjects));
-                                
+                                if(getNodeName("reasonsChildMissedSchoolOrVocTraining",s,listOfObjects) !=null)
+                                cepa.setReasonsChildMissedSchoolOrVocTraining(getNodeValue("reasonsChildMissedSchoolOrVocTraining",s,listOfObjects));
                                 existingCepa=dao.getChildEducationPerformanceAssessment(cepa.getOvcId(), cepa.getDateOfAssessment());
                                 if(existingCepa==null)
                                 {
@@ -1777,6 +1788,17 @@ public List importBeneficiaryStatusUpdateRecordsFromXML(String destinationDirect
                                 bsu.setDateCreated(DateManager.getDateInstance(getNodeValue("dateCreated",s,listOfObjects)));
                                 bsu.setLastModifiedDate(DateManager.getDateInstance(getNodeValue("lastModifiedDate",s,listOfObjects)));
                                 bsu.setRecordedBy(getNodeValue("recordedBy",s,listOfObjects));
+                                bsu.setDateCaregiverExitedFromProgram(DateManager.getDefaultStartDateInstance());
+                                bsu.setDateChildExitedFromProgram(DateManager.getDefaultStartDateInstance());
+                                if(getNodeName("dateCaregiverExitedFromProgram",s,listOfObjects) !=null)
+                                {
+                                    bsu.setChildExitedFromProgram(getIntegerNodeValue(getNodeValue("childExitedFromProgram",s,listOfObjects)));
+                                    bsu.setChildExitStatus(getIntegerNodeValue(getNodeValue("childExitStatus",s,listOfObjects)));
+                                    bsu.setCaregiverExitedFromProgram(getIntegerNodeValue(getNodeValue("caregiverExitedFromProgram",s,listOfObjects)));
+                                    bsu.setCaregiverExitStatus(getIntegerNodeValue(getNodeValue("caregiverExitStatus",s,listOfObjects)));
+                                    bsu.setDateCaregiverExitedFromProgram(DateManager.getDateInstance(getNodeValue("dateCaregiverExitedFromProgram",s,listOfObjects)));
+                                    bsu.setDateChildExitedFromProgram(DateManager.getDateInstance(getNodeValue("dateChildExitedFromProgram",s,listOfObjects)));
+                                }
                                 //bsu.setMarkedForDelete(getIntegerNodeValue(getNodeValue("markedForDelete",s,listOfObjects)));
                                 //bsu.setVolunteerName(getNodeValue("volunteerName",s,listOfObjects));
                                 
@@ -1963,6 +1985,7 @@ public List importData(String currentUserName,int hheOption,int ovcOption,int me
         DataImportFileUploadManager difum=null;
         try
         {
+            //get list of uploaded files from the database
             List uploadedFileList=util.getDataImportUploadManagerDaoInstance().getAllDataImportFileUploadManager(0);
             //String[] uploadedFileList=appUtil.listFiles(appUtil.getImportFilePath());
             if(uploadedFileList !=null && !uploadedFileList.isEmpty())
@@ -1971,10 +1994,12 @@ public List importData(String currentUserName,int hheOption,int ovcOption,int me
                 String importFilePath=null;
                 String destinationDirectory=null;
                 String fileName=null;
+                String partnerCode=null;
                 for(int i=0; i<uploadedFileList.size(); i++)
                 {
                     difum=(DataImportFileUploadManager)uploadedFileList.get(i);
                     fileName=difum.getImportFileName();
+                    partnerCode=difum.getPartnerCode();
                     if(fileName !=null)
                     {
                         importFilePath=appUtil.getImportFilePath()+appUtil.getFileSeperator()+fileName;
@@ -1982,6 +2007,7 @@ public List importData(String currentUserName,int hheOption,int ovcOption,int me
                         File file=new File(importFilePath);
                         if(!file.exists())
                         {
+                            //File was initially uploaded to the folder but has been removed. Set record status to 2
                             difum.setImportStatus(2);
                             updateDataImportFileUploadManager(difum);
                             continue;
@@ -2039,24 +2065,52 @@ public List importData(String currentUserName,int hheOption,int ovcOption,int me
                             fileChildServiceOption=childServiceOption;
                             fileRiskAssessmentOption=riskAssessmentOption;
                         }
-                        mainList.addAll(importHouseholdEnrollmentRecordsFromXML(destinationDirectory,fileHheOption));
-                        mainList.addAll(importAdultHouseholdMembersRecordsFromXML(destinationDirectory,fileHheOption));
-                        mainList.addAll(importOvcRecordsFromXML(destinationDirectory,fileOvcOption));
-                        mainList.addAll(importHouseholdServiceRecordsFromXML(destinationDirectory,fileHouseholdServiceOption));
-                        mainList.addAll(importOvcServiceRecordsFromXML(destinationDirectory,fileChildServiceOption));
-                        mainList.addAll(importHivRiskAssessmentRecordsFromXML(destinationDirectory,fileRiskAssessmentOption));
-                        mainList.addAll(importReferralRecordsFromXML(destinationDirectory));
-                        mainList.addAll(importCareAndSupportRecordsFromXML(destinationDirectory));
-                        mainList.addAll(importCaregiverAccessToEmergencyFundRecordsFromXML(destinationDirectory));
-                        mainList.addAll(importHouseholdVulnerabilityAssessmentRecordsFromXML(destinationDirectory,fileHheOption));
-                        mainList.addAll(importRevisedHouseholdVulnerabilityAssessmentRecordsFromXML(destinationDirectory,fileHheOption));
-                        mainList.addAll(importCareplanAchievementChecklistRecordsFromXML(destinationDirectory));
-                        mainList.addAll(importChildEducationPerformanceAssessmentRecordsFromXML(destinationDirectory));
-                        mainList.addAll(importBeneficiaryStatusUpdateRecordsFromXML(destinationDirectory));
-                        mainList.addAll(importHouseholdCareplanRecordsFromXML(destinationDirectory));
-                        System.err.println("fileMetadataOption is "+fileMetadataOption);
-                        //if(fileMetadataOption !=4)
-                        //importMetadata(destinationDirectory,fileMetadataOption);
+                        if(isNomis3File(destinationDirectory))
+                        {
+                            //The file is a Nomis3 export
+                            mainList.addAll(importHouseholdEnrollmentRecordsFromXML(destinationDirectory,fileHheOption));
+                            mainList.addAll(importAdultHouseholdMembersRecordsFromXML(destinationDirectory,fileHheOption));
+                            mainList.addAll(importOvcRecordsFromXML(destinationDirectory,fileOvcOption));
+                            mainList.addAll(importHouseholdServiceRecordsFromXML(destinationDirectory,fileHouseholdServiceOption));
+                            mainList.addAll(importOvcServiceRecordsFromXML(destinationDirectory,fileChildServiceOption));
+                            mainList.addAll(importHivRiskAssessmentRecordsFromXML(destinationDirectory,fileRiskAssessmentOption));
+                            mainList.addAll(importReferralRecordsFromXML(destinationDirectory));
+                            mainList.addAll(importCareAndSupportRecordsFromXML(destinationDirectory));
+                            mainList.addAll(importCaregiverAccessToEmergencyFundRecordsFromXML(destinationDirectory));
+                            mainList.addAll(importHouseholdVulnerabilityAssessmentRecordsFromXML(destinationDirectory,fileHheOption));
+                            mainList.addAll(importRevisedHouseholdVulnerabilityAssessmentRecordsFromXML(destinationDirectory,fileHheOption));
+                            mainList.addAll(importCareplanAchievementChecklistRecordsFromXML(destinationDirectory));
+                            mainList.addAll(importChildEducationPerformanceAssessmentRecordsFromXML(destinationDirectory));
+                            mainList.addAll(importBeneficiaryStatusUpdateRecordsFromXML(destinationDirectory));
+                            mainList.addAll(importHouseholdCareplanRecordsFromXML(destinationDirectory));
+                            System.err.println("fileMetadataOption is "+fileMetadataOption);
+                            /*difum.setImportStatus(1);
+                            updateDataImportFileUploadManager(difum);
+                            FileManager.moveFileToAnotherDirectory(importFilePath, appUtil.getImportDoneDirectoryPath());*/
+                        }
+                        else
+                        {
+                            //The file is a Nomis2 or earlier export
+                            
+                            LegacyImportManager ldim=new LegacyImportManager(userName);
+                            ldim.processCBORecords(destinationDirectory);
+                            ldim.processWardRecords(destinationDirectory);
+                            ldim.processHouseholdEnrollment(destinationDirectory, partnerCode);
+                            ldim.processHouseholdVulnerabilityAssessment(destinationDirectory, partnerCode);
+                            ldim.processCaregiverRecords(destinationDirectory, partnerCode);
+                            ldim.processOvcRecords(destinationDirectory, partnerCode);
+                            ldim.processOvcServiceRecords(destinationDirectory, partnerCode);
+                            ldim.processHouseholdServiceRecords(destinationDirectory);
+                            ldim.processHivStatusUpdateRecords(destinationDirectory);
+                            ldim.processWithdrawalStatusRecords(destinationDirectory);
+                            ldim.processHivRiskAssessmentRecords(destinationDirectory);
+                            ldim.processReferralRecordsRecords(destinationDirectory);
+                            ldim.processCareplanAchievementRecords(destinationDirectory);
+                            ldim.processCaregiverExpenditureAndSchoolAttendanceRecords(destinationDirectory);
+                            ldim.processNutritionAssessmentRecords(destinationDirectory);
+                            ldim.processChildStatusIndexRecords(destinationDirectory);
+                            ldim.processCareAndSupportRecords(destinationDirectory);
+                        }
                         difum.setImportStatus(1);
                         updateDataImportFileUploadManager(difum);
                         FileManager.moveFileToAnotherDirectory(importFilePath, appUtil.getImportDoneDirectoryPath());
@@ -2064,9 +2118,10 @@ public List importData(String currentUserName,int hheOption,int ovcOption,int me
                     
                 }
                 //AppUtility.setCurrentImportFileName(null);
-                TaskManager.setDatabaseLocked(false);
-                importData(currentUserName,hheOption,ovcOption,metadataOption,fileHouseholdServiceOption,fileChildServiceOption,fileRiskAssessmentOption,updateQuarterlyEnrollmentStatus);
+                
             }
+            TaskManager.setDatabaseLocked(false);
+            //importData(currentUserName,hheOption,ovcOption,metadataOption,fileHouseholdServiceOption,fileChildServiceOption,fileRiskAssessmentOption,updateQuarterlyEnrollmentStatus);
             //uploadedFileList=util.getDataImportUploadManagerDaoInstance().getAllDataImportFileUploadManager(0);
         }
         catch(Exception ex)
@@ -2204,7 +2259,7 @@ public void unzipFile(String fileName,String destinationDirectory)
     zipHandler.unZipFile(fileName,destinationDirectory);
 }
 
-private void setInitialEnrollmentStatusManager(List list,String userName,int beneficiaryType)
+/*private void setInitialEnrollmentStatusManager(List list,String userName,int beneficiaryType)
 {
     EnrollmentStatusManager esm=new EnrollmentStatusManager();//childList
     if(beneficiaryType==AppConstant.OVC_TYPE_NUM)
@@ -2215,7 +2270,7 @@ private void setInitialEnrollmentStatusManager(List list,String userName,int ben
     {
         esm.processAdultHouseholdMemberEnrollmentStatus(list, userName);
     }
-}
+}*/
 private void processQuarterlyEnrollmentStatus(List serviceList,int beneficiaryType,String userName)
 {
     if(serviceList !=null)
@@ -2248,11 +2303,38 @@ private void processQuarterlyEnrollmentStatus(List serviceList,int beneficiaryTy
         }
     }
 }
-/*private void cleanUpIMBCServices()
+public boolean isNomis3File(String destinationDirectory)
 {
-    AppUtility.setCurrentImportRecordName("Cleaning Mother Baby course service records...");
-    DataCleanupUtility dcu=new DataCleanupUtility();
-    int count=dcu.cleanServiceRecords(AppConstant.HEALTH_DOMAIN, OvcServiceAttributesManager.getMotherBabyCourseServices().getServiceCode(), 2);
-    AppUtility.setCurrentImportRecordName(count+" Mother Baby course service records cleaned");
-}*/
+    boolean isNomis3=false;
+    
+    String fileSeperator=appUtil.getFileSeperator();
+    String nomis2ExportFileName="HouseholdEnrollment";
+    String nomis3ExportFileName="HouseholdEnrollments";    
+    String nomis2FilePath=destinationDirectory+fileSeperator+nomis2ExportFileName+fileSeperator+nomis2ExportFileName+".xml";
+    String nomis3FilePath=destinationDirectory+fileSeperator+nomis3ExportFileName+fileSeperator+nomis3ExportFileName+".xml";
+    //System.err.println("nomis2FilePath is "+nomis2FilePath);
+    //System.err.println("nomis3FilePath is "+nomis3FilePath);
+    try
+	{
+                File file=new File(nomis2FilePath);
+                if(file.exists())
+                {
+                    System.err.println("Export is NOMIS2");
+                }
+                else
+                {
+                    file=new File(nomis3FilePath);
+                    if(file.exists())
+                    {
+                        isNomis3=true;
+                        System.err.println("Export is NOMIS3"); 
+                    }
+                }
+	}
+	catch (Exception ex)
+	{
+            ex.printStackTrace ();
+	}
+    return isNomis3;
+}
 }

@@ -97,6 +97,8 @@ public class HouseholdReferralAction extends org.apache.struts.action.Action {
         System.err.println("requiredAction is "+requiredAction);
         if(requiredAction==null)
         {
+            //beneficiaryid is set to null in the setWithdrawalStatusMessage method to reset the session and button to initial values
+            setWithdrawalStatusMessage(session,null,AppConstant.FALSEVALUE,AppConstant.TRUEVALUE);
             hhrform.reset(mapping, request);
             resetBaselineInfo(hhrform);
             return mapping.findForward(SUCCESS);
@@ -168,7 +170,7 @@ public class HouseholdReferralAction extends org.apache.struts.action.Action {
                 hhrform.setDateOfReferral(DateManager.convertDateToString(service.getDateOfReferral(),"MM/dd/yyyy"));
                 hhrform.setReferralCompleted(service.getReferralCompleted());
                 hhrform.setVolunteerName(service.getCommunityWorker());
-                setBeneficiaryDetails(hhrform,session);
+                //setBeneficiaryDetails(hhrform,session);
                 if(service.getSafetyServices() !=null && service.getSafetyServices().indexOf(mbcServiceCode) !=-1)
                 session.setAttribute("mbcdisabled", "false");
                 setButtonState(session,"true","false");
@@ -178,7 +180,7 @@ public class HouseholdReferralAction extends org.apache.struts.action.Action {
                 
                 
             }
-            
+            setBeneficiaryDetails(hhrform,session);
             return mapping.findForward(SUCCESS);
         }
         else if(requiredAction.equalsIgnoreCase("save"))
@@ -225,6 +227,43 @@ public class HouseholdReferralAction extends org.apache.struts.action.Action {
         }
         hhrform.reset(mapping, request);
         return mapping.findForward(SUCCESS);
+    }
+    private void setWithdrawalStatusMessage(HttpSession session,String beneficiaryId,String saveBtnDisabledValue,String modifyBtnDisabledValue) throws Exception
+    {
+        AppUtility appUtil=new AppUtility();
+        String attributeName="hhrWithdrawnMessage";
+        if(beneficiaryId !=null)
+        {
+            DaoUtility util=new DaoUtility();
+            Beneficiary beneficiary=util.getAdultHouseholdMemberDaoInstance().getAdultHouseholdMember(beneficiaryId);
+            if(beneficiary==null)
+            {
+                beneficiary=util.getChildEnrollmentDaoInstance().getOvc(beneficiaryId);
+            }
+            if(beneficiary !=null)
+            {
+                if(appUtil.getBeneficiaryWithrawnMessage(beneficiary.getCurrentEnrollmentStatus()) !=null)
+                {
+                    setButtonState(session,AppConstant.TRUEVALUE,AppConstant.TRUEVALUE);
+                    session.setAttribute(attributeName, appUtil.getBeneficiaryWithrawnMessage(beneficiary.getCurrentEnrollmentStatus()));
+                }
+                else
+                {
+                    session.removeAttribute(attributeName);
+                    setButtonState(session,saveBtnDisabledValue,modifyBtnDisabledValue);
+                }
+            }
+            else
+            {
+                session.removeAttribute(attributeName);
+                setButtonState(session,saveBtnDisabledValue,modifyBtnDisabledValue);
+            }
+        }
+        else
+        {
+            session.removeAttribute(attributeName);
+            setButtonState(session,saveBtnDisabledValue,modifyBtnDisabledValue);
+        }
     }
     private void saveUserActivity(String userName,String userAction,String description)
     {
@@ -304,6 +343,11 @@ public class HouseholdReferralAction extends org.apache.struts.action.Action {
                 hhrform.setHivStatus(beneficiary.getCurrentHivStatus());
                 hhrform.setSex(beneficiary.getSex());
                 hhrform.setPhoneNumber(beneficiary.getPhoneNumber());
+                setWithdrawalStatusMessage(session,hhrform.getBeneficiaryId(),AppConstant.TRUEVALUE,AppConstant.FALSEVALUE);
+            }
+            else
+            {
+                setWithdrawalStatusMessage(session,hhrform.getBeneficiaryId(),AppConstant.FALSEVALUE,AppConstant.TRUEVALUE);
             }
         }
         catch(Exception ex)

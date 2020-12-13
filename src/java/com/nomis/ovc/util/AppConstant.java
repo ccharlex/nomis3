@@ -12,6 +12,32 @@ import java.io.Serializable;
  */
 public class AppConstant implements Serializable
 {
+    public static final String FIRSTREPORTROWCOLOUR="#FFFFFF";
+    public static final String SECONDREPORTROWCOLOUR="#D7E5F2";
+    public static final String HEALTHDOMAINCODE="HLT";
+    public static final String SAFEDOMAINCODE="SFT";
+    public static final String SCHDOMAINCODE="SCH";
+    public static final String STABLEDOMAINCODE="STB";
+    public static final int TRUE_OPTION_NUM=1;
+    public static final int FALSE_OPTION_NUM=2;
+    public static final String DEFAULTUID="xxxxxxxxxxx";
+    public static final int YES_OPTION_NUM=1;
+    public static final int NO_OPTION_NUM=2;
+    public static final int MARITALSTATUS_SINGLE_NUM=1;
+    public static final int MARITALSTATUS_SEPARATED_NUM=2;
+    public static final int MARITALSTATUS_MARRIED_NUM=3;
+    public static final int MARITALSTATUS_WIDOWED_NUM=4;
+    public static final int MARITALSTATUS_DIVORCED_NUM=5;
+    
+    public static final int OCCUPATION_FORMALLYEMPLOYED_NUM=1;
+    public static final int OCCUPATION_INFORMALLYEMPLOYED_NUM=2;
+    public static final int OCCUPATION_SELFEMPLOYED_NUM=3;
+    public static final int OCCUPATION_RETIREDPENSIONER_NUM=4;
+    public static final int OCCUPATION_RETIREDNONPENSIONER_NUM=5;
+    public static final int OCCUPATION_UNEMPLOYED_NUM=6;
+    
+    
+    public static final String DEAULT_PARTNER_CODE="XXX";
     public static final String VULNERABILITYSTATUS_SUBTYPE="vulnerabilitystatus";
     public static final String MAIN_INDICATOR_TYPE="main indicator";
     public static final String HIVRISK_POINTOFUPDATE="hra";
@@ -135,6 +161,7 @@ public class AppConstant implements Serializable
     public static final int OVC_SERV_NUM=12;
     public static final int REENROLLED_NUM=13;
     public static final int CURRENTLY_ENROLLED_NUM=14;
+    public static final int TRANSFERED_NUM=15;
     
     public static final String DOMAIN_PSYCHOSOCIAL="psychosocial";
     public static final String DOMAIN_HEALTH="health";

@@ -21,7 +21,7 @@ import com.nomis.ovc.metadata.OrganizationUnit;
 import com.nomis.ovc.util.AppConstant;
 import com.nomis.ovc.util.AppManager;
 import com.nomis.ovc.util.AppUtility;
-import com.nomis.ovc.util.DatabasetManager;
+import com.nomis.ovc.util.DatasetManager;
 import com.nomis.ovc.util.DateManager;
 import com.nomis.ovc.util.HivPropertiesManager;
 import com.nomis.ovc.util.ReferralFacilityManager;
@@ -62,7 +62,7 @@ public class NationalChildEnrollmentAction extends org.apache.struts.action.Acti
         NationalChildEnrollmentForm ceform=(NationalChildEnrollmentForm)form;
         HttpSession session=request.getSession();
         //session.setAttribute("mainHivStatus", HivPropertiesManager.getThreeMainHivStatus());
-        VulnerabilityStatusManager.setVulnerabilityStatusForDisplay(session);
+        VulnerabilityStatusManager.setMainVulnerabilityStatusForDisplay(session);
         
         String moduleName="Child enrollment";
         DaoUtility util=new DaoUtility();
@@ -76,8 +76,8 @@ public class NationalChildEnrollmentAction extends org.apache.struts.action.Acti
         String hhUniqueId=ceform.getHhUniqueId();
         ouaManager.setOrganizationUnitAttributes(session, level3OuId, userName, ceform.getCboId());
         User user=appManager.getCurrentUser(session);
-        DatasetSetting dsts=util.getDatasetSettingDaoInstance().getDatasetSettingByModuleId(DatabasetManager.getChildEnrollmentModuleId());
-        if(dsts !=null && dsts.getDatasetId().equalsIgnoreCase(DatabasetManager.getRevChildEnrollmentDatasetId()))
+        DatasetSetting dsts=util.getDatasetSettingDaoInstance().getDatasetSettingByModuleId(DatasetManager.getChildEnrollmentModuleId());
+        if(dsts !=null && dsts.getDatasetId().equalsIgnoreCase(DatasetManager.getRevChildEnrollmentDatasetId()))
         {
             return mapping.findForward("RevisedChildEnrollmentForm");
         }
@@ -327,7 +327,7 @@ public class NationalChildEnrollmentAction extends org.apache.struts.action.Acti
             ovc.setTreatmentId(null);
         }
         ovc.setCurrentEnrollmentStatus(AppConstant.ACTIVE_NUM);
-        ovc.setDateOfCurrentStatus(dateOfEnrollment);
+        ovc.setDateOfCurrentEnrollmentStatus(dateOfEnrollment);
         ovc.setDateCreated(DateManager.getDateInstance(DateManager.getCurrentDate()));
         ovc.setDateOfEnrollment(dateOfEnrollment);
         ovc.setBaselineHivStatus(ceform.getBaselineHivStatus());

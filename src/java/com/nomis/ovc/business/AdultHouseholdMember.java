@@ -28,7 +28,7 @@ public class AdultHouseholdMember implements Serializable,Beneficiary
     private Date dateOfBirth;
     private Date dateOfEnrollment;
     private String enrollmentId;
-    
+    private String legacyId;
     //private String nationalId;
     private String beneficiaryId;
     private String firstName;
@@ -71,6 +71,7 @@ public class AdultHouseholdMember implements Serializable,Beneficiary
     private String treatmentId;
     private EnrolledOnTreatment enrolledOnTreatmentObject;
     private ReferralFacility referralFacility;
+    private boolean forUpdateHivStatus;
     int serialNo=0;
     String rowColor="#FFFFFF";
     private HouseholdEnrollment hhe;
@@ -80,6 +81,8 @@ public class AdultHouseholdMember implements Serializable,Beneficiary
     private BeneficiaryType beneficiaryTypeObject;
     private CommunityWorker communityWorker=null;
     private BeneficiaryAttributeManager bcam=new BeneficiaryAttributeManager();
+    private String ageUnitName="Year";
+    private String beneficiaryTypeName=AppConstant.CAREGIVER_TYPE;
 
     public String getAddress() {
         return address;
@@ -469,7 +472,15 @@ public class AdultHouseholdMember implements Serializable,Beneficiary
     public CommunityWorker getCommunityWorker() {
         return communityWorker=BeneficiaryManager.getCommunityWorker("");
     }
+    public String getBaselineAgeUnitName() 
+    {
+        return ageUnitName;
+    }
 
+    public String getCurrentAgeUnitName() 
+    {
+        return ageUnitName;
+    }
     public int getViralLoad() {
         if(viralLoad==0)
         viralLoad=BeneficiaryManager.getViralLoad(beneficiaryId, currentHivStatus, enrolledOnTreatment);
@@ -479,5 +490,25 @@ public class AdultHouseholdMember implements Serializable,Beneficiary
     public void setViralLoad(int viralLoad) {
         this.viralLoad = viralLoad;
     }
-    
+
+    public String getLegacyId() {
+        return legacyId;
+    }
+
+    public void setLegacyId(String legacyId) {
+        this.legacyId = legacyId;
+    }
+    public String getBeneficiaryTypeName()
+    {
+        return beneficiaryTypeName;
+    }
+
+    public boolean isForUpdateHivStatus() {
+        return forUpdateHivStatus;
+    }
+
+    public void setForUpdateHivStatus(boolean forUpdateHivStatus) {
+        this.forUpdateHivStatus = forUpdateHivStatus;
+    }
+
 }

@@ -14,13 +14,17 @@
     <property name="dateCreated" column="DATECREATED" type="date"/>
     <property name="dateOfAssessment" column="DATEOFASSESSMENT" type="date"/>
     <property name="dateOfNextAppointment" column="DATEOFNEXTAPPOINTMENT" type="date"/>
-    <property name="dateOfViralLoadTest" column="DATEOFVIRALLOADTEST" type="date"/>
+    <property name="dateOfViralLoadSampleCollection" column="DATEOFVIRALLOADTEST" type="date"/>
+    
+    <property name="dateOfLastDrugPickup" column="DATEOFLASTDRUGPICKUP" type="date"/>
     <property name="enrolledOnTreatment" column="ENROLLEDONTREATMENT" type="int"/>
     <property name="facilityId" column="FACILITYID" type="string"/>
     <property name="lastModifiedDate" column="LASTMODIFIEDDATE" type="date"/>
     <property name="markedForDelete" column="MARKEDFORDELETE" type="int"/>
     <property name="missedARVsRecently" column="MISSEDARVSRECENTLY" type="int"/>
     <property name="monthsOfTransportationSupport" column="MONTHSOFTRANSPORTATIONSUPPORT" type="int"/>
+    
+    <property name="numberOfDaysOfRefill" column="NUMBEROFDAYSOFREFILL" type="int"/>
     <property name="pickedUpMedication" column="PICKEDUPMEDICATION" type="int"/>
     <property name="reasonViralLoadNotDone" column="REASONVIRALLOADNOTDONE" type="string"/>
     <property name="reasonsPeopleSkipARV" column="REASONSPEOPLESKIPARV" type="string"/>

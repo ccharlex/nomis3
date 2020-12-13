@@ -21,7 +21,7 @@ import com.nomis.ovc.metadata.OrganizationUnit;
 import com.nomis.ovc.util.AppConstant;
 import com.nomis.ovc.util.AppManager;
 import com.nomis.ovc.util.AppUtility;
-import com.nomis.ovc.util.DatabasetManager;
+import com.nomis.ovc.util.DatasetManager;
 import com.nomis.ovc.util.DateManager;
 import com.nomis.ovc.util.HivPropertiesManager;
 import com.nomis.ovc.util.UniqueIdManager;
@@ -72,8 +72,8 @@ public class NationalChildServiceAction extends org.apache.struts.action.Action 
         ouaManager.setOrganizationUnitAttributes(session, level3OuId,userName,csform.getCboId());
         HivPropertiesManager.setHivStatusList(session, HivPropertiesManager.getThreeMainHivStatus());
         CommunityWorkerRecordsManager.setEnumeratorsRegistrationList(session);
-        DatasetSetting dsts=util.getDatasetSettingDaoInstance().getDatasetSettingByModuleId(DatabasetManager.getChildServiceModuleId());
-        if(dsts !=null && dsts.getDatasetId().equalsIgnoreCase(DatabasetManager.getRevChildServiceDatasetId()))
+        DatasetSetting dsts=util.getDatasetSettingDaoInstance().getDatasetSettingByModuleId(DatasetManager.getChildServiceModuleId());
+        if(dsts !=null && dsts.getDatasetId().equalsIgnoreCase(DatasetManager.getRevChildServiceDatasetId()))
         {
             return mapping.findForward("RevisedChildServiceForm");
         }

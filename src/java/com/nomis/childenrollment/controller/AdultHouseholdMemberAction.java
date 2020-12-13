@@ -8,14 +8,18 @@ import com.nomis.operationsManagement.AccessManager;
 import com.nomis.operationsManagement.OrganizationUnitAttributesManager;
 import com.nomis.operationsManagement.UserActivityManager;
 import com.nomis.ovc.business.AdultHouseholdMember;
+import com.nomis.ovc.business.Beneficiary;
 import com.nomis.ovc.business.HouseholdEnrollment;
 import com.nomis.ovc.business.User;
 import com.nomis.ovc.dao.DaoUtility;
 import com.nomis.ovc.metadata.OrganizationUnit;
 import com.nomis.ovc.util.AppConstant;
 import com.nomis.ovc.util.AppManager;
+import com.nomis.ovc.util.AppUtility;
 import com.nomis.ovc.util.DateManager;
 import com.nomis.ovc.util.HivPropertiesManager;
+import com.nomis.ovc.util.MaritalStatusManager;
+import com.nomis.ovc.util.OccupationManager;
 import com.nomis.ovc.util.ReferralFacilityManager;
 import com.nomis.ovc.util.UniqueIdManager;
 import java.util.ArrayList;
@@ -54,6 +58,8 @@ public class AdultHouseholdMemberAction extends org.apache.struts.action.Action 
         AdultHouseholdMemberForm ahmform=(AdultHouseholdMemberForm)form;
         HttpSession session=request.getSession();
         DaoUtility util=new DaoUtility();
+        MaritalStatusManager msm=new MaritalStatusManager();
+        OccupationManager om=new OccupationManager();
         String moduleName="Adult household member enrollment";
         String requiredAction=ahmform.getActionName();
         OrganizationUnitAttributesManager ouaManager=new OrganizationUnitAttributesManager();
@@ -74,15 +80,19 @@ public class AdultHouseholdMemberAction extends org.apache.struts.action.Action 
         String level3OuId=ahmform.getLevel3OuId();
         String hhUniqueId=ahmform.getHhUniqueId();
         
+        msm.setMaritalStatusList(session);
+        om.setOccupationList(session);
         ouaManager.setOrganizationUnitAttributes(session, level3OuId,userName,ahmform.getCboId());
         HivPropertiesManager.setHivStatusList(session, HivPropertiesManager.getThreeMainHivStatus());
         //session.setAttribute("mainHivStatus", HivPropertiesManager.getThreeMainHivStatus());
         setHouseholdMemberListPerHousehold(session, ahmform.getHhUniqueId());
-        loadfacility(session,level2OuId,level3OuId);
-       System.err.println("requiredAction is "+requiredAction);
+        loadfacility(session,level2OuId,null);
+        //setWithdrawalStatusMessage(session,ahmform.getBeneficiaryId(),AppConstant.TRUEVALUE,AppConstant.TRUEVALUE);
+        System.err.println("requiredAction is "+requiredAction);
         if(requiredAction==null)
         {
-            //util.getAdultHouseholdMemberDaoInstance().updateAllAdultHouseholdMembers();
+            //set null beneficiaryid to the setWithdrawalStatusMessage method to reset the session and button to initial values
+            setWithdrawalStatusMessage(session,null,AppConstant.FALSEVALUE,AppConstant.TRUEVALUE);
             ahmform.reset(mapping, request);
             return mapping.findForward(SUCCESS);
         }
@@ -156,7 +166,11 @@ public class AdultHouseholdMemberAction extends org.apache.struts.action.Action 
                 }
                 ahmform.setDateOfEnrollment(DateManager.convertDateToString(ahm.getDateOfEnrollment(),DateManager.MM_DD_YYYY_SLASH));
                 request.setAttribute("hhName", hhName);
-                setButtonState(session,AppConstant.TRUEVALUE,AppConstant.FALSEVALUE);
+                setWithdrawalStatusMessage(session,ahmform.getBeneficiaryId(),AppConstant.TRUEVALUE,AppConstant.FALSEVALUE);
+            }
+            else
+            {
+                setWithdrawalStatusMessage(session,ahmform.getBeneficiaryId(),AppConstant.FALSEVALUE,AppConstant.TRUEVALUE);
             }
             return mapping.findForward(SUCCESS);
         }
@@ -309,5 +323,38 @@ public class AdultHouseholdMemberAction extends org.apache.struts.action.Action 
     {
         session.setAttribute("ahmSaveDisabled", saveDisabled);
         session.setAttribute("ahmModifyDisabled", modifyDisabled);
+    }
+    private void setWithdrawalStatusMessage(HttpSession session,String beneficiaryId,String saveBtnDisabledValue,String modifyBtnDisabledValue) throws Exception
+    {
+        AppUtility appUtil=new AppUtility();
+        String attributeName="ahmWithdrawnMessage";
+        if(beneficiaryId !=null)
+        {
+            DaoUtility util=new DaoUtility();
+            Beneficiary beneficiary=util.getAdultHouseholdMemberDaoInstance().getAdultHouseholdMember(beneficiaryId);
+            if(beneficiary !=null)
+            {
+                if(appUtil.getBeneficiaryWithrawnMessage(beneficiary.getCurrentEnrollmentStatus()) !=null)
+                {
+                    setButtonState(session,AppConstant.TRUEVALUE,AppConstant.TRUEVALUE);
+                    session.setAttribute(attributeName, appUtil.getBeneficiaryWithrawnMessage(beneficiary.getCurrentEnrollmentStatus()));
+                }
+                else
+                {
+                    session.removeAttribute(attributeName);
+                    setButtonState(session,saveBtnDisabledValue,modifyBtnDisabledValue);
+                }
+            }
+            else
+            {
+                session.removeAttribute(attributeName);
+                setButtonState(session,saveBtnDisabledValue,modifyBtnDisabledValue);
+            }
+        }
+        else
+        {
+            session.removeAttribute(attributeName);
+            setButtonState(session,saveBtnDisabledValue,modifyBtnDisabledValue);
+        }
     }
 }

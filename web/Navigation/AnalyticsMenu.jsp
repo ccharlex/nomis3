@@ -4,6 +4,7 @@
     Author     : smomoh
 --%>
 <a href="customindicatorsdatageneration.do">Custom report data management</a>
+<a href="enrollmentstatusupdate.do" >Enrollment status management </a>
 <a href="datimdatageneration.do" >DATIM data generation </a>
 <a href="#" > </a>
 <a href="#" > </a>

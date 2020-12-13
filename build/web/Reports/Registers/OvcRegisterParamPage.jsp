@@ -94,6 +94,10 @@ a:active {
                                 <html:option value="householdServiceRegister">Caregiver Service register</html:option>
                                 <html:option value="hivRiskAssessmentRegister">HIV Risk assessment register</html:option>
                                 <html:option value="careAndSupportRegister">Care and Support register</html:option>
+                                <html:option value="careAndSupportExcelTemplate">Care and Support Excel report</html:option>
+                                <html:option value="nutritionAssessment">Nutrition assessment register</html:option>
+                                <html:option value="caregiverAccessToEmergencyFund">Caregiver access to emergency fund register</html:option>
+                                <html:option value="careplanAchievementChecklist">Careplan achievement register</html:option>
                                 <%--<html:option value="referralRegister">Referral register</html:option>
                                 <html:option value="gbvEnrollmentRegister">GBV Enrollment register</html:option>
                                 <html:option value="gbvServiceRegister">GBV Service register</html:option>

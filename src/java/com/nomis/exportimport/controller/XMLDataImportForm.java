@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.struts.action.ActionErrors;
 import org.apache.struts.action.ActionMapping;
+import org.apache.struts.action.ActionMessage;
 import org.apache.struts.upload.FormFile;
 
 /**
@@ -135,7 +136,13 @@ public void reset(ActionMapping mapping, HttpServletRequest request)
      */
     public ActionErrors validate(ActionMapping mapping, HttpServletRequest request) {
         ActionErrors errors = new ActionErrors();
-        
+        if(this.getActionName()!=null && this.getActionName().equalsIgnoreCase("upload"))
+        {
+            if(this.getPartnerCode()==null || this.getPartnerCode().trim().length()<3)
+            errors.add("partnerCode", new ActionMessage("errors.partnerCode.requiredForImport"));
+            else if(this.getUploadedFile()==null)
+            errors.add("uploadedFile", new ActionMessage("errors.file.required"));
+        }
         return errors;
     }
 }

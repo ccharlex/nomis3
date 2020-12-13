@@ -266,7 +266,7 @@ function setActionName(val)
                 <tr>
                     <td height="40" align="center" colspan="2">
                         <!--onclick="cleanUpDatabase('updateBirthRegistrationStatus','updateBirthRegistrationStatus')"-->
-                        <html:submit value="Execute" styleId="btnId" style="width:120px; height:25px; margin-right:5px;" onclick="return disableBtn()"  disabled="${dbUtilityBtnDisabled}"/>
+                        <html:submit value="Execute" styleId="btnId" style="width:120px; height:25px; margin-right:5px;" onclick="return disableBtn()"  disabled="${adhocOperationsBtnDisabled}"/>
                                 </td>
 				</tr>
 

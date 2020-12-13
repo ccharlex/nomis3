@@ -54,4 +54,5 @@ public interface NutritionAssessmentDao
     public int getNumberofSeverelyMalnourishedOvcIdentifiedAndServedWithinTheReportPeriod(String additionalQueryCriteria,String startDate,String endDate,boolean curretlyEnrolled) throws Exception;
     public List getListofSeverelyMalnourishedOvcIdentifiedAndServedWithinTheReportPeriod(String additionalQueryCriteria,String startDate,String endDate,boolean curretlyEnrolled) throws Exception;
     public List getNutritionAssessmentRecordsForExport(ReportParameterTemplate rpt) throws Exception;
+    public List getNutritionAssessmentRecords(ReportParameterTemplate rpt) throws Exception;
 }

@@ -280,13 +280,51 @@ public class DateManager implements Serializable
         Date date=new Date();
         try
         {
-            date=new SimpleDateFormat("yyyy-MM-dd").parse(("1900-01-01"));
+            date=new SimpleDateFormat("yyyy-MM-dd").parse((DEFAULT_DATE));
         }
         catch(Exception ex)
         {
             ex.printStackTrace();
         }
         return date;
+    }
+    public static String getEmptyStringValueForDefaultStartDateInstance(Date date)
+    {
+        String emptyDateStringValue=" ";
+        if(date !=null)
+        {
+            try
+            {
+                if(date.equals(getDefaultStartDateInstance()))
+                emptyDateStringValue=" ";
+                else
+                {
+                   emptyDateStringValue=date.toString();
+                }
+            }
+            catch(Exception ex)
+            {
+                ex.printStackTrace();
+            }
+        }
+        return emptyDateStringValue;
+    }
+    public static Date getNullDateValueForDefaultStartDateInstance(Date date)
+    {
+        Date nullDateValue=null;
+        if(date !=null)
+        {
+            try
+            {
+                if(!date.equals(getDefaultStartDateInstance()))
+                nullDateValue=date;
+            }
+            catch(Exception ex)
+            {
+                ex.printStackTrace();
+            }
+        }
+        return nullDateValue;
     }
     public boolean isNumberGreaterThanZero(String input)
     {

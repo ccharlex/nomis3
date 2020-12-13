@@ -85,6 +85,33 @@ public class AppUtility implements Serializable
         return false;
         return true;
     }
+    public String getBeneficiaryWithrawnMessage(int currentEnrollmentStatus)
+    {
+        String beneficiaryWithrawnMessage=null;
+        if(currentEnrollmentStatus==AppConstant.AGED_OUT_NUM)
+        beneficiaryWithrawnMessage="Beneficiary has aged out of the program";
+        else if(currentEnrollmentStatus==AppConstant.DIED_NUM)
+        beneficiaryWithrawnMessage="Beneficiary has died";
+        else if(currentEnrollmentStatus==AppConstant.EXITED_WITHOUT_GRADUATION_NUM)
+        beneficiaryWithrawnMessage="Beneficiary has exited from the program";
+        else if(currentEnrollmentStatus==AppConstant.GRADUATED_NUM)
+        beneficiaryWithrawnMessage="Beneficiary has graduated from the program";
+        else if(currentEnrollmentStatus==AppConstant.LOST_TO_FOLLOWUP_NUM)
+        beneficiaryWithrawnMessage="Beneficiary is lost to follow up";
+        else if(currentEnrollmentStatus==AppConstant.MIGRATED_NUM)
+        beneficiaryWithrawnMessage="Beneficiary has migrated";
+        
+        else if(currentEnrollmentStatus==AppConstant.TRANSFERED_NONPEPFAR_NUM)
+        beneficiaryWithrawnMessage="Beneficiary has been transfered to a non PEPFAR program";
+        else if(currentEnrollmentStatus==AppConstant.TRANSFERED_PEPFAR_NUM)
+        beneficiaryWithrawnMessage="Beneficiary has been transfered to another PEPFAR funded program";
+        else if(currentEnrollmentStatus==AppConstant.TRANSFERED_NUM)
+        beneficiaryWithrawnMessage="Beneficiary has been transfered out of the program";
+        else if(currentEnrollmentStatus==AppConstant.VOLUNTARILY_WITHDRAWN_NUM)
+        beneficiaryWithrawnMessage="Beneficiary has voluntarily withdrawn from the program";
+        
+        return beneficiaryWithrawnMessage;
+    }
     /*public String changeFirstLetterToUpperCase(String input)
     {
         if(input !=null && input.length()>0)
@@ -1080,7 +1107,7 @@ public void moveAllImportFilesToDoneDirectory()
             if(str.length()>1)
             finalStr=finalStr+str.substring(1);
         }
-        System.err.println("finalStr is "+finalStr);
+        //System.err.println("finalStr is "+finalStr);
         return finalStr;
     }
     public String getLicenseConfigFile()

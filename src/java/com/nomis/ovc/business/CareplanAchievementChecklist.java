@@ -4,6 +4,7 @@
  */
 package com.nomis.ovc.business;
 
+import com.nomis.ovc.util.AppConstant;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -34,6 +35,24 @@ public class CareplanAchievementChecklist implements Serializable
     private String recordedBy;
     private String volunteerName;
     private int score;
+    
+    private int adolescentInVoctraining;
+    private int childrenEnrolledInEarlyChildCare;
+    private int caregiverDisclosedHivStatus;
+    private int childrenInNeeedOfHltProvidedHltServices;
+    private int hhDemonstratedAbilityToMeetGoals;
+    private int vcAtRiskReferredForChildProtection;
+    private int childrenInHhHaveAdequateHousingAndSpace;
+    private int cgiversCompletedParentingCourse;
+    private int childHeadedHhLinkedToServices;
+    private int hhGraduated;
+    private int childrenReferredForHivTesting;
+    private int childrenReferredReceivedTestingServices;
+    private int childWithdrawnOrSad;
+    private CommunityWorker communityWorker;
+    int serialNo=0;
+    String rowColor=AppConstant.FIRSTREPORTROWCOLOUR;
+    private HouseholdEnrollment hhe;
 
     public int getAllChildrenHaveBirthCert() {
         return allChildrenHaveBirthCert;
@@ -201,5 +220,138 @@ public class CareplanAchievementChecklist implements Serializable
 
     public void setVolunteerName(String volunteerName) {
         this.volunteerName = volunteerName;
-    } 
+    }
+
+    public int getAdolescentInVoctraining() {
+        return adolescentInVoctraining;
+    }
+
+    public void setAdolescentInVoctraining(int adolescentInVoctraining) {
+        this.adolescentInVoctraining = adolescentInVoctraining;
+    }
+
+    public int getCaregiverDisclosedHivStatus() {
+        return caregiverDisclosedHivStatus;
+    }
+
+    public void setCaregiverDisclosedHivStatus(int caregiverDisclosedHivStatus) {
+        this.caregiverDisclosedHivStatus = caregiverDisclosedHivStatus;
+    }
+
+    public int getCgiversCompletedParentingCourse() {
+        return cgiversCompletedParentingCourse;
+    }
+
+    public void setCgiversCompletedParentingCourse(int cgiversCompletedParentingCourse) {
+        this.cgiversCompletedParentingCourse = cgiversCompletedParentingCourse;
+    }
+
+    public int getChildHeadedHhLinkedToServices() {
+        return childHeadedHhLinkedToServices;
+    }
+
+    public void setChildHeadedHhLinkedToServices(int childHeadedHhLinkedToServices) {
+        this.childHeadedHhLinkedToServices = childHeadedHhLinkedToServices;
+    }
+
+    public int getChildrenInHhHaveAdequateHousingAndSpace() {
+        return childrenInHhHaveAdequateHousingAndSpace;
+    }
+
+    public void setChildrenInHhHaveAdequateHousingAndSpace(int childrenInHhHaveAdequateHousingAndSpace) {
+        this.childrenInHhHaveAdequateHousingAndSpace = childrenInHhHaveAdequateHousingAndSpace;
+    }
+
+    public int getChildrenInNeeedOfHltProvidedHltServices() {
+        return childrenInNeeedOfHltProvidedHltServices;
+    }
+
+    public void setChildrenInNeeedOfHltProvidedHltServices(int childrenInNeeedOfHltProvidedHltServices) {
+        this.childrenInNeeedOfHltProvidedHltServices = childrenInNeeedOfHltProvidedHltServices;
+    }
+
+    public int getChildrenEnrolledInEarlyChildCare() {
+        return childrenEnrolledInEarlyChildCare;
+    }
+
+    public void setChildrenEnrolledInEarlyChildCare(int childrenEnrolledInEarlyChildCare) {
+        this.childrenEnrolledInEarlyChildCare = childrenEnrolledInEarlyChildCare;
+    }
+
+    public int getHhGraduated() {
+        return hhGraduated;
+    }
+
+    public void setHhGraduated(int hhGraduated) {
+        this.hhGraduated = hhGraduated;
+    }
+    
+    public int getHhDemonstratedAbilityToMeetGoals() {
+        return hhDemonstratedAbilityToMeetGoals;
+    }
+
+    public void setHhDemonstratedAbilityToMeetGoals(int hhDemonstratedAbilityToMeetGoals) {
+        this.hhDemonstratedAbilityToMeetGoals = hhDemonstratedAbilityToMeetGoals;
+    }
+
+    public int getVcAtRiskReferredForChildProtection() {
+        return vcAtRiskReferredForChildProtection;
+    }
+
+    public void setVcAtRiskReferredForChildProtection(int vcAtRiskReferredForChildProtection) {
+        this.vcAtRiskReferredForChildProtection = vcAtRiskReferredForChildProtection;
+    }
+
+    public int gchildrenReferredForHivTestingetChildrenReferredForHivTesting() {
+        return childrenReferredForHivTesting;
+    }
+
+    public void setChildrenReferredForHivTesting(int childrenReferredForHivTesting) {
+        this.childrenReferredForHivTesting = childrenReferredForHivTesting;
+    }
+
+    public int getChildrenReferredReceivedTestingServices() {
+        return childrenReferredReceivedTestingServices;
+    }
+
+    public void setChildrenReferredReceivedTestingServices(int childrenReferredReceivedTestingServices) {
+        this.childrenReferredReceivedTestingServices = childrenReferredReceivedTestingServices;
+    }
+
+    public int getChildWithdrawnOrSad() {
+        return childWithdrawnOrSad;
+    }
+
+    public void setChildWithdrawnOrSad(int childWithdrawnOrSad) {
+        this.childWithdrawnOrSad = childWithdrawnOrSad;
+    }
+    
+    public String getRowColor() {
+        return rowColor;
+    }
+
+    public void setRowColor(String rowColor) {
+        this.rowColor = rowColor;
+    }
+
+    public int getSerialNo() {
+        return serialNo;
+    }
+
+    public void setSerialNo(int serialNo) {
+        this.serialNo = serialNo;
+    }
+
+    public CommunityWorker getCommunityWorker() {
+        return communityWorker;
+    }
+
+    public HouseholdEnrollment getHhe() {
+        return hhe;
+    }
+
+    public void setHhe(HouseholdEnrollment hhe) {
+        this.hhe = hhe;
+    }
+    
 }

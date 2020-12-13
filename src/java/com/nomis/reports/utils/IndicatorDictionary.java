@@ -1691,8 +1691,8 @@ public Indicator getIndicatorForNumberOfAdultMembersProvidedEntrepreneurshipandB
     {
         Indicator indicator=Indicator.getInstance();
         indicator.setIndicatorId("vccurrinsch");
-        indicator.setIndicatorName("Number of OVC aged (0-17 years) currently in the program who are in school");
-        indicator.setAlternateName("OVC school aged (0-17 years) in the program");
+        indicator.setIndicatorName("Number of OVC aged (5-17 years) currently in the program who are in school");
+        indicator.setAlternateName("OVC school aged (5-17 years) in the program");
         indicator.setIndicatorType(AppConstant.OVC_TYPE);
         indicator.setMerCode("OVC_EDU");
         return indicator;
@@ -1701,7 +1701,7 @@ public Indicator getIndicatorForNumberOfAdultMembersProvidedEntrepreneurshipandB
     {
         Indicator indicator=Indicator.getInstance();
         indicator.setIndicatorId("vcnotschool");
-        indicator.setIndicatorName("Number of OVC aged (0-17 years) currently in the program who are out of school");
+        indicator.setIndicatorName("Number of OVC aged (5-17 years) currently in the program who are out of school");
         indicator.setIndicatorType(AppConstant.OVC_TYPE);
         indicator.setMerCode("OVC_EDU");
         return indicator;

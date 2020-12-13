@@ -33,7 +33,9 @@ public class HivRiskAssessment implements Serializable
     private int bloodTransfusionQuestion;
     private int childCircumcisedOrEarPierced;
     private int childEverPregnantQuestion;
+    
     private int sexualAbuseQuestion;
+    
     private int childAtRiskQuestion;
     private Date dateOfAssessment;
     private Date dateCreated;
@@ -52,6 +54,9 @@ public class HivRiskAssessment implements Serializable
     private int markedForDelete;
     private String recordedBy;
     private String nameOfAssessor;
+    private int skinProblemQuestion;
+    private int parentDeceasedQuestion;
+    
     int serialNo=0;
     String rowColor="#FFFFFF";
     

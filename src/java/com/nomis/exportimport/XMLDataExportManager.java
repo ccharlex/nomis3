@@ -623,7 +623,7 @@ public int exportOvcRecordsInXml(String parentFolderPath,ReportParameterTemplate
                   String sex=getPropertyValue(ovc.getSex()); 
                   String phoneNumber=getPropertyValue(ovc.getPhoneNumber());
                   String currentEnrollmentStatus=getIntegerPropertyValue(ovc.getCurrentEnrollmentStatus()+"");
-                  String dateOfCurrentEnrollmentStatus=getPropertyValue(DateManager.convertDateToString(ovc.getDateOfCurrentStatus(), DateManager.DB_DATE_FORMAT));
+                  String dateOfCurrentEnrollmentStatus=getPropertyValue(DateManager.convertDateToString(ovc.getDateOfCurrentEnrollmentStatus(), DateManager.DB_DATE_FORMAT));
                   String lastModifiedDate=getPropertyValue(DateManager.convertDateToString(ovc.getLastModifiedDate(), DateManager.DB_DATE_FORMAT));
                   String dateCreated=getPropertyValue(DateManager.convertDateToString(ovc.getDateCreated(), DateManager.DB_DATE_FORMAT));
                   String recordedBy=getPropertyValue(ovc.getRecordedBy());
@@ -1017,7 +1017,13 @@ public int exportHivCareAreSupportRecordsInXml(String parentFolderPath,ReportPar
             AttributesImpl atts = new AttributesImpl();
             if(list==null)
             list=new ArrayList();
-            String[] columnNames={"recordId","beneficiaryId","dateOfAssessment","coughSymptom","childLossinWeight","childHasFever","childHasNightSweat","childHasSwelling","enrolledOnTreatment","facilityId","pickedUpMedication","missedARVsRecently","reasonsPeopleSkipARV","viralLoadTestDone","dateOfViralLoadTest","viralLoadResultKnown","viralLoadResult","reasonViralLoadNotDone","receivedTransportationSupport","monthsOfTransportationSupport","soresRashPainExperience","dateOfNextAppointment","markedForDelete","volunteerName","dateCreated","lastModifiedDate","recordedBy"};
+            String[] columnNames={"recordId","beneficiaryId","dateOfAssessment","coughSymptom","childLossinWeight",
+                "childHasFever","childHasNightSweat","childHasSwelling","enrolledOnTreatment","facilityId",
+                "pickedUpMedication","missedARVsRecently","reasonsPeopleSkipARV","viralLoadTestDone","dateOfViralLoadTest",
+                "viralLoadResultKnown","viralLoadResult","reasonViralLoadNotDone","receivedTransportationSupport",
+                "monthsOfTransportationSupport","soresRashPainExperience","dateOfNextAppointment","markedForDelete",
+                "volunteerName","dateCreated","lastModifiedDate","recordedBy","dateOfLastDrugPickup",
+                "numberOfDaysOfRefill"};
 
             atts.clear();
 
@@ -1044,7 +1050,7 @@ public int exportHivCareAreSupportRecordsInXml(String parentFolderPath,ReportPar
                   String missedARVsRecently=getIntegerPropertyValue(casc.getMissedARVsRecently()+"");
                   String reasonsPeopleSkipARV=getPropertyValue(casc.getReasonsPeopleSkipARV());
                   String viralLoadTestDone=getIntegerPropertyValue(casc.getViralLoadTestDone()+"");
-                  String dateOfViralLoadTest=getPropertyValue(DateManager.convertDateToString(casc.getDateOfViralLoadTest(), DateManager.DB_DATE_FORMAT));
+                  String dateOfViralLoadTest=getPropertyValue(DateManager.convertDateToString(casc.getDateOfViralLoadSampleCollection(), DateManager.DB_DATE_FORMAT));
                   String viralLoadResultKnown=getIntegerPropertyValue(casc.getViralLoadResultKnown()+"");
                   String viralLoadResult=getIntegerPropertyValue(casc.getViralLoadResult()+"");
                   String reasonViralLoadNotDone=getPropertyValue(casc.getReasonViralLoadNotDone());
@@ -1053,15 +1059,15 @@ public int exportHivCareAreSupportRecordsInXml(String parentFolderPath,ReportPar
                   String soresRashPainExperience=getIntegerPropertyValue(casc.getSoresRashPainExperience()+"");
                   String dateOfNextAppointment=getPropertyValue(DateManager.convertDateToString(casc.getDateOfNextAppointment(), DateManager.DB_DATE_FORMAT));
                   
+                  String dateOfLastDrugPickup=getPropertyValue(DateManager.convertDateToString(casc.getDateOfLastDrugPickup(), DateManager.DB_DATE_FORMAT));
+                  String numberOfDaysOfRefill=getIntegerPropertyValue(casc.getNumberOfDaysOfRefill()+"");
                   String lastModifiedDate=getPropertyValue(DateManager.convertDateToString(casc.getLastModifiedDate(), DateManager.DB_DATE_FORMAT));
                   String dateCreated=getPropertyValue(DateManager.convertDateToString(casc.getDateCreated(), DateManager.DB_DATE_FORMAT));
                   String volunteerName=getPropertyValue(casc.getVolunteerName());
                   String recordedBy=getPropertyValue(casc.getRecordedBy());
                   String markedForDelete=getIntegerPropertyValue(casc.getMarkedForDelete()+"");
                   
-                  
-
-                  String[] fieldValues={recordId,beneficiaryId,dateOfAssessment,coughSymptom,childLossinWeight,childHasFever,childHasNightSweat,childHasSwelling,enrolledOnTreatment,facilityId,pickedUpMedication,missedARVsRecently,reasonsPeopleSkipARV,viralLoadTestDone,dateOfViralLoadTest,viralLoadResultKnown,viralLoadResult,reasonViralLoadNotDone,receivedTransportationSupport,monthsOfTransportationSupport,soresRashPainExperience,dateOfNextAppointment,markedForDelete,volunteerName,dateCreated,lastModifiedDate,recordedBy};
+                  String[] fieldValues={recordId,beneficiaryId,dateOfAssessment,coughSymptom,childLossinWeight,childHasFever,childHasNightSweat,childHasSwelling,enrolledOnTreatment,facilityId,pickedUpMedication,missedARVsRecently,reasonsPeopleSkipARV,viralLoadTestDone,dateOfViralLoadTest,viralLoadResultKnown,viralLoadResult,reasonViralLoadNotDone,receivedTransportationSupport,monthsOfTransportationSupport,soresRashPainExperience,dateOfNextAppointment,markedForDelete,volunteerName,dateCreated,lastModifiedDate,recordedBy,dateOfLastDrugPickup,numberOfDaysOfRefill};
                   hd.startElement("","","CareAndSupportAssessment",atts);
                     for (int i=0;i<columnNames.length;i++)
                     {
@@ -1434,7 +1440,7 @@ public int exportChildEducationPerformanceAssessmentRecordsInXml(String parentFo
                 AttributesImpl atts = new AttributesImpl();
                 if(list==null)
                 list=new ArrayList();
-                String[] columnNames={"recordId","ovcId","dateOfAssessment","childHasInjuriesOrMarks","childIsSociallyWithdrawn","signsOfFatigueAndTiredness","regularSchoolAttendance","steadyImprovementInClassWork","earlyResumptionInSchool","goodPerformanceInLastExam","childProgressedInSchool","childMissVocTraining","earlyResumptionInTrainingCenter","steadyImprovementInVocWork","classTeacherComment","classTeacherName","dateCreated","lastModifiedDate","recordedBy","volunteerName","markedForDelete"};
+                String[] columnNames={"recordId","ovcId","dateOfAssessment","childHasInjuriesOrMarks","childIsSociallyWithdrawn","signsOfFatigueAndTiredness","regularSchoolAttendance","steadyImprovementInClassWork","earlyResumptionInSchool","goodPerformanceInLastExam","childProgressedInSchool","childMissVocTraining","earlyResumptionInTrainingCenter","steadyImprovementInVocWork","classTeacherComment","classTeacherName","dateCreated","lastModifiedDate","recordedBy","volunteerName","markedForDelete","reasonsChildMissedSchoolOrVocTraining"};
 
                 atts.clear();
 
@@ -1468,8 +1474,8 @@ public int exportChildEducationPerformanceAssessmentRecordsInXml(String parentFo
                       String dateCreated=getPropertyValue(DateManager.convertDateToString(cepa.getDateCreated(), DateManager.DB_DATE_FORMAT));
                       String recordedBy=getPropertyValue(cepa.getRecordedBy());
                       String markedForDelete=getIntegerPropertyValue(cepa.getMarkedForDelete()+"");
-                  
-                  String[] fieldValues={recordId,ovcId,dateOfAssessment,childHasInjuriesOrMarks,childIsSociallyWithdrawn,signsOfFatigueAndTiredness,regularSchoolAttendance,steadyImprovementInClassWork,earlyResumptionInSchool,goodPerformanceInLastExam,childProgressedInSchool,childMissVocTraining,earlyResumptionInTrainingCenter,steadyImprovementInVocWork,classTeacherComment,classTeacherName,dateCreated,lastModifiedDate,recordedBy,volunteerName,markedForDelete};
+                      String reasonsChildMissedSchoolOrVocTraining=getPropertyValue(cepa.getReasonsChildMissedSchoolOrVocTraining());
+                  String[] fieldValues={recordId,ovcId,dateOfAssessment,childHasInjuriesOrMarks,childIsSociallyWithdrawn,signsOfFatigueAndTiredness,regularSchoolAttendance,steadyImprovementInClassWork,earlyResumptionInSchool,goodPerformanceInLastExam,childProgressedInSchool,childMissVocTraining,earlyResumptionInTrainingCenter,steadyImprovementInVocWork,classTeacherComment,classTeacherName,dateCreated,lastModifiedDate,recordedBy,volunteerName,markedForDelete,reasonsChildMissedSchoolOrVocTraining};
                   hd.startElement("","","Assessment",atts);
                     for (int i=0;i<columnNames.length;i++)
                     {
@@ -1538,7 +1544,7 @@ public int exportBeneficiaryStatusUpdateRecordsInXml(String parentFolderPath,Rep
                 AttributesImpl atts = new AttributesImpl();
                 if(list==null)
                 list=new ArrayList();
-                String[] columnNames={"beneficiaryId","beneficiaryType","newHivStatus","dateOfNewStatus","enrolledOnTreatment","dateEnrolledOnTreatment","facilityId","pointOfUpdateValue","birthCertificate","schoolStatus","schoolName","grade","enrolledInVocationalTraining","nameOfVocationalTraining","updateCaregiverHivStatus","updateChildBirthRegStatus","updateChildHivStatus","dateCreated","lastModifiedDate","recordedBy"};
+                String[] columnNames={"beneficiaryId","beneficiaryType","newHivStatus","dateOfNewStatus","enrolledOnTreatment","dateEnrolledOnTreatment","facilityId","pointOfUpdateValue","birthCertificate","schoolStatus","schoolName","grade","enrolledInVocationalTraining","nameOfVocationalTraining","updateCaregiverHivStatus","updateChildBirthRegStatus","updateChildHivStatus","dateCreated","lastModifiedDate","recordedBy","childExitedFromProgram","childExitStatus","caregiverExitStatus","caregiverExitedFromProgram","dateChildExitedFromProgram","dateCaregiverExitedFromProgram"};
 
                 atts.clear();
 
@@ -1571,9 +1577,20 @@ public int exportBeneficiaryStatusUpdateRecordsInXml(String parentFolderPath,Rep
                       String lastModifiedDate=getPropertyValue(DateManager.convertDateToString(bsu.getLastModifiedDate(), DateManager.DB_DATE_FORMAT));
                       String dateCreated=getPropertyValue(DateManager.convertDateToString(bsu.getDateCreated(), DateManager.DB_DATE_FORMAT));
                       String recordedBy=getPropertyValue(bsu.getRecordedBy());
-                      
+                      String childExitedFromProgram=getIntegerPropertyValue(bsu.getChildExitedFromProgram()+"");
+                      String childExitStatus=getIntegerPropertyValue(bsu.getChildExitStatus()+"");
+                      String caregiverExitStatus=getIntegerPropertyValue(bsu.getCaregiverExitStatus()+"");
+                      String caregiverExitedFromProgram=getIntegerPropertyValue(bsu.getCaregiverExitedFromProgram()+"");
+                      String dateChildExitedFromProgram=getPropertyValue(DateManager.convertDateToString(bsu.getDateChildExitedFromProgram(), DateManager.DB_DATE_FORMAT));
+                      String dateCaregiverExitedFromProgram=getPropertyValue(DateManager.convertDateToString(bsu.getDateCaregiverExitedFromProgram(), DateManager.DB_DATE_FORMAT));
+                      //childExitedFromProgram","childExitStatus","caregiverExitStatus","caregiverExitedFromProgram",
+                      //"dateChildExitedFromProgram","dateCaregiverExitedFromProgram
                   
-                  String[] fieldValues={beneficiaryId,beneficiaryType,newHivStatus,dateOfNewStatus,enrolledOnTreatment,dateEnrolledOnTreatment,facilityId,pointOfUpdateValue,birthCertificate,schoolStatus,schoolName,grade,enrolledInVocationalTraining,nameOfVocationalTraining,updateCaregiverHivStatus,updateChildBirthRegStatus,updateChildHivStatus,dateCreated,lastModifiedDate,recordedBy};
+                  String[] fieldValues={beneficiaryId,beneficiaryType,newHivStatus,dateOfNewStatus,enrolledOnTreatment,
+                      dateEnrolledOnTreatment,facilityId,pointOfUpdateValue,birthCertificate,schoolStatus,schoolName,
+                      grade,enrolledInVocationalTraining,nameOfVocationalTraining,updateCaregiverHivStatus,
+                      updateChildBirthRegStatus,updateChildHivStatus,dateCreated,lastModifiedDate,recordedBy,childExitedFromProgram,
+                      childExitStatus,caregiverExitStatus,caregiverExitedFromProgram,dateChildExitedFromProgram,dateCaregiverExitedFromProgram};
                   hd.startElement("","","BeneficiaryStatusUpdate",atts);
                     for (int i=0;i<columnNames.length;i++)
                     {

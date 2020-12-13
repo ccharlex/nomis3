@@ -499,7 +499,7 @@ private boolean isCareplanValid()
         errors.add("CareplanDate", new ActionMessage("errors.careplanDate.required"));
         else if(!ValidationManager.compareDateWithCurrentDate(getCareplanDate()))
         errors.add("CareplanDate", new ActionMessage("errors.careplanDate.postdated"));
-        else if(!ValidationManager.dateAfterEnrollmentDate(this.getBeneficiaryId(),getCareplanDate(),AppConstant.OVC_TYPE_NUM))
+        else if(!ValidationManager.dateAfterEnrollmentDate(this.getBeneficiaryId(),getCareplanDate()))
         errors.add("CareplanDate", new ActionMessage("errors.careplanDate.beforeEnrollment"));
         
         else if(this.getBeneficiaryId()==null || getBeneficiaryId().equalsIgnoreCase("select"))

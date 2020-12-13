@@ -41,6 +41,7 @@ public class ExcelReader implements Serializable
     try 
     {
         //AppUtility appUtil=new AppUtility();
+        int recordCount=0;
       w = Workbook.getWorkbook(inputStream); 
       int count=w.getNumberOfSheets();
       DaoUtility util=new DaoUtility();
@@ -92,6 +93,34 @@ public class ExcelReader implements Serializable
                 rf.setAddress(cell.getContents().trim());
               }
           }
+          else if(i==5)
+          {
+             if(!isEmpty(cell.getContents()))
+              {
+                rf.setNameOfContactPerson(cell.getContents().trim());
+              }
+          }
+          else if(i==6)
+          {
+             if(!isEmpty(cell.getContents()))
+              {
+                rf.setContactEmail(cell.getContents().trim());
+              }
+          }
+          else if(i==7)
+          {
+             if(!isEmpty(cell.getContents()))
+              {
+                rf.setContactPhone(cell.getContents().trim());
+              }
+          }
+          else if(i==8)
+          {
+             if(!isEmpty(cell.getContents()))
+              {
+                rf.setDatimId(cell.getContents().trim());
+              }
+          }
         }
         rf.setDateCreated(DateManager.getCurrentDateInstance());
       rf.setLastModifiedDate(DateManager.getCurrentDateInstance());
@@ -108,7 +137,8 @@ public class ExcelReader implements Serializable
           else
           rfdao.updateReferralFacility(rf);
       }
-        System.err.println("Facility with Id"+rf.getFacilityId()+" rf.getFacilityName() "+rf.getFacilityName());
+      recordCount++;
+        System.err.println("Facility record at "+recordCount+" with Id "+rf.getFacilityId()+" and rf.getFacilityName() "+rf.getFacilityName()+" processed");
         //dataList.add(ou);  
       }
       

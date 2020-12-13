@@ -39,6 +39,7 @@ public class Ovc implements Serializable,Beneficiary
     private String hhUniqueId;
     private String ovcId;
     private String beneficiaryId;
+    private String legacyId;
     private int beneficiaryType;
     private String enrollmentId;
     private Date dateOfEnrollment;
@@ -79,9 +80,11 @@ public class Ovc implements Serializable,Beneficiary
     private Date dateEnrolledOnTreatment;
     private String hivTreatmentFacilityId;
     private String treatmentId;
+    private boolean forUpdateHivStatus;
         
     private int currentEnrollmentStatus;
-    private Date dateOfCurrentStatus;
+    private Date dateOfCurrentEnrollmentStatus;
+    //private Date dateOfCurrentStatus;
     private String fullName;
     private int childHasCasePlan;
     private Date dateCasePlanDeveloped;
@@ -112,6 +115,7 @@ public class Ovc implements Serializable,Beneficiary
     private String baselineAgeUnitName;
     private String currentAgeUnitName;
     private int viralLoad;
+    
     //private ReferralFacility facilityEnrolledOnHivTreatment;
     private ReferralFacility referralFacility;
     private BirthCertificate baselineBirthCertificateObject;
@@ -139,6 +143,7 @@ public class Ovc implements Serializable,Beneficiary
     private HivStatus currentHivStatusObject;
     private SingleOptionManager som=new SingleOptionManager();
     private CommunityWorker communityWorker=null;
+    private String beneficiaryTypeName=AppConstant.OVC_TYPE;
     
     public String getAddress() {
         return address;
@@ -419,13 +424,13 @@ public class Ovc implements Serializable,Beneficiary
         this.currentEnrollmentStatus = currentEnrollmentStatus;
     }
 
-    public Date getDateOfCurrentStatus() {
+    /*public Date getDateOfCurrentStatus() {
         return dateOfCurrentStatus;
     }
 
     public void setDateOfCurrentStatus(Date dateOfCurrentStatus) {
         this.dateOfCurrentStatus = dateOfCurrentStatus;
-    }
+    }*/
 
     public String getRowColor() {
         return rowColor;
@@ -882,6 +887,34 @@ public class Ovc implements Serializable,Beneficiary
 
     public void setCurrentNutritionalStatus(int currentNutritionalStatus) {
         this.currentNutritionalStatus = currentNutritionalStatus;
+    }
+
+    public String getLegacyId() {
+        return legacyId;
+    }
+
+    public void setLegacyId(String legacyId) {
+        this.legacyId = legacyId;
+    }
+
+    public Date getDateOfCurrentEnrollmentStatus() {
+        return dateOfCurrentEnrollmentStatus;
+    }
+
+    public void setDateOfCurrentEnrollmentStatus(Date dateOfCurrentEnrollmentStatus) {
+        this.dateOfCurrentEnrollmentStatus = dateOfCurrentEnrollmentStatus;
+    }
+    public String getBeneficiaryTypeName()
+    {
+        return beneficiaryTypeName;
+    }
+
+    public boolean isForUpdateHivStatus() {
+        return forUpdateHivStatus;
+    }
+
+    public void setForUpdateHivStatus(boolean forUpdateHivStatus) {
+        this.forUpdateHivStatus = forUpdateHivStatus;
     }
     
 }

@@ -8,6 +8,7 @@ import com.nomis.operationsManagement.AccessManager;
 import com.nomis.operationsManagement.CommunityWorkerRecordsManager;
 import com.nomis.operationsManagement.OrganizationUnitAttributesManager;
 import com.nomis.operationsManagement.UserActivityManager;
+import com.nomis.ovc.business.Beneficiary;
 import com.nomis.ovc.business.ChildEducationPerformanceAssessment;
 import com.nomis.ovc.business.HouseholdEnrollment;
 import com.nomis.ovc.business.Ovc;
@@ -16,6 +17,7 @@ import com.nomis.ovc.dao.DaoUtility;
 import com.nomis.ovc.metadata.OrganizationUnit;
 import com.nomis.ovc.util.AppConstant;
 import com.nomis.ovc.util.AppManager;
+import com.nomis.ovc.util.AppUtility;
 import com.nomis.ovc.util.DateManager;
 import com.nomis.ovc.util.HivPropertiesManager;
 import com.nomis.ovc.util.UniqueIdManager;
@@ -84,13 +86,16 @@ public class ChildEducationPerformanceAssessmentAction extends org.apache.struts
         setOvcDetails(cepaform,session);
         CommunityWorkerRecordsManager.setEnumeratorsRegistrationList(session);
         HivPropertiesManager.setHivStatusList(session, HivPropertiesManager.getThreeMainHivStatus());
+        //setWithdrawalStatusMessage(session,cepaform.getOvcId(),AppConstant.TRUEVALUE,AppConstant.FALSEVALUE);
         AccessManager acm=new AccessManager();
         requiredAction=acm.getActionName(requiredAction, user);
         
         if(requiredAction==null)
         {
+            //set null ovcid to the setWithdrawalStatusMessage method to reset the session and button to initial values
+            setWithdrawalStatusMessage(session,null,AppConstant.FALSEVALUE,AppConstant.TRUEVALUE);
             cepaform.reset(mapping, request);
-            setButtonState(session,"false","true");
+            //setButtonState(session,"false","true");
             return mapping.findForward(SUCCESS);
         }
         else if(requiredAction.equalsIgnoreCase("level3OuList"))
@@ -222,6 +227,39 @@ public class ChildEducationPerformanceAssessmentAction extends org.apache.struts
         cepa.setVolunteerName(form.getVolunteerName());
         return cepa;
     }
+    private void setWithdrawalStatusMessage(HttpSession session,String beneficiaryId,String saveBtnDisabledValue,String modifyBtnDisabledValue) throws Exception
+    {
+        AppUtility appUtil=new AppUtility();
+        String attributeName="cepaWithdrawnMessage";
+        if(beneficiaryId !=null)
+        {
+            DaoUtility util=new DaoUtility();
+            Beneficiary beneficiary=util.getChildEnrollmentDaoInstance().getOvc(beneficiaryId);
+            if(beneficiary !=null)
+            {
+                if(appUtil.getBeneficiaryWithrawnMessage(beneficiary.getCurrentEnrollmentStatus()) !=null)
+                {
+                    setButtonState(session,AppConstant.TRUEVALUE,AppConstant.TRUEVALUE);
+                    session.setAttribute(attributeName, appUtil.getBeneficiaryWithrawnMessage(beneficiary.getCurrentEnrollmentStatus()));
+                }
+                else
+                {
+                    session.removeAttribute(attributeName);
+                    setButtonState(session,saveBtnDisabledValue,modifyBtnDisabledValue);
+                }
+            }
+            else
+            {
+                session.removeAttribute(attributeName);
+                setButtonState(session,saveBtnDisabledValue,modifyBtnDisabledValue);
+            }
+        }
+        else
+        {
+            session.removeAttribute(attributeName);
+            setButtonState(session,saveBtnDisabledValue,modifyBtnDisabledValue);
+        }
+    }
     private ChildEducationPerformanceAssessmentForm setOrganizationUnitProperties(HttpSession session, String hhUniqueId,ChildEducationPerformanceAssessmentForm form,String userName) throws Exception
     {
         DaoUtility util=new DaoUtility();
@@ -285,6 +323,11 @@ public class ChildEducationPerformanceAssessmentAction extends org.apache.struts
                 cepaform.setPhoneNumber(ovc.getPhoneNumber());
                 cepaform.setSchoolName(ovc.getSchoolObj().getSchoolName());
                 cepaform.setSchoolGrade(ovc.getSchoolGradeObj().getGradeName());
+                setWithdrawalStatusMessage(session,cepaform.getOvcId(),AppConstant.TRUEVALUE,AppConstant.FALSEVALUE); 
+            }
+            else
+            {
+                setWithdrawalStatusMessage(session,cepaform.getOvcId(),AppConstant.FALSEVALUE,AppConstant.TRUEVALUE);
             }
         }
         catch(Exception ex)

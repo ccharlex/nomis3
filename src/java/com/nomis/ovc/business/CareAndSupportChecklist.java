@@ -5,7 +5,7 @@
 package com.nomis.ovc.business;
 
 import com.nomis.operationsManagement.BeneficiaryManager;
-import com.nomis.ovc.util.BeneficiaryAttributeManager;
+import com.nomis.ovc.util.AppConstant;
 import com.nomis.ovc.util.ReferralFacilityManager;
 import com.nomis.ovc.util.SingleOptionManager;
 import java.io.Serializable;
@@ -33,7 +33,8 @@ public class CareAndSupportChecklist implements Serializable
     private int missedARVsRecently;
     private String reasonsPeopleSkipARV;
     private int viralLoadTestDone;
-    private Date dateOfViralLoadTest;
+    
+    private Date dateOfViralLoadSampleCollection;
     private int viralLoadResultKnown;
     private int viralLoadResult;
     private String reasonViralLoadNotDone;
@@ -44,6 +45,8 @@ public class CareAndSupportChecklist implements Serializable
     private int markedForDelete;
     private String volunteerName;
     private String recordedBy;
+    private Date dateOfLastDrugPickup;
+    private int numberOfDaysOfRefill;
     
     private String coughSymptomOptionName;
     private String childLossinWeightOptionName;
@@ -64,7 +67,7 @@ public class CareAndSupportChecklist implements Serializable
     private String soresRashPainExperienceOptionName;
         
     private int serialNo=0;
-    String rowColor="#FFFFFF";
+    String rowColor=AppConstant.FIRSTREPORTROWCOLOUR;
     private Beneficiary beneficiary;
 
     public Beneficiary getBeneficiary() 
@@ -142,12 +145,12 @@ public class CareAndSupportChecklist implements Serializable
         this.dateOfNextAppointment = dateOfNextAppointment;
     }
 
-    public Date getDateOfViralLoadTest() {
-        return dateOfViralLoadTest;
+    public Date getDateOfViralLoadSampleCollection() {
+        return dateOfViralLoadSampleCollection;
     }
 
-    public void setDateOfViralLoadTest(Date dateOfViralLoadTest) {
-        this.dateOfViralLoadTest = dateOfViralLoadTest;
+    public void setDateOfViralLoadSampleCollection(Date dateOfViralLoadSampleCollection) {
+        this.dateOfViralLoadSampleCollection = dateOfViralLoadSampleCollection;
     }
 
     public int getEnrolledOnTreatment() {
@@ -376,6 +379,22 @@ public class CareAndSupportChecklist implements Serializable
 
     public String getViralLoadTestDoneOptionName() {
         return viralLoadTestDoneOptionName=SingleOptionManager.getSingleChoiceOption(viralLoadTestDone).getName();
+    }
+
+    public Date getDateOfLastDrugPickup() {
+        return dateOfLastDrugPickup;
+    }
+
+    public void setDateOfLastDrugPickup(Date dateOfLastDrugPickup) {
+        this.dateOfLastDrugPickup = dateOfLastDrugPickup;
+    }
+
+    public int getNumberOfDaysOfRefill() {
+        return numberOfDaysOfRefill;
+    }
+
+    public void setNumberOfDaysOfRefill(int numberOfDaysOfRefill) {
+        this.numberOfDaysOfRefill = numberOfDaysOfRefill;
     }
 
     

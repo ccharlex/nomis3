@@ -510,7 +510,7 @@ function setActionName(val)
                                       <html:option value="1">1</html:option>
                                       <html:option value="2">2</html:option>
                                       <html:option value="3">3</html:option>
-                                      <html:option value="4 or more">4 or more</html:option>
+                                      <html:option value="4">4 or more</html:option>
                                     
                                   </html:select> </td>
                           </tr>

@@ -65,8 +65,26 @@ public class CaregiverRelationshipManager
         }
         else if(value==9)
         {
-            cgrm.setCode("cgr");
+            cgrm.setCode("spo");
             cgrm.setName("Spouse");
+            cgrm.setValue(value);
+        }
+        else if(value==10)
+        {
+            cgrm.setCode("nfm");
+            cgrm.setName("Nuclear family member");
+            cgrm.setValue(value);
+        }
+        else if(value==11)
+        {
+            cgrm.setCode("nfm");
+            cgrm.setName("Neighbour");
+            cgrm.setValue(value);
+        }
+        else if(value==12)
+        {
+            cgrm.setCode("fnd");
+            cgrm.setName("Friend");
             cgrm.setValue(value);
         }
         return cgrm;
@@ -125,6 +143,30 @@ public class CaregiverRelationshipManager
                 cgrm.setName(name);
                 cgrm.setValue(8);
             }
+            else if(name.equalsIgnoreCase("Spouse"))
+            {
+                cgrm.setCode("spo");
+                cgrm.setName(name);
+                cgrm.setValue(9);
+            }
+            else if(name.equalsIgnoreCase("Nuclear family member"))
+            {
+                cgrm.setCode("nfm");
+                cgrm.setName(name);
+                cgrm.setValue(10);
+            }
+            else if(name.equalsIgnoreCase("Neighbour"))
+            {
+                cgrm.setCode("nfm");
+                cgrm.setName(name);
+                cgrm.setValue(11);
+            }
+            else if(name.equalsIgnoreCase("Friend"))
+            {
+                cgrm.setCode("fnd");
+                cgrm.setName(name);
+                cgrm.setValue(12);
+            }  
         }
         return cgrm;
     }

@@ -315,7 +315,7 @@ function setActionName(val)
                                     <tr><td colspan="4" align="center">Child Educational assessment form </td></tr>
                                       <jsp:include page="../includes/OrganizationUnitHeader.jsp" />                                  
                                     <tr><td colspan="4" align="center" style="color:red"><html:errors/></td></tr>
-                                    
+                                    <tr><td style="font-size: 14px; font-weight: bold; color: red" colspan="4"><logic:present name="cepaWithdrawnMessage">${cepaWithdrawnMessage}</logic:present></td></tr>
                                     <tr>
                                         <td colspan="4">
                                             

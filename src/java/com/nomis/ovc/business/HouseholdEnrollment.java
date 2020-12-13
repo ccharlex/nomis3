@@ -19,6 +19,7 @@ public class HouseholdEnrollment implements Serializable
 {
     private String hhUniqueId;
     private String enrollmentId;
+    private String legacyId;
     private String partnerCode;
     private String cboId;
     private String organizationUnit;
@@ -38,7 +39,8 @@ public class HouseholdEnrollment implements Serializable
     private int cgEngagedInEconomicActivities;
     private int socialEmotionalSupport;
     private String volunteerName;
-    
+    private int numberOfChildrenInHousehold;
+    private int numberOfPeopleInHousehold;
     //private Date dateOfEnrollment;
     
     private int markedForDelete;
@@ -383,4 +385,29 @@ public class HouseholdEnrollment implements Serializable
     public CommunityWorker getCommunityWorker() {
         return communityWorker=BeneficiaryManager.getCommunityWorker(volunteerName);
     }
+
+    public int getNumberOfChildrenInHousehold() {
+        return numberOfChildrenInHousehold;
+    }
+
+    public void setNumberOfChildrenInHousehold(int numberOfChildrenInHousehold) {
+        this.numberOfChildrenInHousehold = numberOfChildrenInHousehold;
+    }
+
+    public int getNumberOfPeopleInHousehold() {
+        return numberOfPeopleInHousehold;
+    }
+
+    public void setNumberOfPeopleInHousehold(int numberOfPeopleInHousehold) {
+        this.numberOfPeopleInHousehold = numberOfPeopleInHousehold;
+    }
+
+    public String getLegacyId() {
+        return legacyId;
+    }
+
+    public void setLegacyId(String legacyId) {
+        this.legacyId = legacyId;
+    }
+    
 }

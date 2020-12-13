@@ -4,6 +4,10 @@
  */
 package com.nomis.ovc.business;
 
+import com.nomis.operationsManagement.BeneficiaryManager;
+import com.nomis.operationsManagement.NutritionAssessmentAttributesManager;
+import com.nomis.ovc.util.AppConstant;
+import com.nomis.ovc.util.SingleOptionManager;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -53,6 +57,26 @@ public class NutritionAssessment implements Serializable
     private String recordedBy;
     private int ageAtAssessment;
     private int ageUnitAtAssessment;
+    int serialNo=0;
+    String rowColor=AppConstant.FIRSTREPORTROWCOLOUR;
+    
+    private Ovc ovc;
+    private String nutritionalStatusAnswer;
+    private String foodSecurityAndDietQ1Answer;
+    private String foodSecurityAndDietQ2Answer;
+    private String foodSecurityAndDietQ3Answer;
+    private String foodSecurityAndDietQ4Answer;
+    private String foodSecurityAndDietQ5Answer;
+    private String foodSecurityAndDietQ6Answer;
+    private String foodSecurityAndDietQ7Answer;
+    private String foodSecurityAndDietQ8Answer;
+    private String foodSecurityAndDietQ9Answer;
+    private String hygieneQ1Answer;
+    private String hygieneQ2Answer;
+    private String hygieneQ3Answer;
+    private String hygieneQ4Answer;
+    private String ageUnitAtAssessmentName;
+    private CommunityWorker communityWorker;
 
     public double getBmi() {
         return bmi;
@@ -373,5 +397,91 @@ public class NutritionAssessment implements Serializable
     public void setAgeUnitAtAssessment(int ageUnitAtAssessment) {
         this.ageUnitAtAssessment = ageUnitAtAssessment;
     }
-    
+
+    public String getRowColor() {
+        return rowColor;
+    }
+
+    public void setRowColor(String rowColor) {
+        this.rowColor = rowColor;
+    }
+
+    public int getSerialNo() {
+        return serialNo;
+    }
+
+    public void setSerialNo(int serialNo) {
+        this.serialNo = serialNo;
+    }
+
+    public Ovc getOvc() {
+        return ovc;
+    }
+
+    public void setOvc(Ovc ovc) {
+        this.ovc = ovc;
+    }
+
+    public String getAgeUnitAtAssessmentName() {
+        return ageUnitAtAssessmentName=SingleOptionManager.getAgeUnit(ageUnitAtAssessment).getName();
+    }
+
+    public String getFoodSecurityAndDietQ1Answer() {
+        return foodSecurityAndDietQ1Answer=NutritionAssessmentAttributesManager.getAnswerToHouseholdMemberDidNotEatBecauseNoFood(foodSecurityAndDietQ1);
+    }
+
+    public String getFoodSecurityAndDietQ2Answer() {
+        return foodSecurityAndDietQ2Answer=NutritionAssessmentAttributesManager.getAnswerToHouseholdMemberDidNotEatBecauseNoFood(foodSecurityAndDietQ2);
+    }
+
+    public String getFoodSecurityAndDietQ3Answer() {
+        return foodSecurityAndDietQ3Answer=NutritionAssessmentAttributesManager.getAnswerToHouseholdMemberDidNotEatBecauseNoFood(foodSecurityAndDietQ3);
+    }
+
+    public String getFoodSecurityAndDietQ4Answer() {
+        return foodSecurityAndDietQ4Answer=NutritionAssessmentAttributesManager.getAnswerToNumberOfTimesChildAteFood(foodSecurityAndDietQ4);
+    }
+
+    public String getFoodSecurityAndDietQ5Answer() {
+        return foodSecurityAndDietQ5Answer=SingleOptionManager.getSingleChoiceOption(foodSecurityAndDietQ5).getName();
+    }
+
+    public String getFoodSecurityAndDietQ6Answer() {
+        return foodSecurityAndDietQ6Answer=SingleOptionManager.getSingleChoiceOption(foodSecurityAndDietQ6).getName();
+    }
+
+    public String getFoodSecurityAndDietQ7Answer() {
+        return foodSecurityAndDietQ7Answer=SingleOptionManager.getSingleChoiceOption(foodSecurityAndDietQ7).getName();
+    }
+
+    public String getFoodSecurityAndDietQ8Answer() {
+        return foodSecurityAndDietQ8Answer=SingleOptionManager.getSingleChoiceOption(foodSecurityAndDietQ8).getName();
+    }
+
+    public String getFoodSecurityAndDietQ9Answer() {
+        return foodSecurityAndDietQ9Answer=SingleOptionManager.getSingleChoiceOption(foodSecurityAndDietQ9).getName();
+    }
+
+    public String getHygieneQ1Answer() {
+        return hygieneQ1Answer=SingleOptionManager.getSingleChoiceOption(hygieneQ1).getName();
+    }
+
+    public String getHygieneQ2Answer() {
+        return hygieneQ2Answer=SingleOptionManager.getSingleChoiceOption(hygieneQ2).getName();
+    }
+
+    public String getHygieneQ3Answer() {
+        return hygieneQ3Answer=SingleOptionManager.getSingleChoiceOption(hygieneQ3).getName();
+    }
+
+    public String getHygieneQ4Answer() {
+        return hygieneQ4Answer=SingleOptionManager.getSingleChoiceOption(hygieneQ4).getName();
+    }
+
+    public String getNutritionalStatusAnswer() {
+        return nutritionalStatusAnswer=NutritionAssessmentAttributesManager.getAnswerToNutritionalStatus(nutritionalStatus);
+    }
+    public CommunityWorker getCommunityWorker() {
+        return communityWorker=BeneficiaryManager.getCommunityWorker(volunteerName);
+    }
 }

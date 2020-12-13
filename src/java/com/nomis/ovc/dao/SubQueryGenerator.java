@@ -909,7 +909,7 @@ public class SubQueryGenerator
         String orgUnitQuery=" from HouseholdEnrollment hhe, AdultHouseholdMember ahm, HouseholdReferral referral, OrganizationUnit ou where hhe.hhUniqueId=ahm.hhUniqueId and ahm.beneficiaryId=referral.beneficiaryId and hhe.organizationUnit=ou.uid ";
         return orgUnitQuery;
     }
-    public static String getHheCaregiverAccessToEmergencyFundOrganizationUnitQuery()
+    public static String getHheAdultHouseholdMemberCaregiverAccessToEmergencyFundOrganizationUnitQuery()
     {
         String orgUnitQuery=" from HouseholdEnrollment hhe,AdultHouseholdMember ahm,CaregiverAccessToEmergencyFund caef, OrganizationUnit ou where hhe.hhUniqueId=ahm.hhUniqueId and ahm.beneficiaryId=caef.beneficiaryId and hhe.organizationUnit=ou.uid ";
         return orgUnitQuery;
@@ -953,18 +953,18 @@ public class SubQueryGenerator
         String orgUnitQuery="";
         if(transportationSupport>0)
         {
-            orgUnitQuery=" and csc.receivedTransportationSupport="+transportationSupport;
+            orgUnitQuery=" and casc.receivedTransportationSupport="+transportationSupport;
         }
         return orgUnitQuery;
     }
     public static String getHheAdultHouseholdMemberOvcOrganizationUnitCareAndSupportQuery()
     {
-        String orgUnitQuery=" from HouseholdEnrollment hhe,AdultHouseholdMember ahm,Ovc ovc,OrganizationUnit ou, CareAndSupportChecklist csc where hhe.hhUniqueId=ahm.hhUniqueId and ovc.caregiverId=ahm.beneficiaryId and hhe.organizationUnit=ou.uid and ovc.ovcId=csc.beneficiaryId";
+        String orgUnitQuery=" from HouseholdEnrollment hhe,AdultHouseholdMember ahm,Ovc ovc,OrganizationUnit ou, CareAndSupportChecklist casc where hhe.hhUniqueId=ahm.hhUniqueId and ovc.caregiverId=ahm.beneficiaryId and hhe.organizationUnit=ou.uid and ovc.ovcId=casc.beneficiaryId";
         return orgUnitQuery;
     }
     public static String getHheAdultHouseholdMemberOrganizationUnitCareAndSupportQuery()
     {
-        String orgUnitQuery=" from HouseholdEnrollment hhe,AdultHouseholdMember ahm,OrganizationUnit ou, CareAndSupportChecklist csc where hhe.hhUniqueId=ahm.hhUniqueId and hhe.organizationUnit=ou.uid and ahm.beneficiaryId=csc.beneficiaryId";
+        String orgUnitQuery=" from HouseholdEnrollment hhe,AdultHouseholdMember ahm,OrganizationUnit ou, CareAndSupportChecklist casc where hhe.hhUniqueId=ahm.hhUniqueId and hhe.organizationUnit=ou.uid and ahm.beneficiaryId=casc.beneficiaryId";
         return orgUnitQuery;
     }
     public static String getHheOvcOrganizationUnitQuery()
@@ -1145,13 +1145,13 @@ public class SubQueryGenerator
         }
           return dateQuery;
     }
-    public static String getDateOfCareAndSupportAssessmentQuery(String startDate, String endDate)
+    public static String getCareAndSupportDateOfAssessmentQuery(String startDate, String endDate)
     {
         String dateQuery=" ";
         if((startDate !=null && !startDate.equalsIgnoreCase("All")) && (endDate !=null && !endDate.equalsIgnoreCase("All")))
         {
             if(startDate.trim().length()>0 && endDate.trim().length()>0)
-            dateQuery=" and csc.dateOfAssessment between '"+startDate+"' and '"+endDate+"'";
+            dateQuery=" and casc.dateOfAssessment between '"+startDate+"' and '"+endDate+"'";
         }
           return dateQuery;
     }
@@ -1271,7 +1271,7 @@ public class SubQueryGenerator
         if((startDate !=null && !startDate.equalsIgnoreCase("All")) && (endDate !=null && !endDate.equalsIgnoreCase("All")))
         {
             if(startDate.trim().length()>0 && endDate.trim().length()>0)
-            ovcDateQuery=" and ovc.dateOfCurrentStatus between '"+startDate+"' and '"+endDate+"'";
+            ovcDateQuery=" and ovc.dateOfCurrentEnrollmentStatus between '"+startDate+"' and '"+endDate+"'";
         }
           return ovcDateQuery;
     }
@@ -1280,7 +1280,7 @@ public class SubQueryGenerator
         String ovcDateQuery=" ";
         if((startDate !=null && !startDate.equalsIgnoreCase("All") && startDate.trim().length()>0))
         {
-            ovcDateQuery=" and ovc.dateOfCurrentStatus >= '"+startDate+"'";
+            ovcDateQuery=" and ovc.dateOfCurrentEnrollmentStatus >= '"+startDate+"'";
         }
           return ovcDateQuery;
     }

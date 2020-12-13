@@ -39,15 +39,15 @@ public class EnrollmentStatusManager implements Serializable
         DatabaseMaintenance dbm=new DatabaseMaintenance(); 
         dbm.defragmentTable(tableCodeList, 0); 
     }
-    public int updateBeneficiaryEnrollmentStatusHistory(String userName)
+    public int updateBeneficiaryEnrollmentStatusHistory(String serviceStartDate, String serviceEndDate,String userName)
     {
         int count=0;
         //defragmentEssentialTables();
-        count+=updateChildrenEnrollmentStatusHistory(userName);
-        count+=updateAdultHouseholdMemberEnrollmentStatusHistory(userName);
+        count+=updateChildrenEnrollmentStatusHistory(serviceStartDate,serviceEndDate,userName);
+        count+=updateAdultHouseholdMemberEnrollmentStatusHistory(serviceStartDate,serviceEndDate,userName);
         return count;
     }
-    public int updateChildrenEnrollmentStatusHistory(String userName)
+    public int updateChildrenEnrollmentStatusHistory(String serviceStartDate, String serviceEndDate,String userName)
     {
         int count=0;
         try
@@ -63,7 +63,7 @@ public class EnrollmentStatusManager implements Serializable
                 {
                     level4Ou=(String)obj;
                     childrenList=util.getChildEnrollmentDaoInstance().getListOfOvcByLevel4OrganizationUnit(level4Ou);
-                    count+=processChildrenEnrollmentStatus(childrenList,userName);
+                    count+=processChildrenEnrollmentStatus(childrenList,serviceStartDate,serviceEndDate,userName);
                     
                 }
             }
@@ -75,7 +75,7 @@ public class EnrollmentStatusManager implements Serializable
         }
         return count;
     }
-    public int processChildrenEnrollmentStatus(List childrenList,String userName)
+    public int processChildrenEnrollmentStatus(List childrenList,String serviceStartDate, String serviceEndDate,String userName)
     {
         int count=0;
         try
@@ -87,9 +87,9 @@ public class EnrollmentStatusManager implements Serializable
                 for(Object ovcObj:childrenList)
                 {
                    ovc=(Ovc)ovcObj; 
-                   saveOvcEnrollmentStatusHistory(ovc,1,userName);
-                   saveOvcEnrollmentStatusHistory(ovc,2,userName);
-                   saveOvcEnrollmentStatusHistory(ovc,3,userName);
+                   saveOvcEnrollmentStatusHistory(ovc,1,serviceStartDate,serviceEndDate,userName);
+                   saveOvcEnrollmentStatusHistory(ovc,2,serviceStartDate,serviceEndDate,userName);
+                   saveOvcEnrollmentStatusHistory(ovc,3,serviceStartDate,serviceEndDate,userName);
                    count++;
                    if(count==10000)
                    {
@@ -105,7 +105,7 @@ public class EnrollmentStatusManager implements Serializable
         }
         return count;
     }
-    public  int processAdultHouseholdMemberEnrollmentStatus(List adultList,String userName)
+    public  int processAdultHouseholdMemberEnrollmentStatus(List adultList,String serviceStartDate, String serviceEndDate,String userName)
     {
         int count=0;
         try
@@ -117,9 +117,9 @@ public class EnrollmentStatusManager implements Serializable
                 for(Object ovcObj:adultList)
                 {
                    ahm=(AdultHouseholdMember)ovcObj; 
-                   saveAdultHouseholdMemberEnrollmentStatusHistory(ahm,1,userName);
-                   saveAdultHouseholdMemberEnrollmentStatusHistory(ahm,2,userName);
-                   saveAdultHouseholdMemberEnrollmentStatusHistory(ahm,3,userName);
+                   saveAdultHouseholdMemberEnrollmentStatusHistory(ahm,1,serviceStartDate, serviceEndDate,userName);
+                   saveAdultHouseholdMemberEnrollmentStatusHistory(ahm,2,serviceStartDate, serviceEndDate,userName);
+                   saveAdultHouseholdMemberEnrollmentStatusHistory(ahm,3,serviceStartDate, serviceEndDate,userName);
                    count++;
                    if(count==10000)
                    {
@@ -135,7 +135,7 @@ public class EnrollmentStatusManager implements Serializable
         }
         return count;
     }
-    public int updateAdultHouseholdMemberEnrollmentStatusHistory(String userName)
+    public int updateAdultHouseholdMemberEnrollmentStatusHistory(String serviceStartDate, String serviceEndDate,String userName)
     {
         int count=0;
         try
@@ -153,7 +153,7 @@ public class EnrollmentStatusManager implements Serializable
                     adultList=util.getAdultHouseholdMemberDaoInstance().getListOfAdultHouseholdMembersByLevel4OrganizationUnit(level4Ou);
                     if(adultList !=null)
                     {
-                        count+=processAdultHouseholdMemberEnrollmentStatus(adultList,userName);
+                        count+=processAdultHouseholdMemberEnrollmentStatus(adultList,serviceStartDate, serviceEndDate,userName);
                         
                     }
                 }
@@ -166,7 +166,7 @@ public class EnrollmentStatusManager implements Serializable
         }
         return count;
     }
-    public void saveOvcEnrollmentStatusHistory(Ovc ovc,int statusIndicator,String userName) throws Exception
+    public void saveOvcEnrollmentStatusHistory(Ovc ovc,int statusIndicator,String serviceStartDate,String serviceEndDate,String userName) throws Exception
     {
         EnrollmentStatusHistory esh=new EnrollmentStatusHistory();
         if(ovc !=null)
@@ -184,6 +184,7 @@ public class EnrollmentStatusManager implements Serializable
             esh.setLastModifiedDate(DateManager.getCurrentDateInstance());
             if(statusIndicator==1)
             {
+                //Baseline enrollment status
                 esh.setEnrollmentStatus(AppConstant.ACTIVE_NUM);
                 esh.setCurrentAge(ovc.getAgeAtBaseline());
                 esh.setDateOfEnrollmentStatus(ovc.getDateOfEnrollment());
@@ -195,7 +196,7 @@ public class EnrollmentStatusManager implements Serializable
                 if(ovc.getCurrentEnrollmentStatus()!=AppConstant.REENROLLED_NUM)
                 return;
                 esh.setEnrollmentStatus(AppConstant.INACTIVE_NUM);
-                esh.setDateOfEnrollmentStatus(ovc.getDateOfCurrentStatus());
+                esh.setDateOfEnrollmentStatus(ovc.getDateOfCurrentEnrollmentStatus());
                 //esh.setDateOfEnrollmentStatus(DateManager.getDateInstance("2019-03-31"));
                 esh.setHivStatus(ovc.getCurrentHivStatus());
                 esh.setDateOfHivStatus(ovc.getDateOfCurrentHivStatus());
@@ -203,13 +204,13 @@ public class EnrollmentStatusManager implements Serializable
             else if(statusIndicator==3)
             {
                 esh.setEnrollmentStatus(ovc.getCurrentEnrollmentStatus());
-                esh.setDateOfEnrollmentStatus(ovc.getDateOfCurrentStatus());
+                esh.setDateOfEnrollmentStatus(ovc.getDateOfCurrentEnrollmentStatus());
                 esh.setHivStatus(ovc.getCurrentHivStatus());
                 esh.setDateOfHivStatus(ovc.getDateOfCurrentHivStatus());
             }
             //esh.setPointOfUpdateValue(ovc.getPointOfUpdate());
             esh.setRecordedBy(userName);
-            esh=trackOvcService(ovc.getOvcId(),esh,userName,"2020-01-01","2020-03-31");
+            esh=trackOvcService(ovc.getOvcId(),esh,serviceStartDate,serviceEndDate,userName);
             util.getEnrollmentStatusHistoryDaoInstance().saveEnrollmentStatusHistory(esh);
         }
     }
@@ -230,7 +231,7 @@ public class EnrollmentStatusManager implements Serializable
             esh.setFacilityId(ovc.getHivTreatmentFacilityId());
             esh.setLastModifiedDate(DateManager.getCurrentDateInstance());
             esh.setEnrollmentStatus(enrollmentstatus);
-            esh.setDateOfEnrollmentStatus(ovc.getDateOfCurrentStatus());
+            esh.setDateOfEnrollmentStatus(ovc.getDateOfCurrentEnrollmentStatus());
             esh.setHivStatus(ovc.getCurrentHivStatus());
             esh.setDateOfHivStatus(ovc.getDateOfCurrentHivStatus());
             
@@ -265,7 +266,7 @@ public class EnrollmentStatusManager implements Serializable
             util.getAdultHouseholdMemberDaoInstance().updateAdultHouseholdMember(ahm);
         }
     }
-    public void saveAdultHouseholdMemberEnrollmentStatusHistory(AdultHouseholdMember ahm,int statusIndicator,String userName) throws Exception
+    public void saveAdultHouseholdMemberEnrollmentStatusHistory(AdultHouseholdMember ahm,int statusIndicator,String serviceStartDate, String serviceEndDate,String userName) throws Exception
     {
         EnrollmentStatusHistory esh=new EnrollmentStatusHistory();
         if(ahm !=null)
@@ -305,7 +306,7 @@ public class EnrollmentStatusManager implements Serializable
                 esh.setDateOfHivStatus(ahm.getDateOfCurrentHivStatus());
             }
             esh.setRecordedBy(userName);
-            esh=trackAdultHouseholdMemberService(ahm.getBeneficiaryId(),esh,userName,"2020-01-01","2020-03-31");
+            esh=trackAdultHouseholdMemberService(ahm.getBeneficiaryId(),esh,serviceStartDate, serviceEndDate,userName);
             util.getEnrollmentStatusHistoryDaoInstance().saveEnrollmentStatusHistory(esh);
         }
     }
@@ -408,7 +409,7 @@ public class EnrollmentStatusManager implements Serializable
                     enrollmentStatus=AppConstant.ACTIVE_NUM;
                     ovc=getOvcWithCurrentStatus(ovc, enrollmentStatus,service.getServiceDate());
                     //ovc.setCurrentEnrollmentStatus(enrollmentStatus);
-                    //ovc.setDateOfCurrentStatus(service.getServiceDate());
+                    //ovc.setDateOfCurrentEnrollmentStatus(service.getServiceDate());
                 }
                 else if(reportQuarterService==1 && precedingQuarterService==0)
                 {
@@ -442,7 +443,7 @@ public class EnrollmentStatusManager implements Serializable
                 if(service !=null)
                 {
                     Date firstDatimReportQuarterStatusDate=DateManager.getDateInstance("2019-03-31");
-                    //service.getServiceDate().after(ovc.getDateOfCurrentStatus())  && 
+                    //service.getServiceDate().after(ovc.getDateOfCurrentEnrollmentStatus())  && 
                     if(enrollmentStatus>0)
                     {
                         //set the current enrollment status for this beneficiary
@@ -450,8 +451,8 @@ public class EnrollmentStatusManager implements Serializable
                         
                     }
                     //The first status report was at the end FY 19 SAPR i.e March 2019, so all status that was set before this date should default to this date
-                    if(ovc.getDateOfCurrentStatus().before(firstDatimReportQuarterStatusDate))
-                    ovc.setDateOfCurrentStatus(firstDatimReportQuarterStatusDate);
+                    if(ovc.getDateOfCurrentEnrollmentStatus().before(firstDatimReportQuarterStatusDate))
+                    ovc.setDateOfCurrentEnrollmentStatus(firstDatimReportQuarterStatusDate);
                 }
                 if(enrollmentStatus==0)
                 enrollmentStatus=ovc.getCurrentEnrollmentStatus();
@@ -669,10 +670,10 @@ public class EnrollmentStatusManager implements Serializable
     {
         if(ovc !=null && dateOfNewStatus !=null)
         {
-            if(ovc.getDateOfCurrentStatus().before(dateOfNewStatus) || ovc.getDateOfCurrentStatus().equals(dateOfNewStatus))
+            if(ovc.getDateOfCurrentEnrollmentStatus().before(dateOfNewStatus) || ovc.getDateOfCurrentEnrollmentStatus().equals(dateOfNewStatus))
             {
                 ovc.setCurrentEnrollmentStatus(enrollmentStatus);
-                ovc.setDateOfCurrentStatus(dateOfNewStatus);
+                ovc.setDateOfCurrentEnrollmentStatus(dateOfNewStatus);
             }
         }
         return ovc;
@@ -782,10 +783,10 @@ public class EnrollmentStatusManager implements Serializable
                             if(service !=null)
                             {
                                 Date firstDatimReportQuarterStatusDate=DateManager.getDateInstance("2019-03-31");
-                                if(service.getServiceDate().after(ovc.getDateOfCurrentStatus()))
-                                ovc.setDateOfCurrentStatus(service.getServiceDate());
-                                if(ovc.getDateOfCurrentStatus().before(firstDatimReportQuarterStatusDate))
-                                ovc.setDateOfCurrentStatus(firstDatimReportQuarterStatusDate);
+                                if(service.getServiceDate().after(ovc.getDateOfCurrentEnrollmentStatus()))
+                                ovc.setDateOfCurrentEnrollmentStatus(service.getServiceDate());
+                                if(ovc.getDateOfCurrentEnrollmentStatus().before(firstDatimReportQuarterStatusDate))
+                                ovc.setDateOfCurrentEnrollmentStatus(firstDatimReportQuarterStatusDate);
                             }
                             saveNewOvcEnrollmentStatusInstance(ovc,enrollmentStatus,userName);
                             count++;
@@ -937,7 +938,7 @@ public class EnrollmentStatusManager implements Serializable
         }
         return enrollmentStatus;
     }
-    public EnrollmentStatusHistory trackOvcService(String beneficiaryId,EnrollmentStatusHistory esh,String userName,String startServiceDate,String endServiceDate)
+    public EnrollmentStatusHistory trackOvcService(String beneficiaryId,EnrollmentStatusHistory esh,String startServiceDate,String endServiceDate,String userName)
     {
         try
         {
@@ -947,7 +948,8 @@ public class EnrollmentStatusManager implements Serializable
             if(serviceList !=null && !serviceList.isEmpty())
             {
                //The result is ordered desc, hence the first service is the last in the list
-                ChildService firstService=(ChildService)serviceList.get(serviceList.size()-1);
+                //ChildService firstService=(ChildService)serviceList.get(serviceList.size()-1);
+                ChildService firstService=(ChildService)serviceList.get(0);
                 esh.setDateOfEnrollmentStatus(firstService.getServiceDate());
                 updateQuarterlyEnrollmentStatusByServiceParameters(userName,beneficiaryId,AppConstant.OVC_TYPE_NUM,firstService.getServiceDate());
             }
@@ -958,7 +960,7 @@ public class EnrollmentStatusManager implements Serializable
         }
         return esh;
     }
-    public EnrollmentStatusHistory trackAdultHouseholdMemberService(String beneficiaryId,EnrollmentStatusHistory esh,String userName,String startServiceDate,String endServiceDate)
+    public EnrollmentStatusHistory trackAdultHouseholdMemberService(String beneficiaryId,EnrollmentStatusHistory esh,String startServiceDate,String endServiceDate,String userName)
     {
         try
         {
@@ -968,7 +970,8 @@ public class EnrollmentStatusManager implements Serializable
             if(serviceList !=null && !serviceList.isEmpty())
             {
                //The result is ordered desc, hence the first service is the last in the list
-                HouseholdService firstService=(HouseholdService)serviceList.get(serviceList.size()-1);
+                //HouseholdService firstService=(HouseholdService)serviceList.get(serviceList.size()-1);
+                HouseholdService firstService=(HouseholdService)serviceList.get(0);
                 esh.setDateOfEnrollmentStatus(firstService.getServiceDate());
                 updateQuarterlyEnrollmentStatusByServiceParameters(userName,beneficiaryId,AppConstant.CAREGIVER_TYPE_NUM,firstService.getServiceDate());
             }

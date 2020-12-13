@@ -47,6 +47,10 @@ public class ChildService implements Serializable
     private int markedForDelete;
     private int ageAtService;
     private int ageUnitAtService;
+    
+    private int childMissedSchool;
+    private int childAbused;
+    private int abusedChildLinkedToGovt;
     int serialNo=0;
     String rowColor="#FFFFFF";
     private Ovc ovc;
@@ -267,6 +271,30 @@ public class ChildService implements Serializable
 
     public void setCommunityWorker(String communityWorker) {
         this.communityWorker = communityWorker;
+    }
+
+    public int getChildAbused() {
+        return childAbused;
+    }
+
+    public void setChildAbused(int childAbused) {
+        this.childAbused = childAbused;
+    }
+
+    public int getAbusedChildLinkedToGovt() {
+        return abusedChildLinkedToGovt;
+    }
+
+    public void setAbusedChildLinkedToGovt(int abusedChildLinkedToGovt) {
+        this.abusedChildLinkedToGovt = abusedChildLinkedToGovt;
+    }
+
+    public int getChildMissedSchool() {
+        return childMissedSchool;
+    }
+
+    public void setChildMissedSchool(int childMissedSchool) {
+        this.childMissedSchool = childMissedSchool;
     }
 
 }
